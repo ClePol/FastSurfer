@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Advanced scripts" href="advanced.html" /><link rel="prev" title="Scripts" href="index.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Advanced scripts" href="advanced.html" /><link rel="prev" title="BATCH: brun_fastsurfer.sh" href="BATCH.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>SLURM: srun_fastsurfer.sh - FastSurfer</title>
@@ -217,6 +217,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Scripts</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of Scripts</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="BATCH.html">BATCH: brun_fastsurfer.sh</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">SLURM: srun_fastsurfer.sh</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="advanced.html">Advanced scripts</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Advanced scripts</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="fastsurfercnn.html">FastSurferCNN: run_prediction.py</a></li>
@@ -425,7 +426,7 @@ Data- and subject-related options:
   Note: files will be copied here only after all jobs have finished, so most IO happens on
   a work directory, which can use IO-optimized cluster storage (see --work).
 --work: directory with fast filesystem on cluster
-  (default: $HPCWORK/fastsurfer-processing/20240808-101654)
+  (default: $HPCWORK/fastsurfer-processing/20240808-102943)
   NOTE: THIS SCRIPT considers this directory to be owned by this script and job!
   No modifications should be made to the directory after the job is started until it is
   finished (if the job fails, cleanup of this directory may be necessary) and it should be
@@ -568,14 +569,14 @@ done
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="BATCH.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Scripts</div>
+                <div class="title">BATCH: brun_fastsurfer.sh</div>
                 
               </div>
             </a>
