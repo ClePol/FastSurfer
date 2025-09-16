@@ -1086,10 +1086,6 @@ class CC_Mesh(lapy.TriaMesh):
         Args:
             iterations (int, optional): Number of smoothing iterations. Defaults to 1.
         """
-        # Skip smoothing if there are no faces
-        if len(self.t) == 0:
-            return
-            
         z_values = self.v[:, 2]
         super().smooth_(iterations)
         self.v[:, 2] = z_values

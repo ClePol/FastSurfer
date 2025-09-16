@@ -209,7 +209,7 @@ def process_slices(segmentation, slice_selection, temp_seg_affine, midslices, ac
     IO_processes = []
     
     if slice_selection == "middle":
-        cc_mesh = CC_Mesh(num_slices=segmentation.shape[0])
+        cc_mesh = CC_Mesh(num_slices=1)
         cc_mesh.set_acpc_coords(ac_coords, pc_coords)
         cc_mesh.set_resolution(1) # contour is always scaled to 1 mm
 
@@ -221,7 +221,6 @@ def process_slices(segmentation, slice_selection, temp_seg_affine, midslices, ac
                              num_thickness_points, subdivisions, subdivision_method, contour_smoothing)
         
         cc_mesh.add_contour(0, contour_with_thickness[0], contour_with_thickness[1], start_end_idx=(anterior_endpoint_idx, posterior_endpoint_idx))
-        cc_mesh.fill_thickness_values()
 
         if result is not None:
             slice_results.append(result)
