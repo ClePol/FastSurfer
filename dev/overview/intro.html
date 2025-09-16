@@ -5,33 +5,33 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Quick Start" href="QUICKSTART.html" /><link rel="prev" title="User Guide" href="index.html" />
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 7.4.7 and Furo 2025.07.19 -->
         <title>Introduction to FastSurfer - FastSurfer</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
     body[data-theme="dark"] {
-      --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+      --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
     }
     @media (prefers-color-scheme: dark) {
       body:not([data-theme="light"]) {
-        --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
+        --color-code-background: #2b2b2b;
+  --color-code-foreground: #f8f8f2;
   
       }
     }
@@ -191,7 +191,6 @@
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
-  
   <span class="sidebar-brand-text">FastSurfer</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
@@ -311,7 +310,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.utils.load_config.html">CerebNet.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.utils.lr_scheduler.html">CerebNet.utils.lr_scheduler</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.utils.meters.html">CerebNet.utils.meters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.utils.metrics.html">CerebNet.utils.metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.utils.misc.html">CerebNet.utils.misc</a></li>
 </ul>
 </li>
@@ -397,7 +395,7 @@ You will learn about it’s different segmentation and surface modules and how t
 recommended Docker or Singularity images. But first let us tell you why we think FastSurfer is great:</p>
 <ul class="simple">
 <li><p>FastSurfer uses dedicated and fast AI methods (developed in-house).</p></li>
-<li><p>It is thoroughly validated across different scanners, field-strenghts, T1 sequences, ages, diesease, …</p></li>
+<li><p>It is thoroughly validated across different scanners, field-strenghts, T1 sequences, ages, diseases, …</p></li>
 <li><p>FastSurfer is fully open-source using a permissive Apache license.</p></li>
 <li><p>It is compatible with FreeSurfer, enabling FreeSurfer downstream tools to work directly.</p></li>
 <li><p>It is much faster and provides increased reliability and sensitivity of the derived measures.</p></li>
@@ -462,6 +460,10 @@ This is documented in READMEs in subfolders, for example: <a class="reference in
 <section id="freesurfer-downstream-modules">
 <h2>FreeSurfer Downstream Modules<a class="headerlink" href="#freesurfer-downstream-modules" title="Link to this heading">¶</a></h2>
 <p>FreeSurfer provides several Add-on modules for downstream processing, such as subfield segmentation ( <a class="reference external" href="https://surfer.nmr.mgh.harvard.edu/fswiki/HippocampalSubfieldsAndNucleiOfAmygdala">hippocampus/amygdala</a>, <a class="reference external" href="https://surfer.nmr.mgh.harvard.edu/fswiki/BrainstemSubstructures">brainstem</a>, <a class="reference external" href="https://freesurfer.net/fswiki/ThalamicNuclei">thalamus</a> and <a class="reference external" href="https://surfer.nmr.mgh.harvard.edu/fswiki/HypothalamicSubunits">hypothalamus</a> ) as well as <a class="reference external" href="https://surfer.nmr.mgh.harvard.edu/fswiki/Tracula">TRACULA</a>. We now provide symlinks to the required files, as FastSurfer creates them with a different name (e.g. using “mapped” or “DKT” to make clear that these file are from our segmentation using the DKT Atlas protocol, and mapped to the surface). Most subfield segmentations require <code class="docutils literal notranslate"><span class="pre">wmparc.mgz</span></code> and work very well with FastSurfer,  so feel free to run those pipelines after FastSurfer. TRACULA requires <code class="docutils literal notranslate"><span class="pre">aparc+aseg.mgz</span></code> which we now link, but have not tested if it works, given that <a class="reference external" href="https://mindboggle.readthedocs.io/en/latest/labels.html">DKT-atlas</a> merged a few labels. You should source FreeSurfer 7.3.2 to run these modules.</p>
+</section>
+<section id="want-to-know-more">
+<h2>Want to know more?<a class="headerlink" href="#want-to-know-more" title="Link to this heading">¶</a></h2>
+<p>The DeepMI lab hosts an annual <strong>FastSurfer course</strong> at the German Center for Neurodegenerative Diseaes in Bonn, Germany. This is a 2.5-day, hands-on, introductory course on state-of-the-art deep-learning methods for fast and reliable neuroimage analysis. Participants will gain an understanding of modern methods for the analysis of structural brain images, learn how to run both the FastSurfer and FreeSurfer packages, and will know how to set up an analysis and work with the resulting outputs in the context of their own research projects. The course consists of lectures, demonstrations, practical exercises, and provides ample opportunities for discussions and informal exchange. The course typically takes place in <strong>September</strong>. Check out our <a class="reference external" href="https://deep-mi.org/events">website</a> for details and current information!</p>
 </section>
 <section id="intended-use">
 <h2>Intended Use<a class="headerlink" href="#intended-use" title="Link to this heading">¶</a></h2>
@@ -557,6 +559,7 @@ This is documented in READMEs in subfolders, for example: <a class="reference in
 </li>
 <li><a class="reference internal" href="#expert-usage">Expert usage</a></li>
 <li><a class="reference internal" href="#freesurfer-downstream-modules">FreeSurfer Downstream Modules</a></li>
+<li><a class="reference internal" href="#want-to-know-more">Want to know more?</a></li>
 <li><a class="reference internal" href="#intended-use">Intended Use</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 <li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
@@ -574,7 +577,7 @@ This is documented in READMEs in subfolders, for example: <a class="reference in
 </div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
