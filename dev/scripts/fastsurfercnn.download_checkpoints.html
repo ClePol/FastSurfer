@@ -336,7 +336,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.lta.html">recon_surf.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.paint_cc_into_pred.html">recon_surf.paint_cc_into_pred</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rewrite_mc_surface.html">recon_surf.rewrite_mc_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rotate_sphere.html">recon_surf.rotate_sphere</a></li>
@@ -395,7 +394,7 @@
 <p><p>Check and Download Network Checkpoints</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">FastSurferCNN</span><span class="o">/</span><span class="n">download_checkpoints</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">all</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">vinn</span><span class="p">]</span>
-                                             <span class="p">[</span><span class="o">--</span><span class="n">cerebnet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">hypvinn</span><span class="p">]</span>
+                                             <span class="p">[</span><span class="o">--</span><span class="n">cerebnet</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">cc</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">hypvinn</span><span class="p">]</span>
                                              <span class="p">[</span><span class="o">--</span><span class="n">url</span> <span class="n">URL</span><span class="p">]</span>
                                              <span class="p">[</span><span class="n">files</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
@@ -421,6 +420,10 @@
 </dd>
 <dt><kbd>--cerebnet</kbd></dt>
 <dd><p>Check and download CerebNet default checkpoints</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--cc</kbd></dt>
+<dd><p>Check and download Corpus Callosum default checkpoints</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
 <dt><kbd>--hypvinn</kbd></dt>
