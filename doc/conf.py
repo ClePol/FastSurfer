@@ -259,7 +259,7 @@ def linkcode_resolve(domain, info):
 # myst_ref_domains = ["myst", "std", "py"]
 
 
-_re_script_dirs = "fastsurfercnn|cerebnet|recon_surf|hypvinn"
+_re_script_dirs = "fastsurfercnn|cerebnet|recon_surf|hypvinn|corpuscallosum"
 _up = "^/\\.\\./"
 _end = "(\\.md)?(#.*)?$"
 
