@@ -1,0 +1,5 @@
+﻿CorpusCallosum.shape.cc_metrics
+===============================
+
+.. automodule:: CorpusCallosum.shape.cc_metrics
+    :members:

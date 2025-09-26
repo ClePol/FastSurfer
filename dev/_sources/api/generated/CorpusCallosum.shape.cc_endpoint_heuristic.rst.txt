@@ -1,0 +1,5 @@
+﻿CorpusCallosum.shape.cc_endpoint_heuristic
+==========================================
+
+.. automodule:: CorpusCallosum.shape.cc_endpoint_heuristic
+    :members:
