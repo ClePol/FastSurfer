@@ -408,45 +408,43 @@
 <span id="corpuscallosum-data-read-write"></span><h1>CorpusCallosum.data.read_write<a class="headerlink" href="#module-CorpusCallosum.data.read_write" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.convert_numpy_to_json_serializable">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">convert_numpy_to_json_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L130-L157"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.convert_numpy_to_json_serializable" title="Link to this definition">¶</a></dt>
-<dd><p>Convert numpy arrays in nested data structures to JSON serializable format.</p>
-<p>Recursively traverses dictionaries, lists, and numpy arrays, converting numpy arrays
-to Python lists and numpy scalars to Python scalars for JSON serialization.</p>
-<dl>
-<dt>Args:</dt><dd><p>obj: Any Python object that may contain numpy arrays (dict, list, np.ndarray, or scalar)</p>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">convert_numpy_to_json_serializable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L142-L165"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.convert_numpy_to_json_serializable" title="Link to this definition">¶</a></dt>
+<dd><p>Convert numpy types to JSON serializable types.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>obj</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></span></dt><dd><p>Object to convert to JSON serializable type.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The input object with all numpy arrays converted to lists and numpy scalars to Python scalars</p>
+</dl>
 </dd>
-<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span> <span class="s1">&#39;nested&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;array&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">convert_numpy_to_json_serializable</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Result: {&#39;array&#39;: [1, 2, 3], &#39;nested&#39;: {&#39;array&#39;: [4, 5]}}</span>
-</pre></div>
-</div>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></dt><dd><p>JSON serializable version of the input object.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.get_centroids_from_nib">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">get_centroids_from_nib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L52-L108"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.get_centroids_from_nib" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">get_centroids_from_nib</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seg_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L56-L108"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.get_centroids_from_nib" title="Link to this definition">¶</a></dt>
 <dd><p>Get centroids of segmentation labels in RAS coordinates.</p>
-<p>Calculates the centroid coordinates for each segmentation label in the image.
-If label_ids is provided, only calculates centroids for those specific labels.
-Coordinates are returned in RAS (Right-Anterior-Superior) coordinate system.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>seg_img (nib.Nifti1Image)</dt><dd><p>Nibabel image containing segmentation labels</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>seg_img</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.Nifti1Image</span></code></span></dt><dd><p>Input segmentation image.</p>
 </dd>
-<dt>label_ids (list[int] | None) </dt><dd><p>Optional list of specific label IDs to process.
-If None, processes all non-zero labels.</p>
+<dt><strong>label_ids</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of label IDs to extract centroids for. If None, extracts all non-zero labels.</p>
 </dd>
 </dl>
 </dd>
-<dt>Returns:</dt><dd><dl class="simple">
-<dt>centroids (dict | dict, list)</dt><dd><p>If label_ids is None, returns a dict mapping label IDs to their centroids (x,y,z) in RAS coordinates.
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</dt><dd><p>If label_ids is None, returns a dict mapping label IDs to their centroids (x,y,z) in RAS coordinates.
 If label_ids is provided, returns a tuple containing:
-- dict[int, np.ndarray]: Mapping of found label IDs to their centroids
-- list[int]: List of label IDs that were not found in the image</p>
+- dict[int, np.ndarray]: Mapping of found label IDs to their centroids.
+- list[int]: List of label IDs that were not found in the image.</p>
 </dd>
 </dl>
 </dd>
@@ -455,57 +453,78 @@ If label_ids is provided, returns a tuple containing:
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.load_fsaverage_affine">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">load_fsaverage_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">affine_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L195-L222"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.load_fsaverage_affine" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">load_fsaverage_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">affine_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L198-L221"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.load_fsaverage_affine" title="Link to this definition">¶</a></dt>
 <dd><p>Load fsaverage affine matrix from static text file.</p>
-<p>Loads pre-computed affine matrix from a static text file, avoiding the need to
-load the fsaverage segmentation at runtime.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>affine_path (str or Path): Path to the text file containing affine matrix</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>affine_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a></span></dt><dd><p>Path to the text file containing affine matrix.</p>
 </dd>
-<dt>Returns:</dt><dd><p>np.ndarray: 4x4 affine transformation matrix</p>
+</dl>
 </dd>
-<dt>Raises:</dt><dd><p>FileNotFoundError: If the affine file doesn’t exist
-ValueError: If the file doesn’t contain a valid 4x4 matrix</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>4x4 affine transformation matrix.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.load_fsaverage_centroids">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">load_fsaverage_centroids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centroids_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L160-L192"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.load_fsaverage_centroids" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">load_fsaverage_centroids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">centroids_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L168-L195"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.load_fsaverage_centroids" title="Link to this definition">¶</a></dt>
 <dd><p>Load fsaverage centroids from static JSON file.</p>
-<p>Loads pre-computed centroids from a static JSON file, avoiding the need to
-compute them from the fsaverage segmentation at runtime.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>centroids_path (str or Path): Path to the JSON file containing centroids</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>centroids_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a></span></dt><dd><p>Path to the JSON file containing centroids.</p>
 </dd>
-<dt>Returns:</dt><dd><p>dict[int, np.ndarray]: Mapping of label IDs to their centroids (x,y,z) in RAS coordinates</p>
+</dl>
 </dd>
-<dt>Raises:</dt><dd><p>FileNotFoundError: If the centroids file doesn’t exist
-json.JSONDecodeError: If the file is not valid JSON</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</dt><dd><p>Dictionary mapping label IDs to their centroids in RAS coordinates.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.load_fsaverage_data">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">load_fsaverage_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L225-L279"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.load_fsaverage_data" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">load_fsaverage_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L224-L289"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.load_fsaverage_data" title="Link to this definition">¶</a></dt>
 <dd><p>Load fsaverage affine matrix and header fields from static JSON file.</p>
-<p>Loads pre-computed affine matrix and header fields from a static JSON file,
-avoiding the need to load the fsaverage segmentation at runtime.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>data_path (str or Path): Path to the JSON file containing combined data</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a></span></dt><dd><p>Path to the JSON file containing combined data.</p>
 </dd>
-<dt>Returns:</dt><dd><dl class="simple">
-<dt>tuple: Contains:</dt><dd><ul class="simple">
-<li><p>affine_matrix (np.ndarray): 4x4 affine transformation matrix</p></li>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>affine_matrix</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>4x4 affine transformation matrix.</p>
+</dd>
+<dt><strong>header_fields</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><dl class="simple">
+<dt>Header fields needed for LTA:</dt><dd><ul class="simple">
 <li><dl class="simple">
-<dt>header_fields (dict): Header fields needed for LTA:</dt><dd><ul>
-<li><p>dims (list[int]): Volume dimensions [x,y,z]</p></li>
-<li><p>delta (list[float]): Voxel size in mm [x,y,z]</p></li>
-<li><p>Mdc (np.ndarray): 3x3 direction cosines matrix</p></li>
-<li><p>Pxyz_c (np.ndarray): RAS center coordinates [x,y,z]</p></li>
-</ul>
+<dt>dims<span class="classifier">list[int]</span></dt><dd><p>Volume dimensions [x,y,z].</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>delta<span class="classifier">list[float]</span></dt><dd><p>Voxel size in mm [x,y,z].</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Mdc<span class="classifier">np.ndarray</span></dt><dd><p>3x3 direction cosines matrix.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Pxyz_c<span class="classifier">np.ndarray</span></dt><dd><p>RAS center coordinates [x,y,z].</p>
 </dd>
 </dl>
 </li>
@@ -513,44 +532,69 @@ avoiding the need to load the fsaverage segmentation at runtime.</p>
 </dd>
 </dl>
 </dd>
-<dt>Raises:</dt><dd><p>FileNotFoundError: If the data file doesn’t exist
-json.JSONDecodeError: If the file is not valid JSON
-ValueError: If required fields are missing</p>
+<dt><strong>vox2ras_tkr</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Voxel to RAS tkr-space transformation matrix.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a></dt><dd><p>If the data file doesn’t exist.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/json.html#json.JSONDecodeError" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">json.JSONDecodeError</span></code></a></dt><dd><p>If the file is not valid JSON.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If required fields are missing.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.run_in_background">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">run_in_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L25-L48"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.run_in_background" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">run_in_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L27-L52"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.run_in_background" title="Link to this definition">¶</a></dt>
 <dd><p>Run a function in the background using multiprocessing.</p>
-<p>This function executes the given function either in a separate process (normal mode)
-or in the current process (debug mode). In debug mode, the function is executed
-synchronously for easier debugging.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>function: The function to execute
-debug (bool): If True, run synchronously in current process
-args: Positional arguments to pass to the function
-kwargs: Keyword arguments to pass to the function</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>function</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a></span></dt><dd><p>The function to execute.</p>
 </dd>
-<dt>Returns:</dt><dd><p>multiprocessing.Process or None: Process object if running in background,
-None if in debug mode</p>
+<dt><strong>debug</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>If True, run synchronously in current process, by default False.</p>
+</dd>
+<dt><strong>*args</strong></dt><dd><p>Positional arguments to pass to the function.</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><p>Keyword arguments to pass to the function.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>Process object if running in background, None if in debug mode.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.data.read_write.save_nifti_background">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">save_nifti_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">io_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L112-L127"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.save_nifti_background" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.data.read_write.</span></span><span class="sig-name descname"><span class="pre">save_nifti_background</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">io_processes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/data/read_write.py#L112-L139"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.data.read_write.save_nifti_background" title="Link to this definition">¶</a></dt>
 <dd><p>Save a NIfTI image in a background process.</p>
 <p>Creates a MGHImage from the provided data and metadata, then saves it to disk
 using a background process to avoid blocking the main execution.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>io_processes (list): List to store background process handles
-data (np.ndarray): Image data array
-affine (np.ndarray): 4x4 affine transformation matrix
-header: NIfTI header object containing metadata
-filepath (str): Path where the image should be saved</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>io_processes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>List to store background process handles.</p>
+</dd>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Image data array.</p>
+</dd>
+<dt><strong>affine</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>4x4 affine transformation matrix.</p>
+</dd>
+<dt><strong>header</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nib.Nifti1Header</span></code></span></dt><dd><p>NIfTI header object containing metadata.</p>
+</dd>
+<dt><strong>filepath</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a></span></dt><dd><p>Path where the image should be saved.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

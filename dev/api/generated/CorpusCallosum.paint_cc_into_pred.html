@@ -408,39 +408,33 @@
 <span id="corpuscallosum-paint-cc-into-pred"></span><h1>CorpusCallosum.paint_cc_into_pred<a class="headerlink" href="#module-CorpusCallosum.paint_cc_into_pred" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.paint_cc_into_pred.argument_parse">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">argument_parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L46-L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.argument_parse" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">argument_parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L46-L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.argument_parse" title="Link to this definition">¶</a></dt>
 <dd><p>Create a command line interface and return command line options.</p>
-<dl class="field-list">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><strong>options</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/argparse.html#argparse.Namespace" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">argparse.Namespace</span></code></a></span></dt><dd><p>Namespace object holding options.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.paint_cc_into_pred.paint_in_cc">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">paint_in_cc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aseg_cc</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L83-L103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.paint_in_cc" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">paint_in_cc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aseg_cc</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L77-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.paint_in_cc" title="Link to this definition">¶</a></dt>
 <dd><p>Paint corpus callosum segmentation into aseg+dkt segmentation map.</p>
-<p>Note, that this function modifies the original array and does not create a copy.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>asegdkt</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">npt.ArrayLike</span></code></span></dt><dd><p>Deep-learning segmentation map.</p>
+<dt><strong>pred</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">npt.NDArray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">np.int_</span></code>]</span></dt><dd><p>Deep-learning segmentation map.</p>
 </dd>
-<dt><strong>aseg_cc</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">npt.ArrayLike</span></code></span></dt><dd><p>Aseg segmentation with CC.</p>
+<dt><strong>aseg_cc</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">npt.NDArray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">np.int_</span></code>]</span></dt><dd><p>Aseg segmentation with CC.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">asegdkt</span></code></dt><dd><p>Segmentation map with added CC.</p>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">npt.NDArray</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">np.int_</span></code>]</dt><dd><p>Segmentation map with added CC.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This function modifies the original array and does not create a copy.
+The CC labels (251-255) from aseg_cc are copied into pred.</p>
 </dd></dl>
 
 </section>

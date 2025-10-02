@@ -408,12 +408,20 @@
 <span id="corpuscallosum-shape-cc-metrics"></span><h1>CorpusCallosum.shape.cc_metrics<a class="headerlink" href="#module-CorpusCallosum.shape.cc_metrics" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_metrics.calculate_cc_index">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_metrics.</span></span><span class="sig-name descname"><span class="pre">calculate_cc_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_contour</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_metrics.py#L18-L136"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_metrics.calculate_cc_index" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_metrics.</span></span><span class="sig-name descname"><span class="pre">calculate_cc_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_contour</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_metrics.py#L18-L153"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_metrics.calculate_cc_index" title="Link to this definition">¶</a></dt>
 <dd><p>Calculate CC index based on three perpendicular measurements.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>cc_contour: 2xN array of contour points in ACPC space</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>cc_contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) containing contour points in ACPC space.</p>
 </dd>
-<dt>Returns:</dt><dd><p>float: Sum of thicknesses at three measurement points</p>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Sum of thicknesses at three measurement points divided by AP length.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

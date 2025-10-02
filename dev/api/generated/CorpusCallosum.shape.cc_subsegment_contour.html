@@ -407,16 +407,211 @@
           <section id="module-CorpusCallosum.shape.cc_subsegment_contour">
 <span id="corpuscallosum-shape-cc-subsegment-contour"></span><h1>CorpusCallosum.shape.cc_subsegment_contour<a class="headerlink" href="#module-CorpusCallosum.shape.cc_subsegment_contour" title="Link to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.minimum_bounding_rectangle">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">minimum_bounding_rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L19-L72"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.minimum_bounding_rectangle" title="Link to this definition">¶</a></dt>
-<dd><p>Find the smallest bounding rectangle for a set of points.
-Returns a set of points representing the corners of the bounding box.</p>
-<dl class="field-list simple">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.get_area_from_subsegments">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">get_area_from_subsegments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_contours</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L83-L104"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.get_area_from_subsegments" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate area of each subsegment using the shoelace formula.</p>
+<dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>points</strong> – an nx2 matrix of coordinates</p>
+<dd class="field-odd"><dl>
+<dt><strong>split_contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</span></dt><dd><p>List of contour arrays, each of shape (2, N).</p>
 </dd>
-<dt class="field-even">Rval<span class="colon">:</span></dt>
-<dd class="field-even"><p>an nx2 matrix of coordinates</p>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>Array containing the area of each subsegment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.get_primary_eigenvector">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">get_primary_eigenvector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_ras</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L911-L961"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.get_primary_eigenvector" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate primary eigenvector of contour points using PCA.</p>
+<p>Computes the principal direction of the contour by:
+1. Centering the points
+2. Computing covariance matrix
+3. Finding eigenvectors
+4. Selecting primary direction</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour_ras</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) containing contour points in RAS space.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>pt0</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Starting point for eigenvector line.</p>
+</dd>
+<dt><strong>pt1</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>End point for eigenvector line.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.minimum_bounding_rectangle">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">minimum_bounding_rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L22-L80"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.minimum_bounding_rectangle" title="Link to this definition">¶</a></dt>
+<dd><p>Find the smallest bounding rectangle for a set of points.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>points</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (N, 2) containing point coordinates.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>Array of shape (4, 2) containing coordinates of the bounding box corners.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.preprocess_cc">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">preprocess_cc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_label_nib</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">paths_csv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subj_id</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L871-L908"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.preprocess_cc" title="Link to this definition">¶</a></dt>
+<dd><p>Preprocess corpus callosum mask and extract AC/PC coordinates.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>cc_label_nib</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabel.Nifti1Image</span></code></span></dt><dd><p>NIfTI image containing corpus callosum segmentation.</p>
+</dd>
+<dt><strong>paths_csv</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pd.DataFrame</span></code></span></dt><dd><p>DataFrame containing AC and PC coordinates.</p>
+</dd>
+<dt><strong>subj_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Subject ID to look up in paths_csv.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>cc_mask</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Binary mask of corpus callosum.</p>
+</dd>
+<dt><strong>AC_2d</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>2D coordinates of anterior commissure.</p>
+</dd>
+<dt><strong>PC_2d</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>2D coordinates of posterior commissure.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.subdivide_contour">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">subdivide_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oriented</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hline_anchor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L464-L803"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.subdivide_contour" title="Link to this definition">¶</a></dt>
+<dd><p>Subdivide contour based on area weights using vertical lines.</p>
+<p>Divides the contour into segments by drawing vertical lines at positions
+determined by the area weights. The lines are drawn perpendicular to a
+reference line connecting the extreme points of the contour.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) containing contour points.</p>
+</dd>
+<dt><strong>area_weights</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>]</span></dt><dd><p>List of weights for area-based subdivision.</p>
+</dd>
+<dt><strong>plot</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to plot the results, by default False.</p>
+</dd>
+<dt><strong>ax</strong><span class="classifier"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Axes for plotting, by default None.</p>
+</dd>
+<dt><strong>plot_transform</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Function to transform points before plotting, by default None.</p>
+</dd>
+<dt><strong>oriented</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>If True, use fixed horizontal reference line, by default False.</p>
+</dd>
+<dt><strong>hline_anchor</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Point to anchor horizontal reference line, by default None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>areas</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of areas for each subsegment.</p>
+</dd>
+<dt><strong>split_contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</span></dt><dd><p>List of contour arrays for each subsegment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The subdivision process:
+1. Finds extreme points in x-direction.
+2. Creates reference line between extremes.
+3. Calculates split points based on area weights.
+4. Divides contour using perpendicular lines at split points.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.subsegment_midline_orthogonal">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">subsegment_midline_orthogonal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">midline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">area_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extremes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L107-L322"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.subsegment_midline_orthogonal" title="Link to this definition">¶</a></dt>
+<dd><p>Subsegment contour orthogonally to the midline based on area weights.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>midline</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (N, 2) containing midline points.</p>
+</dd>
+<dt><strong>area_weights</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of weights for area-based subdivision.</p>
+</dd>
+<dt><strong>contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, M) containing contour points.</p>
+</dd>
+<dt><strong>plot</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to plot the results, by default True.</p>
+</dd>
+<dt><strong>ax</strong><span class="classifier"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Axes for plotting, by default None.</p>
+</dd>
+<dt><strong>extremes</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Tuple of extreme points, by default None.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>split_contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</span></dt><dd><p>List of contour arrays for each subsegment.</p>
+</dd>
+<dt><strong>split_points</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of split points.</p>
+</dd>
+<dt><strong>edge_directions</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of edge directions at split points.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_subsegment_contour.transform_to_acpc_standard">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_subsegment_contour.</span></span><span class="sig-name descname"><span class="pre">transform_to_acpc_standard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_ras</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_pt_ras</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_pt_ras</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_subsegment_contour.py#L806-L868"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_subsegment_contour.transform_to_acpc_standard" title="Link to this definition">¶</a></dt>
+<dd><p>Transform contour coordinates to AC-PC standard space.</p>
+<dl class="simple">
+<dt>Transforms the contour coordinates by:</dt><dd><ol class="arabic simple">
+<li><p>Translating AC point to origin.</p></li>
+<li><p>Rotating to align PC point with posterior direction.</p></li>
+<li><p>Scaling to maintain AC-PC distance.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour_ras</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) or (3, N) containing contour points in RAS space.</p>
+</dd>
+<dt><strong>ac_pt_ras</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Anterior commissure point coordinates in RAS space.</p>
+</dd>
+<dt><strong>pc_pt_ras</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Posterior commissure point coordinates in RAS space.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>contour_acpc</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Transformed contour points in AC-PC space.</p>
+</dd>
+<dt><strong>ac_pt_acpc</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>AC point in AC-PC space (origin).</p>
+</dd>
+<dt><strong>pc_pt_acpc</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>PC point in AC-PC space.</p>
+</dd>
+<dt><strong>rotate_back</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#callable" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">callable()</span></code></a></span></dt><dd><p>Function to transform points back to RAS space.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -485,7 +680,13 @@ Returns a set of points representing the corners of the bounding box.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">CorpusCallosum.shape.cc_subsegment_contour</a><ul>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.get_area_from_subsegments"><code class="docutils literal notranslate"><span class="pre">get_area_from_subsegments()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.get_primary_eigenvector"><code class="docutils literal notranslate"><span class="pre">get_primary_eigenvector()</span></code></a></li>
 <li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.minimum_bounding_rectangle"><code class="docutils literal notranslate"><span class="pre">minimum_bounding_rectangle()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.preprocess_cc"><code class="docutils literal notranslate"><span class="pre">preprocess_cc()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.subdivide_contour"><code class="docutils literal notranslate"><span class="pre">subdivide_contour()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.subsegment_midline_orthogonal"><code class="docutils literal notranslate"><span class="pre">subsegment_midline_orthogonal()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_subsegment_contour.transform_to_acpc_standard"><code class="docutils literal notranslate"><span class="pre">transform_to_acpc_standard()</span></code></a></li>
 </ul>
 </li>
 </ul>

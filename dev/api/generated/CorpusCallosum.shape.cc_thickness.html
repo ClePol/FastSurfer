@@ -407,28 +407,217 @@
           <section id="module-CorpusCallosum.shape.cc_thickness">
 <span id="corpuscallosum-shape-cc-thickness"></span><h1>CorpusCallosum.shape.cc_thickness<a class="headerlink" href="#module-CorpusCallosum.shape.cc_thickness" title="Link to this heading">¶</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.find_closest_edge">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">find_closest_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L90-L123"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.find_closest_edge" title="Link to this definition">¶</a></dt>
-<dd><p>Find the index of the edge closest to the given point.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>point: 2D point coordinates
-contour: Array of contour points (N x 2)</p>
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.cc_thickness">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">cc_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anterior_endpoint_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_endpoint_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L298-L543"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.cc_thickness" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate corpus callosum thickness using Laplace equation.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour_2d</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (N, 2) containing contour points.</p>
 </dd>
-<dt>Returns:</dt><dd><p>Index of the closest edge</p>
+<dt><strong>anterior_endpoint_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of anterior endpoint in contour.</p>
+</dd>
+<dt><strong>posterior_endpoint_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of posterior endpoint in contour.</p>
+</dd>
+<dt><strong>n_points</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Number of points for thickness measurement, by default 100.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</dt><dd><ul class="simple">
+<li><p>thickness_values : Array of thickness measurements.</p></li>
+<li><p>measurement_points : Array of points where thickness was measured.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses the Laplace equation to compute thickness by:
+1. Creating a triangular mesh from the contour
+2. Setting boundary conditions (0 at endpoints, ±1 on sides)
+3. Solving Laplace equation to get level sets
+4. Computing thickness along level sets</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.compute_curvature">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">compute_curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L24-L44"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.compute_curvature" title="Link to this definition">¶</a></dt>
+<dd><p>Compute curvature by computing edge angles.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>path</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (N, 2) containing path coordinates.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>Array of angle differences between consecutive edges.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.insert_point_to_contour">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">insert_point_to_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_with_thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L126-L153"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.insert_point_to_contour" title="Link to this definition">¶</a></dt>
-<dd><p>Insert a point and its thickness value into the contour.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>contour_with_thickness: List containing [contour_points, thickness_values]
-point: 2D point to insert
-thickness_value: Thickness value corresponding to the point</p>
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.convert_to_ras">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">convert_to_ras</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox2ras_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L47-L118"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.convert_to_ras" title="Link to this definition">¶</a></dt>
+<dd><p>Convert contour coordinates from voxel space to RAS space.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) or (3, N) containing contour coordinates.</p>
 </dd>
-<dt>Returns:</dt><dd><p>Updated contour_with_thickness</p>
+<dt><strong>vox2ras_matrix</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>4x4 voxel to RAS transformation matrix.</p>
+</dd>
+<dt><strong>get_parameters</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>If True, return additional transformation parameters, by default False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>]</dt><dd><p>If get_parameters is False:
+Transformed contour coordinates.
+If get_parameters is True:
+- anterior_reversed : bool - Whether anterior axis was reversed.
+- superior_reversed : bool - Whether superior axis was reversed.
+- swap_axes : bool - Whether axes were swapped.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.find_closest_edge">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">find_closest_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L151-L189"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.find_closest_edge" title="Link to this definition">¶</a></dt>
+<dd><p>Find the index of the edge closest to the given point.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>point</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>2D point coordinates.</p>
+</dd>
+<dt><strong>contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (N, 2) containing contour points.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd><p>Index of the closest edge.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.insert_point_with_thickness">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">insert_point_with_thickness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_with_thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L192-L234"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.insert_point_with_thickness" title="Link to this definition">¶</a></dt>
+<dd><p>Insert a point and its thickness value into the contour.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour_with_thickness</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</span></dt><dd><p>List containing [contour_points, thickness_values].</p>
+</dd>
+<dt><strong>point</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>2D point to insert, shape (2,).</p>
+</dd>
+<dt><strong>thickness_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Thickness value corresponding to the point.</p>
+</dd>
+<dt><strong>get_index</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>If True, return the index where point was inserted, by default False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>], <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</dt><dd><dl class="simple">
+<dt>If get_index is True:</dt><dd><ul class="simple">
+<li><p>Updated contour_with_thickness.</p></li>
+<li><p>Index where point was inserted.</p></li>
+</ul>
+</dd>
+<dt>If get_index is False:</dt><dd><ul class="simple">
+<li><p>Updated contour_with_thickness.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.make_mesh_from_contour">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">make_mesh_from_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_volume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L237-L295"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.make_mesh_from_contour" title="Link to this definition">¶</a></dt>
+<dd><p>Create a triangular mesh from a 2D contour.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour_2d</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (N, 2) containing contour points.</p>
+</dd>
+<dt><strong>max_volume</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Maximum triangle area, by default 0.5.</p>
+</dd>
+<dt><strong>min_angle</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Minimum angle in triangles (degrees), by default 25.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to print mesh generation info, by default False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</dt><dd><ul class="simple">
+<li><p>mesh_points : Array of shape (M, 2) containing mesh vertices.</p></li>
+<li><p>mesh_trias : Array of shape (K, 3) containing triangle indices.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Uses meshpy.triangle to create a constrained Delaunay triangulation
+of the contour. The contour must not have duplicate points.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.cc_thickness.set_contour_zero_idx">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_thickness.</span></span><span class="sig-name descname"><span class="pre">set_contour_zero_idx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anterior_endpoint_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_endpoint_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_thickness.py#L121-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_thickness.set_contour_zero_idx" title="Link to this definition">¶</a></dt>
+<dd><p>Roll contour points to set a new zero index, while keeping track of CC endpoints.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of contour points.</p>
+</dd>
+<dt><strong>idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>New zero index.</p>
+</dd>
+<dt><strong>anterior_endpoint_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of anterior endpoint.</p>
+</dd>
+<dt><strong>posterior_endpoint_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of posterior endpoint.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>contour<span class="classifier">np.ndarray</span></dt><dd><p>Rolled contour points.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>anterior_endpoint_idx<span class="classifier">int</span></dt><dd><p>Updated anterior endpoint index.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>posterior_endpoint_idx<span class="classifier">int</span></dt><dd><p>Updated posterior endpoint index.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -497,8 +686,13 @@ thickness_value: Thickness value corresponding to the point</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">CorpusCallosum.shape.cc_thickness</a><ul>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.cc_thickness"><code class="docutils literal notranslate"><span class="pre">cc_thickness()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.compute_curvature"><code class="docutils literal notranslate"><span class="pre">compute_curvature()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.convert_to_ras"><code class="docutils literal notranslate"><span class="pre">convert_to_ras()</span></code></a></li>
 <li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.find_closest_edge"><code class="docutils literal notranslate"><span class="pre">find_closest_edge()</span></code></a></li>
-<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.insert_point_to_contour"><code class="docutils literal notranslate"><span class="pre">insert_point_to_contour()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.insert_point_with_thickness"><code class="docutils literal notranslate"><span class="pre">insert_point_with_thickness()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.make_mesh_from_contour"><code class="docutils literal notranslate"><span class="pre">make_mesh_from_contour()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.cc_thickness.set_contour_zero_idx"><code class="docutils literal notranslate"><span class="pre">set_contour_zero_idx()</span></code></a></li>
 </ul>
 </li>
 </ul>

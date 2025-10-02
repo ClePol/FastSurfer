@@ -408,176 +408,269 @@
 <span id="corpuscallosum-shape-cc-postprocessing"></span><h1>CorpusCallosum.shape.cc_postprocessing<a class="headerlink" href="#module-CorpusCallosum.shape.cc_postprocessing" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.check_area_changes">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">check_area_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L555-L591"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.check_area_changes" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">check_area_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L672-L715"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.check_area_changes" title="Link to this definition">¶</a></dt>
 <dd><p>Check for large changes between consecutive CC areas and issue warnings.</p>
-<p>This function checks if any two consecutive areas have a change greater than
-the specified threshold (default 30%) and issues a warning if they do.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>contours (list[np.ndarray]): List of contours
-threshold (float, optional): Threshold for relative change. Defaults to 0.3 (30%).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</span></dt><dd><p>List of contours.</p>
+</dd>
+<dt><strong>threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Threshold for relative change, by default 0.3 (30%).</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to print warnings, by default False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a></dt><dd><p>True if no large area changes are detected, False otherwise.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.create_slice_affine">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">create_slice_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_seg_affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsaverage_middle</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L87-L103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.create_slice_affine" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">create_slice_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp_seg_affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsaverage_middle</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L101-L120"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.create_slice_affine" title="Link to this definition">¶</a></dt>
 <dd><p>Create slice-specific affine transformation matrix.</p>
-<p>Adjusts the input affine transformation matrix for a specific slice by updating
-the translation component based on the slice index and fsaverage middle reference.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>temp_seg_affine (np.ndarray): Base 4x4 affine transformation matrix
-slice_idx (int): Index of the slice to transform
-fsaverage_middle (int): Reference middle slice index in fsaverage space</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>temp_seg_affine</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Base 4x4 affine transformation matrix.</p>
 </dd>
-<dt>Returns:</dt><dd><p>np.ndarray: Modified 4x4 affine transformation matrix for the specific slice</p>
+<dt><strong>slice_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of the slice to transform.</p>
+</dd>
+<dt><strong>fsaverage_middle</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Reference middle slice index in fsaverage space.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>Modified 4x4 affine transformation matrix for the specific slice.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.create_visualization">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">create_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subdivision_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midslices_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L46-L83"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.create_visualization" title="Link to this definition">¶</a></dt>
-<dd><p>Helper function to create visualization plots based on subdivision method.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>subdivision_method: The subdivision method being used
-result: Dictionary containing processing results with split_contours and split_contours_hofer_frahm
-midslices_data: Slice data for visualization
-output_subdir: Directory to save visualization
-ac_coords: AC coordinates
-pc_coords: PC coordinates
-title_suffix: Additional text to append to the title</p>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">create_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subdivision_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midslices_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_image_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L47-L97"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.create_visualization" title="Link to this definition">¶</a></dt>
+<dd><p>Create visualization plots based on subdivision method.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>subdivision_method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The subdivision method being used.</p>
 </dd>
-<dt>Returns:</dt><dd><p>Process object for background execution</p>
+<dt><strong>result</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Dictionary containing processing results with split_contours and split_contours_hofer_frahm.</p>
+</dd>
+<dt><strong>midslices_data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Slice data for visualization.</p>
+</dd>
+<dt><strong>output_image_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a></span></dt><dd><p>Path to save visualization.</p>
+</dd>
+<dt><strong>ac_coords</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>AC coordinates.</p>
+</dd>
+<dt><strong>pc_coords</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>PC coordinates.</p>
+</dd>
+<dt><strong>vox_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Voxel size in mm.</p>
+</dd>
+<dt><strong>title_suffix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Additional text to append to the title, by default “”.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">multiprocessing.Process</span></code></a></dt><dd><p>Process object for background execution.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.get_unique_contour_points">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">get_unique_contour_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_contours</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L453-L495"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.get_unique_contour_points" title="Link to this definition">¶</a></dt>
-<dd><p>Get unique contour points from the split contours.
-This is a workaround to retrospectively add voxel-based sub-division
-in the future we could keep track of the sub-division lines for
-every sub-division scheme.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>split_contours (list): List of split contours (subsegmentations)</p>
-</dd>
-<dt>Returns:</dt><dd><p>list: List of unique contour points</p>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">get_unique_contour_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split_contours</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L543-L596"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.get_unique_contour_points" title="Link to this definition">¶</a></dt>
+<dd><p>Get unique contour points from the split contours.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>split_contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]]</span></dt><dd><p>List of split contours (subsegmentations), each containing x and y coordinates.</p>
 </dd>
 </dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]</dt><dd><p>List of unique contour points for each subsegment.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is a workaround to retrospectively add voxel-based subdivision.
+In the future, we could keep track of the subdivision lines for
+every subdivision scheme.</p>
+<p>The function:
+1. Processes each contour point.
+2. Checks if it appears in other contours (with small tolerance).
+3. Collects points unique to each subsegment.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.make_subdivision_mask">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">make_subdivision_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slice_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_contours</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L498-L552"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.make_subdivision_mask" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">make_subdivision_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slice_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_contours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L599-L669"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.make_subdivision_mask" title="Link to this definition">¶</a></dt>
 <dd><p>Create a mask for subdividing the corpus callosum based on split contours.</p>
-<p>This function creates a mask that assigns different labels to different segments of the corpus callosum
-based on the subdivision lines defined by the split contours. Each segment is labeled with a value from
-SUBSEGEMNT_LABELS.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>slice_shape (tuple): </dt><dd><p>Shape of the slice (rows, cols)</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>slice_shape</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>]</span></dt><dd><p>Shape of the slice (rows, cols).</p>
 </dd>
-<dt>split_contours (list): </dt><dd><p>List of contours defining the subdivisions. 
+<dt><strong>split_contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>, <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a>]]</span></dt><dd><p>List of contours defining the subdivisions.
 Each contour is a tuple of x and y coordinates.</p>
 </dd>
 </dl>
 </dd>
-<dt>Returns:</dt><dd><dl class="simple">
-<dt>ndarray: </dt><dd><p>A mask of shape slice_shape where each pixel is labeled with a value from SUBSEGEMNT_LABELS
-indicating which subdivision segment it belongs to.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>A mask of shape slice_shape where each pixel is labeled with a value
+from SUBSEGEMNT_LABELS indicating which subdivision segment it belongs to.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The function:
+1. Extracts unique contour points at subdivision boundaries.
+2. Creates coordinate grids for all points in the slice.
+3. Initializes mask with first segment label.
+4. For each subdivision line:
+- Tests which points lie to the right of the line.
+- Updates labels for those points.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.process_slice">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">process_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_thickness_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivisions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivision_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_smoothing</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L106-L242"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.process_slice" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">process_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_thickness_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivisions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivision_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_smoothing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L123-L277"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.process_slice" title="Link to this definition">¶</a></dt>
 <dd><p>Process a single slice for corpus callosum measurements.</p>
-<p>Performs detailed analysis of a corpus callosum slice, including:
-- Contour extraction and endpoint detection
-- Thickness profile calculation
-- Area and perimeter measurements
-- Shape-based metrics (circularity, CC index)
-- Subdivision into anatomical regions</p>
-<dl>
-<dt>Args:</dt><dd><dl class="simple">
-<dt>segmentation (np.ndarray): </dt><dd><p>3D segmentation array</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>segmentation</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>3D segmentation array.</p>
 </dd>
-<dt>slice_idx (int): </dt><dd><p>Index of the slice to process</p>
+<dt><strong>slice_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of the slice to process.</p>
 </dd>
-<dt>ac_coords (np.ndarray): </dt><dd><p>Anterior commissure coordinates</p>
+<dt><strong>ac_coords</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Anterior commissure coordinates.</p>
 </dd>
-<dt>pc_coords (np.ndarray): </dt><dd><p>Posterior commissure coordinates</p>
+<dt><strong>pc_coords</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Posterior commissure coordinates.</p>
 </dd>
-<dt>affine (np.ndarray): </dt><dd><p>4x4 affine transformation matrix</p>
+<dt><strong>affine</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>4x4 affine transformation matrix.</p>
 </dd>
-<dt>num_thickness_points (int): </dt><dd><p>Number of points for thickness estimation</p>
+<dt><strong>num_thickness_points</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of points for thickness estimation.</p>
 </dd>
-<dt>subdivisions (list[float]): </dt><dd><p>List of fractions for anatomical subdivisions</p>
+<dt><strong>subdivisions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>]</span></dt><dd><p>List of fractions for anatomical subdivisions.</p>
 </dd>
-<dt>subdivision_method (str): </dt><dd><p>Method for contour subdivision (‘shape’, ‘vertical’, 
-‘angular’, or ‘eigenvector’)</p>
+<dt><strong>subdivision_method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Method for contour subdivision (‘shape’, ‘vertical’, ‘angular’, or ‘eigenvector’).</p>
 </dd>
-<dt>contour_smoothing (float): </dt><dd><p>Gaussian sigma for contour smoothing</p>
+<dt><strong>contour_smoothing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Gaussian sigma for contour smoothing.</p>
+</dd>
+<dt><strong>vox_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Voxel size in millimeters.</p>
 </dd>
 </dl>
 </dd>
-<dt>Returns:</dt><dd><dl>
-<dt>slice_data (dict | None): </dt><dd><p>Dictionary containing measurements if successful, including:</p>
-<ul class="simple">
-<li><p>cc_index: Corpus callosum shape index</p></li>
-<li><p>circularity: Shape circularity measure</p></li>
-<li><p>areas: Areas of subdivided regions</p></li>
-<li><p>midline_length: Length along the midline</p></li>
-<li><p>thickness: Array of thickness measurements</p></li>
-<li><p>curvature: Array of curvature measurements</p></li>
-<li><p>thickness_profile: Thickness measurements along the contour</p></li>
-<li><p>total_area: Total area of the CC</p></li>
-<li><p>total_perimeter: Total perimeter length</p></li>
-<li><p>split_contours: Subdivided contour segments</p></li>
-<li><p>split_contours_hofer_frahm: Alternative subdivision (if applicable)</p></li>
-<li><p>midline_equidistant: Equidistant points along midline</p></li>
-<li><p>levelpaths: Paths for thickness measurements</p></li>
-<li><p>thickness_measurement_points: Points where thickness was measured</p></li>
-<li><p>slice_index: Index of the processed slice</p></li>
-</ul>
-<p>Returns None if no CC is found in the slice.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>Dictionary containing measurements if successful, including:
+- cc_index : float - Corpus callosum shape index.
+- circularity : float - Shape circularity measure.
+- areas : np.ndarray - Areas of subdivided regions.
+- midline_length : float - Length along the midline.
+- thickness : np.ndarray - Array of thickness measurements.
+- curvature : np.ndarray - Array of curvature measurements.
+- thickness_profile : list[float] - Thickness measurements along the contour.
+- total_area : float - Total area of the CC.
+- total_perimeter : float - Total perimeter length.
+- split_contours : list[np.ndarray] - Subdivided contour segments.
+- split_contours_hofer_frahm : list[np.ndarray] - Alternative subdivision (if applicable).
+- midline_equidistant : np.ndarray - Equidistant points along midline.
+- levelpaths : list[np.ndarray] - Paths for thickness measurements.
+- thickness_measurement_points : np.ndarray - Points where thickness was measured.
+- slice_index : int - Index of the processed slice.
+Returns None if no CC is found in the slice.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If no CC is found in the specified slice.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The function performs the following steps:
+1. Extracts CC contour and identifies endpoints.
+2. Converts coordinates to RAS space.
+3. Calculates thickness profile using Laplace equation.
+4. Computes shape metrics and subdivisions.
+5. Generates visualization data.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.process_slices">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">process_slices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_selection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_seg_affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midslices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_thickness_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivisions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivision_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_smoothing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_debug_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surf_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc_html_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtk_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L245-L421"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.process_slices" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">process_slices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_selection</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_seg_affine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midslices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_thickness_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivisions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdivision_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_smoothing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug_image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">one_debug_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_image_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox2ras_tkr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surf_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc_html_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtk_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L280-L503"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.process_slices" title="Link to this definition">¶</a></dt>
 <dd><p>Process corpus callosum slices based on selection mode.</p>
-<p>Handles the processing of either a single middle slice, all slices, or a specific slice,
-including affine transformations and measurements for each slice.</p>
-<dl>
-<dt>Args:</dt><dd><p>segmentation (np.ndarray): 3D segmentation array
-slice_selection (str): Which slices to process (‘middle’, ‘all’, or slice number)
-temp_seg_affine (np.ndarray): Base affine transformation matrix
-midslices (np.ndarray): Array of mid-sagittal slices
-ac_coords (np.ndarray): Anterior commissure coordinates
-pc_coords (np.ndarray): Posterior commissure coordinates
-num_thickness_points (int): Number of points for thickness estimation
-subdivisions (list[float]): List of fractions for anatomical subdivisions
-subdivision_method (str): Method for contour subdivision
-contour_smoothing (float): Gaussian sigma for contour smoothing
-debug_image_path (str, optional): Path for debug visualization image
-verbose (bool): Whether to print progress information
-save_template (str | Path | None): Directory path where to save template files, or None to skip saving</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>tuple: Contains:</p>
-<ul class="simple">
-<li><p>list: List of slice processing results</p></li>
-<li><p>list: List of background IO processes</p></li>
-</ul>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>segmentation</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>3D segmentation array.</p>
+</dd>
+<dt><strong>slice_selection</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Which slices to process (‘middle’, ‘all’, or slice number).</p>
+</dd>
+<dt><strong>temp_seg_affine</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Base affine transformation matrix.</p>
+</dd>
+<dt><strong>midslices</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of mid-sagittal slices.</p>
+</dd>
+<dt><strong>ac_coords</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Anterior commissure coordinates.</p>
+</dd>
+<dt><strong>pc_coords</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Posterior commissure coordinates.</p>
+</dd>
+<dt><strong>num_thickness_points</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of points for thickness estimation.</p>
+</dd>
+<dt><strong>subdivisions</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>]</span></dt><dd><p>List of fractions for anatomical subdivisions.</p>
+</dd>
+<dt><strong>subdivision_method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Method for contour subdivision.</p>
+</dd>
+<dt><strong>contour_smoothing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Gaussian sigma for contour smoothing.</p>
+</dd>
+<dt><strong>debug_image_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path for debug visualization image, by default None.</p>
+</dd>
+<dt><strong>one_debug_image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to save only one debug image, by default False.</p>
+</dd>
+<dt><strong>thickness_image_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path for thickness visualization image, by default None.</p>
+</dd>
+<dt><strong>vox_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>] <code class="xref py py-obj docutils literal notranslate"><span class="pre">or</span></code> <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Voxel size in millimeters (x, y, z), by default None.</p>
+</dd>
+<dt><strong>vox2ras_tkr</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Voxel to RAS tkr-space transformation matrix, by default None.</p>
+</dd>
+<dt><strong>save_template</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Directory path where to save template files, by default None.</p>
+</dd>
+<dt><strong>surf_file_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to save surface file, by default None.</p>
+</dd>
+<dt><strong>overlay_file_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to save overlay file, by default None.</p>
+</dd>
+<dt><strong>cc_html_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to save HTML visualization, by default None.</p>
+</dd>
+<dt><strong>vtk_file_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to save VTK file, by default None.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to print progress information, by default False.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of slice processing results.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of background IO processes.</p>
 </dd>
 </dl>
 </dd>
@@ -586,15 +679,26 @@ save_template (str | Path | None): Directory path where to save template files, 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.cc_postprocessing.vectorized_line_test">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">vectorized_line_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_end</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L426-L448"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.vectorized_line_test" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.cc_postprocessing.</span></span><span class="sig-name descname"><span class="pre">vectorized_line_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_end</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/cc_postprocessing.py#L508-L538"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.cc_postprocessing.vectorized_line_test" title="Link to this definition">¶</a></dt>
 <dd><p>Vectorized version of point_relative_to_line for arrays of points.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>coords_x (np.ndarray): Array of x coordinates
-coords_y (np.ndarray): Array of y coordinates  
-line_start (array-like): [x, y] coordinates of line start point
-line_end (array-like): [x, y] coordinates of line end point</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>coords_x</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of x coordinates.</p>
 </dd>
-<dt>Returns:</dt><dd><p>np.ndarray: Boolean array where True means point is to the left of the line</p>
+<dt><strong>coords_y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of y coordinates.</p>
+</dd>
+<dt><strong>line_start</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.3)"><span>array_like</span></a></span></dt><dd><p>[x, y] coordinates of line start point.</p>
+</dd>
+<dt><strong>line_end</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v2.3)"><span>array_like</span></a></span></dt><dd><p>[x, y] coordinates of line end point.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>Boolean array where True means point is to the left of the line.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
