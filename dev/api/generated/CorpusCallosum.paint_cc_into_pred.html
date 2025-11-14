@@ -408,13 +408,23 @@
 <span id="corpuscallosum-paint-cc-into-pred"></span><h1>CorpusCallosum.paint_cc_into_pred<a class="headerlink" href="#module-CorpusCallosum.paint_cc_into_pred" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.paint_cc_into_pred.argument_parse">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">argument_parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L46-L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.argument_parse" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">argument_parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L49-L77"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.argument_parse" title="Link to this definition">¶</a></dt>
 <dd><p>Create a command line interface and return command line options.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.paint_cc_into_pred.correct_wm_ventricles">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">correct_wm_ventricles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aseg_cc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fornix_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">close_gap_size_mm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L105-L237"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.correct_wm_ventricles" title="Link to this definition">¶</a></dt>
+<dd><p>Correct WM mask and ventricle labels according to the CC and fornix masks.</p>
+<p>The function
+Take non-CC-connected WM components -&gt; remove
+Take FN -&gt; WM
+Fill space in superior inferior direction between CC and left/right Ventricle with corresponding Ventricle labels</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.paint_cc_into_pred.paint_in_cc">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">paint_in_cc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aseg_cc</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L77-L99"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.paint_in_cc" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.paint_cc_into_pred.</span></span><span class="sig-name descname"><span class="pre">paint_in_cc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aseg_cc</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/paint_cc_into_pred.py#L80-L103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.paint_cc_into_pred.paint_in_cc" title="Link to this definition">¶</a></dt>
 <dd><p>Paint corpus callosum segmentation into aseg+dkt segmentation map.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -502,6 +512,7 @@ The CC labels (251-255) from aseg_cc are copied into pred.</p>
             <ul>
 <li><a class="reference internal" href="#">CorpusCallosum.paint_cc_into_pred</a><ul>
 <li><a class="reference internal" href="#CorpusCallosum.paint_cc_into_pred.argument_parse"><code class="docutils literal notranslate"><span class="pre">argument_parse()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.paint_cc_into_pred.correct_wm_ventricles"><code class="docutils literal notranslate"><span class="pre">correct_wm_ventricles()</span></code></a></li>
 <li><a class="reference internal" href="#CorpusCallosum.paint_cc_into_pred.paint_in_cc"><code class="docutils literal notranslate"><span class="pre">paint_in_cc()</span></code></a></li>
 </ul>
 </li>
