@@ -1,0 +1,5 @@
+﻿CorpusCallosum.registration.mapping_helpers
+===========================================
+
+.. automodule:: CorpusCallosum.registration.mapping_helpers
+    :members:

@@ -1,5 +1,0 @@
-﻿CorpusCallosum.utils.utils
-==========================
-
-.. automodule:: CorpusCallosum.utils.utils
-    :members:
