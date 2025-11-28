@@ -1,5 +1,0 @@
-﻿CorpusCallosum.visualization.visualization
-==========================================
-
-.. automodule:: CorpusCallosum.visualization.visualization
-    :members:

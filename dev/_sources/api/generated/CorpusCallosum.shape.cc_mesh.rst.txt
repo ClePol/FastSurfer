@@ -1,5 +1,0 @@
-﻿CorpusCallosum.shape.cc_mesh
-============================
-
-.. automodule:: CorpusCallosum.shape.cc_mesh
-    :members:

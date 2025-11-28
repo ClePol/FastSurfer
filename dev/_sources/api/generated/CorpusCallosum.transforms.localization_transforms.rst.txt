@@ -1,5 +1,0 @@
-﻿CorpusCallosum.transforms.localization_transforms
-=================================================
-
-.. automodule:: CorpusCallosum.transforms.localization_transforms
-    :members:

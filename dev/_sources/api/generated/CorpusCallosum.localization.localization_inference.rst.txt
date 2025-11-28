@@ -1,5 +1,0 @@
-﻿CorpusCallosum.localization.localization_inference
-==================================================
-
-.. automodule:: CorpusCallosum.localization.localization_inference
-    :members:

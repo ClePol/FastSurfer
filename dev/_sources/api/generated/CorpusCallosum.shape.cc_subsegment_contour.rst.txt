@@ -1,5 +1,0 @@
-﻿CorpusCallosum.shape.cc_subsegment_contour
-==========================================
-
-.. automodule:: CorpusCallosum.shape.cc_subsegment_contour
-    :members:
