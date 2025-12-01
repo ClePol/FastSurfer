@@ -125,3 +125,36 @@ This file contains comprehensive per-slice analysis when using `--slice_selectio
 **Per-Slice Data (`slices` array):**
 
 Each slice entry contains the shape measurements, thickness analysis and sub-divisions as described above.
+
+## QC Visualizations
+
+The corpus callosum pipeline provides several visualization options for quality control and analysis. These can be enabled using the `--qc_snaps` flag when running FastSurfer, which creates visualizations in the `qc_snapshots/` subdirectory.
+
+### Available QC Visualizations
+
+**Contour and Thickness Visualization (`qc_snapshots/callosum.png`):**
+- Debug visualization showing corpus callosum contours and thickness measurements
+- Available for all slice selection modes
+
+**3D Thickness Visualization (`qc_snapshots/callosum_thickness.png`):**
+- Comprehensive 3D thickness visualization across multiple slices
+- Requires `--slice_selection all` for full 3D analysis
+
+**Interactive 3D Mesh Visualization (`qc_snapshots/corpus_callosum.html`):**
+- Web-based interactive 3D visualization of the corpus callosum mesh
+- Requires `--slice_selection all` for 3D mesh generation
+- Allows rotation, zooming, and inspection of thickness measurements
+
+### Custom QC Output Paths
+
+You can also specify custom paths for individual QC outputs using:
+
+```bash
+# Specify custom paths for QC visualizations
+python3 fastsurfer_cc.py --subject_dir /path/to/subject \
+    --qc_image /custom/path/contours.png \
+    --thickness_image /custom/path/thickness_3d.png \
+    --cc_html /custom/path/interactive_mesh.html
+```
+
+When using the main `run_fastsurfer.sh` script, the `--qc_snaps` flag automatically sets these paths to the standard `qc_snapshots/` locations.
