@@ -272,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lta.html">FastSurferCNN.utils.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.mapper.html">FastSurferCNN.utils.mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.meters.html">FastSurferCNN.utils.meters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.metrics.html">FastSurferCNN.utils.metrics</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.lta.html">recon_surf.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
@@ -430,18 +430,75 @@
 <span id="corpuscallosum-shape-metrics"></span><h1>CorpusCallosum.shape.metrics<a class="headerlink" href="#module-CorpusCallosum.shape.metrics" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.metrics.calculate_cc_index">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.metrics.</span></span><span class="sig-name descname"><span class="pre">calculate_cc_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_contour</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/metrics.py#L21-L102"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.metrics.calculate_cc_index" title="Link to this definition">¶</a></dt>
-<dd><p>Calculate CC index based on three perpendicular measurements.</p>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.metrics.</span></span><span class="sig-name descname"><span class="pre">calculate_cc_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/metrics.py#L144-L231"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.metrics.calculate_cc_index" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate CC index based on three thickness measurements.</p>
+<p>The AP line intersects the contour 4 times. The measurements are:
+- Anterior thickness: distance between intersection points 1 and 2
+- Posterior thickness: distance between intersection points 3 and 4
+- Middle thickness: perpendicular line through midpoint of AP line</p>
+<p>The CC index is: (anterior + posterior + middle) / AP_length</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>cc_contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) containing contour points in ACPC space.</p>
+</dd>
+<dt><strong>plot</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to generate a debug plot. Default is True.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
 <dt><strong>cc_index</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The CC index, which is the sum of thicknesses at three measurement points divided by AP length.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.metrics.get_intersections">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.metrics.</span></span><span class="sig-name descname"><span class="pre">get_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/metrics.py#L78-L141"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.metrics.get_intersections" title="Link to this definition">¶</a></dt>
+<dd><p>Find intersection points between an infinite line and a closed contour.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) containing contour points in ACPC space.</p>
+</dd>
+<dt><strong>start_point</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>A point on the line, shape (2,).</p>
+</dd>
+<dt><strong>direction</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Direction vector of the line, shape (2,).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></dt><dd><p>Array of shape (M, 2) containing intersection points, sorted along the direction.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="CorpusCallosum.shape.metrics.plot_cc_index_calculation">
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.metrics.</span></span><span class="sig-name descname"><span class="pre">plot_cc_index_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc_contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anterior_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ap_intersections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middle_intersections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">midpoint</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/metrics.py#L234-L328"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.metrics.plot_cc_index_calculation" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the CC index measurements.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ax</strong><span class="classifier"><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code></a></span></dt><dd><p>The axes to plot on.</p>
+</dd>
+<dt><strong>cc_contour</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, N) containing contour points in ACPC space.</p>
+</dd>
+<dt><strong>anterior_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of the anterior point on the contour.</p>
+</dd>
+<dt><strong>posterior_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of the posterior point on the contour.</p>
+</dd>
+<dt><strong>ap_intersections</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (4, 2) containing the 4 intersection points of the AP line with the contour.</p>
+</dd>
+<dt><strong>middle_intersections</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2, 2) containing middle perpendicular intersection points.</p>
+</dd>
+<dt><strong>midpoint</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>Array of shape (2,) containing the midpoint of the AP line.</p>
 </dd>
 </dl>
 </dd>
@@ -513,6 +570,8 @@
             <ul>
 <li><a class="reference internal" href="#">CorpusCallosum.shape.metrics</a><ul>
 <li><a class="reference internal" href="#CorpusCallosum.shape.metrics.calculate_cc_index"><code class="docutils literal notranslate"><span class="pre">calculate_cc_index()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.metrics.get_intersections"><code class="docutils literal notranslate"><span class="pre">get_intersections()</span></code></a></li>
+<li><a class="reference internal" href="#CorpusCallosum.shape.metrics.plot_cc_index_calculation"><code class="docutils literal notranslate"><span class="pre">plot_cc_index_calculation()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -272,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.lta.html">FastSurferCNN.utils.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.mapper.html">FastSurferCNN.utils.mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.meters.html">FastSurferCNN.utils.meters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/FastSurferCNN.utils.metrics.html">FastSurferCNN.utils.metrics</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.lta.html">recon_surf.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api/generated/recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
@@ -559,41 +559,6 @@ python3<span class="w"> </span>fastsurfer_cc.py<span class="w"> </span>--subject
 <p>Each slice entry contains the shape measurements, thickness analysis and sub-divisions as described above.</p>
 </section>
 </section>
-<section id="qc-visualizations">
-<h2>QC Visualizations<a class="headerlink" href="#qc-visualizations" title="Link to this heading">¶</a></h2>
-<p>The corpus callosum pipeline provides several visualization options for quality control and analysis. These can be enabled using the <code class="docutils literal notranslate"><span class="pre">--qc_snaps</span></code> flag when running FastSurfer, which creates visualizations in the <code class="docutils literal notranslate"><span class="pre">qc_snapshots/</span></code> subdirectory.</p>
-<section id="available-qc-visualizations">
-<h3>Available QC Visualizations<a class="headerlink" href="#available-qc-visualizations" title="Link to this heading">¶</a></h3>
-<p><strong>Contour and Thickness Visualization (<code class="docutils literal notranslate"><span class="pre">qc_snapshots/callosum.png</span></code>):</strong></p>
-<ul class="simple">
-<li><p>Debug visualization showing corpus callosum contours and thickness measurements</p></li>
-<li><p>Available for all slice selection modes</p></li>
-</ul>
-<p><strong>3D Thickness Visualization (<code class="docutils literal notranslate"><span class="pre">qc_snapshots/callosum_thickness.png</span></code>):</strong></p>
-<ul class="simple">
-<li><p>Comprehensive 3D thickness visualization across multiple slices</p></li>
-<li><p>Requires <code class="docutils literal notranslate"><span class="pre">--slice_selection</span> <span class="pre">all</span></code> for full 3D analysis</p></li>
-</ul>
-<p><strong>Interactive 3D Mesh Visualization (<code class="docutils literal notranslate"><span class="pre">qc_snapshots/corpus_callosum.html</span></code>):</strong></p>
-<ul class="simple">
-<li><p>Web-based interactive 3D visualization of the corpus callosum mesh</p></li>
-<li><p>Requires <code class="docutils literal notranslate"><span class="pre">--slice_selection</span> <span class="pre">all</span></code> for 3D mesh generation</p></li>
-<li><p>Allows rotation, zooming, and inspection of thickness measurements</p></li>
-</ul>
-</section>
-<section id="custom-qc-output-paths">
-<h3>Custom QC Output Paths<a class="headerlink" href="#custom-qc-output-paths" title="Link to this heading">¶</a></h3>
-<p>You can also specify custom paths for individual QC outputs using:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify custom paths for QC visualizations</span>
-python3<span class="w"> </span>fastsurfer_cc.py<span class="w"> </span>--subject_dir<span class="w"> </span>/path/to/subject<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--qc_image<span class="w"> </span>/custom/path/contours.png<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--thickness_image<span class="w"> </span>/custom/path/thickness_3d.png<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--cc_html<span class="w"> </span>/custom/path/interactive_mesh.html
-</pre></div>
-</div>
-<p>When using the main <code class="docutils literal notranslate"><span class="pre">run_fastsurfer.sh</span></code> script, the <code class="docutils literal notranslate"><span class="pre">--qc_snaps</span></code> flag automatically sets these paths to the standard <code class="docutils literal notranslate"><span class="pre">qc_snapshots/</span></code> locations.</p>
-</section>
-</section>
 </section>
 
         </article>
@@ -668,11 +633,6 @@ python3<span class="w"> </span>fastsurfer_cc.py<span class="w"> </span>--subject
 <li><a class="reference internal" href="#json-output-structure">JSON Output Structure</a><ul>
 <li><a class="reference internal" href="#stats-callosum-cc-midslice-json-middle-slice-analysis"><code class="docutils literal notranslate"><span class="pre">stats/callosum.CC.midslice.json</span></code> (Middle Slice Analysis)</a></li>
 <li><a class="reference internal" href="#stats-callosum-cc-all-slices-json-multi-slice-analysis"><code class="docutils literal notranslate"><span class="pre">stats/callosum.CC.all_slices.json</span></code> (Multi-Slice Analysis)</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#qc-visualizations">QC Visualizations</a><ul>
-<li><a class="reference internal" href="#available-qc-visualizations">Available QC Visualizations</a></li>
-<li><a class="reference internal" href="#custom-qc-output-paths">Custom QC Output Paths</a></li>
 </ul>
 </li>
 </ul>

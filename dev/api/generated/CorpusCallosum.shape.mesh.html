@@ -272,6 +272,7 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lta.html">FastSurferCNN.utils.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.mapper.html">FastSurferCNN.utils.mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.meters.html">FastSurferCNN.utils.meters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.metrics.html">FastSurferCNN.utils.metrics</a></li>
@@ -375,7 +376,6 @@
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.lta.html">recon_surf.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
@@ -430,7 +430,7 @@
 <span id="corpuscallosum-shape-mesh"></span><h1>CorpusCallosum.shape.mesh<a class="headerlink" href="#module-CorpusCallosum.shape.mesh" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.mesh.</span></span><span class="sig-name descname"><span class="pre">CCMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_slices</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L44-L1709"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.mesh.</span></span><span class="sig-name descname"><span class="pre">CCMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_slices</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L45-L1730"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh" title="Link to this definition">¶</a></dt>
 <dd><p>A class for representing and manipulating corpus callosum (CC) meshes.</p>
 <p>This class extends lapy.TriaMesh to provide specialized functionality for working with
 corpus callosum meshes, including contour management, thickness measurements, and
@@ -614,7 +614,7 @@ contours.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snap_cc_picture</span></code></a>(output_path[, fssurf_file, ...])</p></td>
 <td><p>Snap a picture of the corpus callosum mesh.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates" title="CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_fs_coordinates</span></code></a>(vox2ras_tkr, vox_size)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates" title="CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_fs_coordinates</span></code></a>(vox2ras_tkr)</p></td>
 <td><p>Convert mesh coordinates to FreeSurfer coordinate system.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tria_areas</span></code>()</p></td>
@@ -652,7 +652,7 @@ contours.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.add_contour">
-<span class="sig-name descname"><span class="pre">add_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_end_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L96-L125"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.add_contour" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_end_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L103-L132"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.add_contour" title="Link to this definition">¶</a></dt>
 <dd><p>Add a contour and its associated thickness values for a specific slice.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -673,7 +673,7 @@ If None, defaults to (0, len(contour)//2).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.create_mesh">
-<span class="sig-name descname"><span class="pre">create_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lr_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L712-L809"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.create_mesh" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lr_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L719-L814"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.create_mesh" title="Link to this definition">¶</a></dt>
 <dd><p>Create a surface mesh by triangulating between consecutive contours.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -706,7 +706,7 @@ If None, defaults to (0, len(contour)//2).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.fill_thickness_values">
-<span class="sig-name descname"><span class="pre">fill_thickness_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L811-L865"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.fill_thickness_values" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fill_thickness_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L816-L870"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.fill_thickness_values" title="Link to this definition">¶</a></dt>
 <dd><p>Interpolate missing thickness values using weighted averaging.</p>
 <p class="rubric">Notes</p>
 <p>The function:
@@ -722,7 +722,7 @@ points have more influence on the interpolated value.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.get_contour_edge_lengths">
-<span class="sig-name descname"><span class="pre">get_contour_edge_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L459-L478"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.get_contour_edge_lengths" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_contour_edge_lengths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L466-L485"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.get_contour_edge_lengths" title="Link to this definition">¶</a></dt>
 <dd><p>Get the lengths of the edges of a contour.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -745,7 +745,7 @@ in the contour.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.load_contours">
-<span class="sig-name descname"><span class="pre">load_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1368-L1422"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.load_contours" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1384-L1438"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.load_contours" title="Link to this definition">¶</a></dt>
 <dd><p>Load contours from a CSV file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -771,7 +771,7 @@ in the contour.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.load_thickness_values">
-<span class="sig-name descname"><span class="pre">load_thickness_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_thickness_vertices_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1449-L1555"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.load_thickness_values" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">load_thickness_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">original_thickness_vertices_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1465-L1571"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.load_thickness_values" title="Link to this definition">¶</a></dt>
 <dd><p>Load thickness values from a CSV file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -801,7 +801,7 @@ or if number of slices is inconsistent.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.make_triangles_between_contours">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_triangles_between_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L480-L525"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.make_triangles_between_contours" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">make_triangles_between_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L487-L532"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.make_triangles_between_contours" title="Link to this definition">¶</a></dt>
 <dd><p>Create a triangular mesh between two contours using a robust method.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -829,22 +829,24 @@ or if number of slices is inconsistent.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.plot_cc_contour_with_levelsets">
-<span class="sig-name descname"><span class="pre">plot_cc_contour_with_levelsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levelpaths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L964-L1147"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_cc_contour_with_levelsets" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_cc_contour_with_levelsets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_idx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levelpaths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'p-value'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L969-L1162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_cc_contour_with_levelsets" title="Link to this definition">¶</a></dt>
 <dd><p>Plot a contour with levelset visualization.</p>
 <p>Creates a visualization of a contour with interpolated levelsets, useful for
 analyzing the thickness distribution across the corpus callosum.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>contour_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Index of the contour to plot, by default 0.</p>
+<dt><strong>contour_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default=0</span></dt><dd><p>Index of the contour to plot, by default 0.</p>
 </dd>
-<dt><strong>levelpaths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of levelset paths. If None, uses stored levelpaths, by default None.</p>
+<dt><strong>levelpaths</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of levelset paths. If None, uses stored levelpaths.</p>
 </dd>
-<dt><strong>title</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Title for the plot, by default None.</p>
+<dt><strong>title</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Title for the plot.</p>
 </dd>
-<dt><strong>save_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to save the plot. If None, displays interactively, by default None.</p>
+<dt><strong>save_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to save the plot. If None, displays interactively.</p>
 </dd>
-<dt><strong>colorbar</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to show the colorbar, by default True.</p>
+<dt><strong>colorbar</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a>, default=True</span></dt><dd><p>Whether to show the colorbar.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{“p-value”, “icc”}, default=”p-value”</span></dt><dd><p>Mode of the plot.</p>
 </dd>
 </dl>
 </dd>
@@ -859,7 +861,7 @@ analyzing the thickness distribution across the corpus callosum.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.plot_contour">
-<span class="sig-name descname"><span class="pre">plot_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L884-L941"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_contour" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slice_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L889-L946"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_contour" title="Link to this definition">¶</a></dt>
 <dd><p>Plot a single contour with thickness values.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -887,7 +889,7 @@ analyzing the thickness distribution across the corpus callosum.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.plot_mesh">
-<span class="sig-name descname"><span class="pre">plot_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red_to_yellow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_overlay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_contours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L150-L457"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_mesh" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red_to_yellow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_overlay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_contours</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_mesh_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L157-L464"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_mesh" title="Link to this definition">¶</a></dt>
 <dd><p>Plot the mesh using Plotly for better performance and interactivity.</p>
 <p>Creates an interactive 3D visualization of the mesh with optional features like
 thickness overlay, contour display, and grid visualization.</p>
@@ -926,7 +928,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.save_contours">
-<span class="sig-name descname"><span class="pre">save_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1339-L1366"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.save_contours" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1355-L1382"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.save_contours" title="Link to this definition">¶</a></dt>
 <dd><p>Save the contours to a CSV file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -945,7 +947,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.save_thickness_measurement_points">
-<span class="sig-name descname"><span class="pre">save_thickness_measurement_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1650-L1672"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.save_thickness_measurement_points" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_thickness_measurement_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1671-L1693"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.save_thickness_measurement_points" title="Link to this definition">¶</a></dt>
 <dd><p>Write the thickness measurement points to a CSV file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -964,7 +966,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.save_thickness_values">
-<span class="sig-name descname"><span class="pre">save_thickness_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1424-L1447"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.save_thickness_values" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_thickness_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1440-L1463"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.save_thickness_values" title="Link to this definition">¶</a></dt>
 <dd><p>Save thickness values to a CSV file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -983,7 +985,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.set_acpc_coords">
-<span class="sig-name descname"><span class="pre">set_acpc_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L127-L138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.set_acpc_coords" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_acpc_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ac_coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L134-L145"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.set_acpc_coords" title="Link to this definition">¶</a></dt>
 <dd><p>Set the coordinates of the anterior and posterior commissure.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -999,7 +1001,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.set_mesh">
-<span class="sig-name descname"><span class="pre">set_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1149-L1187"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.set_mesh" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1164-L1203"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.set_mesh" title="Link to this definition">¶</a></dt>
 <dd><p>Set the mesh vertices, faces, and optional thickness values.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1023,12 +1025,12 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.set_resolution">
-<span class="sig-name descname"><span class="pre">set_resolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L140-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.set_resolution" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_resolution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolution</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L147-L155"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.set_resolution" title="Link to this definition">¶</a></dt>
 <dd><p>Set the spatial resolution of the mesh.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>resolution</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Spatial resolution in millimeters.</p>
+<dt><strong>resolution</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">triplet</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">floats</span></code></span></dt><dd><p>LIA-oriented spatial resolution of the mesh.</p>
 </dd>
 </dl>
 </dd>
@@ -1037,7 +1039,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.smooth_">
-<span class="sig-name descname"><span class="pre">smooth_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1320-L1337"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">smooth_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1336-L1353"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_" title="Link to this definition">¶</a></dt>
 <dd><p>Smooth the mesh while preserving the z-coordinates.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1056,14 +1058,14 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.smooth_contour">
-<span class="sig-name descname"><span class="pre">smooth_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L943-L962"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_contour" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">smooth_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L948-L967"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_contour" title="Link to this definition">¶</a></dt>
 <dd><p>Smooth a contour using a moving average filter.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>contour_idx</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Index of the contour to smooth.</p>
 </dd>
-<dt><strong>window_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Size of the smoothing window, by default 5.</p>
+<dt><strong>window_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default=5</span></dt><dd><p>Size of the smoothing window.</p>
 </dd>
 </dl>
 </dd>
@@ -1077,7 +1079,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.smooth_thickness_values">
-<span class="sig-name descname"><span class="pre">smooth_thickness_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L867-L882"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_thickness_values" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">smooth_thickness_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L872-L887"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_thickness_values" title="Link to this definition">¶</a></dt>
 <dd><p>Smooth the thickness values using a Gaussian filter.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1094,7 +1096,7 @@ for each slice that has measurements.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture">
-<span class="sig-name descname"><span class="pre">snap_cc_picture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fssurf_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1230-L1318"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">snap_cc_picture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fssurf_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1246-L1334"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="Link to this definition">¶</a></dt>
 <dd><p>Snap a picture of the corpus callosum mesh.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1128,29 +1130,30 @@ If None, the mesh is saved to a temporary file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates">
-<span class="sig-name descname"><span class="pre">to_fs_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vox2ras_tkr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1573-L1618"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_fs_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vox2ras_tkr</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1589-L1639"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.to_fs_coordinates" title="Link to this definition">¶</a></dt>
 <dd><p>Convert mesh coordinates to FreeSurfer coordinate system.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>vox2ras_tkr</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>4x4 voxel to RAS tkr-space transformation matrix.</p>
 </dd>
-<dt><strong>vox_size</strong><span class="classifier">3-tuple <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">floats</span></code></span></dt><dd><p>Voxel size in millimeters (x, y, z).</p>
-</dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The function:
-1. Converts coordinates from original to LSA orientation.
-2. Converts to voxel coordinates using voxel size.
-3. Centers LR coordinates and flips SI coordinates.
-4. Applies vox2ras_tkr transformation to get final coordinates.</p>
+<p>Mesh coordinates seem to be in ASR (Anterior-Superior-Right) orientation, with the coordinate system origin on
+<em>the</em> midslice.
+The function performs the following:
+1. Convert from mesh coordinates (LSA and voxel coordinates) to fsaverage voxel coordinates (LIA, origin).
+a. Convert coordinates from ASR to LSA orientation.
+b. Convert to voxel coordinates using voxel size.
+c. Center LR coordinates and flips SI coordinates.
+2. Apply vox2ras_tkr transformation to get final coordinates.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.write_fssurf">
-<span class="sig-name descname"><span class="pre">write_fssurf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1620-L1633"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_fssurf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_fssurf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1641-L1654"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_fssurf" title="Link to this definition">¶</a></dt>
 <dd><p>Write the mesh to a FreeSurfer surface file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1166,7 +1169,7 @@ If None, the mesh is saved to a temporary file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.write_overlay">
-<span class="sig-name descname"><span class="pre">write_overlay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1635-L1648"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_overlay" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_overlay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/deep-mi/FastSurfer/blob/dev/CorpusCallosum/shape/mesh.py#L1656-L1669"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_overlay" title="Link to this definition">¶</a></dt>
 <dd><p>Write the thickness values as a FreeSurfer overlay file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
