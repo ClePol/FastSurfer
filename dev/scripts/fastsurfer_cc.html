@@ -454,13 +454,13 @@ Also segments the fornix, localizes the anterior and posterior commissure (AC an
                         <span class="p">[</span><span class="o">--</span><span class="n">subdivision_method</span> <span class="p">{</span><span class="n">shape</span><span class="p">,</span><span class="n">vertical</span><span class="p">,</span><span class="n">angular</span><span class="p">,</span><span class="n">eigenvector</span><span class="p">}]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">contour_smoothing</span> <span class="n">CONTOUR_SMOOTHING</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">slice_selection</span> <span class="n">SLICE_SELECTION</span><span class="p">]</span>
-                        <span class="p">[</span><span class="o">--</span><span class="n">threads</span> <span class="n">THREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">upright_volume</span> <span class="n">UPRIGHT_VOLUME</span><span class="p">]</span>
-                        <span class="p">[</span><span class="o">--</span><span class="n">segmentation</span> <span class="n">SEGMENTATION</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">threads</span> <span class="n">THREADS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">segmentation</span> <span class="n">SEGMENTATION</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">segmentation_in_orig</span> <span class="n">SEGMENTATION_IN_ORIG</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">cc_measures</span> <span class="n">CC_MEASURES</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">cc_mid_measures</span> <span class="n">CC_MID_MEASURES</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">upright_lta</span> <span class="n">UPRIGHT_LTA</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">upright_volume</span> <span class="n">UPRIGHT_VOLUME</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">orient_volume_lta</span> <span class="n">ORIENT_VOLUME_LTA</span><span class="p">]</span>
-                        <span class="p">[</span><span class="o">--</span><span class="n">segmentation_in_orig</span> <span class="n">SEGMENTATION_IN_ORIG</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">qc_image</span> <span class="n">QC_IMAGE</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">save_template_dir</span> <span class="n">SAVE_TEMPLATE_DIR</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">thickness_image</span> <span class="n">THICKNESS_IMAGE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">surf</span> <span class="n">CC_SURF</span><span class="p">]</span>
@@ -528,64 +528,64 @@ Also segments the fornix, localizes the anterior and posterior commissure (AC an
 <dd><p>Number of threads to use (defaults to number of hardware threads: 4)</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">4</span></code></p>
 </dd>
-<dt><kbd>--upright_volume</kbd></dt>
-<dd><p>Path for upright volume output.</p>
-</dd>
 <dt><kbd>--segmentation, --seg</kbd></dt>
-<dd><p>Path for corpus callosum and fornix segmentation 3D image.</p>
+<dd><p>Output path for corpus callosum and fornix segmentation output.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">mri/callosum.CC.upright.mgz</span></code></p>
 </dd>
+<dt><kbd>--segmentation_in_orig</kbd></dt>
+<dd><p>Output path for corpus callosum and fornix segmentation output in the input MRI space.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">mri/callosum.CC.orig.mgz</span></code></p>
+</dd>
 <dt><kbd>--cc_measures</kbd></dt>
-<dd><p>Path for surface-based corpus callosum measures describing shape and volume for each image slice.</p>
+<dd><p>Output path for surface-based corpus callosum measures describing shape and volume for each image slice.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">stats/callosum.CC.all_slices.json</span></code></p>
 </dd>
 <dt><kbd>--cc_mid_measures</kbd></dt>
-<dd><p>Path for surface-based corpus callosum measures of the midslice describing CC shape and volume.</p>
+<dd><p>Output path for surface-based corpus callosum measures of the midslice describing CC shape and volume.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">stats/callosum.CC.midslice.json</span></code></p>
 </dd>
 <dt><kbd>--upright_lta</kbd></dt>
-<dd><p>Path for upright LTA transform. This makes sure the midplane is at 128 in LR direction, but no nodding correction is applied.</p>
+<dd><p>Output path for upright LTA transform. This makes sure the midplane is at 128 in LR direction, but no nodding correction is applied.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">mri/transforms/cc_up.lta</span></code></p>
 </dd>
+<dt><kbd>--upright_volume</kbd></dt>
+<dd><p>Output path for upright volume (input image with cc_up.lta applied).</p>
+</dd>
 <dt><kbd>--orient_volume_lta</kbd></dt>
-<dd><p>Path for orientation volume LTA transform. This makes sure the midplane is at 128 in LR direction, and the anterior and posterior commisures are on the coordinate line, standardizing the head orientation.</p>
+<dd><p>Output path for orientation volume LTA transform. This makes sure the midplane is the volume center, the anterior and posterior commisures are on the coordinate line, and the posterior commissure is at the origin - standardizing the head position.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">mri/transforms/orient_volume.lta</span></code></p>
 </dd>
-<dt><kbd>--segmentation_in_orig</kbd></dt>
-<dd><p>Path for corpus callosum and fornix segmentation in the input MRI space.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">mri/callosum.CC.orig.mgz</span></code></p>
-</dd>
 <dt><kbd>--qc_image</kbd></dt>
-<dd><p>Path for QC visualization image .</p>
+<dd><p>Output path for QC visualization image.</p>
 </dd>
 <dt><kbd>--save_template_dir</kbd></dt>
-<dd><p>Directory path where to save contours.txt and thickness_values.txt files. These files can be used to visualize the CC shape and volume in 3D.</p>
+<dd><p>Directory path where to save contours.txt and thickness_values.txt files. These files can be used to visualize the CC shape and volume with the cc_visualization.py script.</p>
 </dd>
 <dt><kbd>--thickness_image</kbd></dt>
-<dd><p>Path for thickness image.</p>
+<dd><p>Output path for thickness image.</p>
 </dd>
 <dt><kbd>--surf</kbd></dt>
-<dd><p>Path for surf file.</p>
+<dd><p>Output path for surf file.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">surf/callosum.surf</span></code></p>
 </dd>
 <dt><kbd>--thickness_overlay</kbd></dt>
-<dd><p>Path for corpus callosum thickness overlay file.</p>
+<dd><p>Output path for corpus callosum thickness overlay file.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">surf/callosum.thickness.w</span></code></p>
 </dd>
 <dt><kbd>--cc_interactive_html, --cc_html</kbd></dt>
-<dd><p>Path to the corpus callosum interactive 3D visualization HTML file.</p>
+<dd><p>Output path to the corpus callosum interactive 3D visualization HTML file.</p>
 </dd>
 <dt><kbd>--cc_surf_vtk</kbd></dt>
-<dd><p>Path for vtk file, showing the CC 3D mesh. Example: surf/callosum.vtk.</p>
+<dd><p>Output path for vtk file, showing the CC 3D mesh. Example: surf/callosum.vtk.</p>
 </dd>
 <dt><kbd>--softlabels_cc</kbd></dt>
-<dd><p>Path for corpus callosum softlabels, which contains the soft labels of each voxel. Example: mri/callosum.CC.soft.mgz.</p>
+<dd><p>Output path for corpus callosum softlabels, which contains the soft labels of each voxel. Example: mri/callosum.CC.soft.mgz.</p>
 </dd>
 <dt><kbd>--softlabels_fn</kbd></dt>
-<dd><p>Path for fornix softlabels, which contains the soft labels of each voxel. Example: mri/fornix.CC.soft.mgz.</p>
+<dd><p>Output path for fornix softlabels, which contains the soft labels of each voxel. Example: mri/fornix.CC.soft.mgz.</p>
 </dd>
 <dt><kbd>--softlabels_background</kbd></dt>
-<dd><p>Path for background softlabels, which contains the probability of each voxel. Example: mri/background.CC.soft.mgz.</p>
+<dd><p>Output path for background softlabels, which contains the probability of each voxel. Example: mri/background.CC.soft.mgz.</p>
 </dd>
 </dl>
 </section>
