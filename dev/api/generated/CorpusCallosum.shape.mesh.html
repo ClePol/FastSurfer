@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="CorpusCallosum.shape.metrics" href="CorpusCallosum.shape.metrics.html"><link rel="prev" title="CorpusCallosum.shape.postprocessing" href="CorpusCallosum.shape.postprocessing.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="CorpusCallosum.shape.metrics" href="CorpusCallosum.shape.metrics.html"><link rel="prev" title="CorpusCallosum.shape.endpoint_heuristic" href="CorpusCallosum.shape.endpoint_heuristic.html">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>CorpusCallosum.shape.mesh - FastSurfer</title>
@@ -194,11 +194,10 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../overview/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction to FastSurfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/QUICKSTART.html">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/INSTALL.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/EXAMPLES.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/FLAGS.html">FastSurfer Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
@@ -214,6 +213,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../scripts/index.html">Scripts</a><input aria-label="Toggle navigation of Scripts" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../scripts/RUN_FASTSURFER.html">run_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/long_fastsurfer.html">LONG: long_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/BATCH.html">BATCH: brun_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/SLURM.html">SLURM: srun_fastsurfer.sh</a></li>
@@ -247,10 +247,14 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.download_checkpoints.html">FastSurferCNN.download_checkpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.generate_hdf5.html">FastSurferCNN.generate_hdf5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.inference.html">FastSurferCNN.inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_brainvol_stats.html">FastSurferCNN.mri_brainvol_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_segstats.html">FastSurferCNN.mri_segstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.quick_qc.html">FastSurferCNN.quick_qc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.reduce_to_aseg.html">FastSurferCNN.reduce_to_aseg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_model.html">FastSurferCNN.run_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_prediction.html">FastSurferCNN.run_prediction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.segstats.html">FastSurferCNN.segstats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.train.html">FastSurferCNN.train</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.version.html">FastSurferCNN.version</a></li>
 </ul>
 </li>
@@ -266,13 +270,16 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.interpolation_layer.html">FastSurferCNN.models.interpolation_layer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.losses.html">FastSurferCNN.models.losses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.networks.html">FastSurferCNN.models.networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.optimizer.html">FastSurferCNN.models.optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.sub_module.html">FastSurferCNN.models.sub_module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../FastSurferCNN.utils.html">FastSurferCNN.utils</a><input aria-label="Toggle navigation of FastSurferCNN.utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.arg_types.html">FastSurferCNN.utils.arg_types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.brainvolstats.html">FastSurferCNN.utils.brainvolstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.checkpoint.html">FastSurferCNN.utils.checkpoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.common.html">FastSurferCNN.utils.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.dataclasses.html">FastSurferCNN.utils.dataclasses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
@@ -292,7 +299,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.run_prediction.html">CerebNet.run_prediction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.dataloader.html">CerebNet.dataloader</a><input aria-label="Toggle navigation of CerebNet.dataloader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.data_loader.html">CerebNet.data_loader</a><input aria-label="Toggle navigation of CerebNet.data_loader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.augmentation.html">CerebNet.data_loader.augmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.data_utils.html">CerebNet.data_loader.data_utils</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.dataset.html">CerebNet.data_loader.dataset</a></li>
@@ -328,6 +335,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -341,13 +349,14 @@
 </ul>
 </li>
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../CorpusCallosum.shape.html">CorpusCallosum.shape</a><input aria-label="Toggle navigation of CorpusCallosum.shape" checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.curvature.html">CorpusCallosum.shape.curvature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">CorpusCallosum.shape.mesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.metrics.html">CorpusCallosum.shape.metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.subsegment_contour.html">CorpusCallosum.shape.subsegment_contour</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.transforms.html">CorpusCallosum.transforms</a><input aria-label="Toggle navigation of CorpusCallosum.transforms" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -376,19 +385,32 @@
 <li class="toctree-l3"><a class="reference internal" href="HypVINN.models.networks.html">HypVINN.models.networks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a><input aria-label="Toggle navigation of HypVINN.utils" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.checkpoint.html">HypVINN.utils.checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.img_processing_utils.html">HypVINN.utils.img_processing_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.load_config.html">HypVINN.utils.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.misc.html">HypVINN.utils.misc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.mode_config.html">HypVINN.utils.mode_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.preproc.html">HypVINN.utils.preproc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.stats_utils.html">HypVINN.utils.stats_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.visualization_utils.html">HypVINN.utils.visualization_utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_points.html">recon_surf.align_points</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.image_io.html">recon_surf.image_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.long_compat_segmentHA.html">recon_surf.long_compat_segmentHA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_mc_surface.html">recon_surf.rewrite_mc_surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rotate_sphere.html">recon_surf.rotate_sphere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.sample_parc.html">recon_surf.sample_parc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.smooth_aparc.html">recon_surf.smooth_aparc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project.html">recon_surf.spherically_project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project_wrapper.html">recon_surf.spherically_project_wrapper</a></li>
 </ul>
 </li>
@@ -436,7 +458,7 @@
 <span id="corpuscallosum-shape-mesh"></span><h1>CorpusCallosum.shape.mesh<a class="headerlink" href="#module-CorpusCallosum.shape.mesh" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.mesh.</span></span><span class="sig-name descname"><span class="pre">CCMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertex_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L185-L823"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.mesh.</span></span><span class="sig-name descname"><span class="pre">CCMesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">faces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertex_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L184-L803"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh" title="Link to this definition">¶</a></dt>
 <dd><p>A class for representing and manipulating corpus callosum (CC) meshes.</p>
 <p>This class extends lapy.TriaMesh to provide specialized functionality for working with
 corpus callosum meshes, including contour management, thickness measurements, and
@@ -482,17 +504,23 @@ contours.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">construct_adj_dir_tidx</span></code>()</p></td>
 <td><p>Construct directed adjacency matrix (edge graph) of triangle mesh.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">curvature</span></code>([smoothit])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">critical_points</span></code>(vfunc)</p></td>
+<td><p>Compute critical points (extrema and saddles) of a function on mesh vertices.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">curvature</span></code>([smoothit])</p></td>
 <td><p>Compute various curvature values at vertices.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">curvature_tria</span></code>([smoothit])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">curvature_tria</span></code>([smoothit])</p></td>
 <td><p>Compute min and max curvature and directions on triangle faces.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">edges</span></code>([with_boundary])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">edges</span></code>([with_boundary])</p></td>
 <td><p>Compute vertices and adjacent triangle ids for each edge.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">euler</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">euler</span></code>()</p></td>
 <td><p>Compute the Euler Characteristic.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_level_paths</span></code>(vfunc, level[, eps])</p></td>
+<td><p>Extract level set paths as Polygon objects with triangle/edge metadata.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.from_contours" title="CorpusCallosum.shape.mesh.CCMesh.from_contours"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_contours</span></code></a>(contours[, lr_center, closed, ...])</p></td>
 <td><p>Create a surface mesh by triangulating between consecutive contours.</p></td>
@@ -506,44 +534,50 @@ contours.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_2d</span></code>()</p></td>
 <td><p>Check if the mesh was created with 2D vertices.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_closed</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_boundary</span></code>()</p></td>
+<td><p>Check which vertices are on the boundary.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_closed</span></code>()</p></td>
 <td><p>Check if triangle mesh is closed (no boundary edges).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_manifold</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_manifold</span></code>()</p></td>
 <td><p>Check if triangle mesh is manifold (no edges with &gt;2 triangles).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_oriented</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_oriented</span></code>()</p></td>
 <td><p>Check if triangle mesh is oriented.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_largest_connected_component_</span></code>([clean])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">keep_largest_connected_component_</span></code>([clean])</p></td>
 <td><p>Keep only the largest connected component of the mesh.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">level_length</span></code>(vfunc, level)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">level_length</span></code>(vfunc, level)</p></td>
 <td><p>Compute the length of level sets.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">level_path</span></code>(vfunc, level[, get_tria_idx, ...])</p></td>
-<td><p>Extract levelset of vfunc at a specific level as a path of 3D points.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">level_path</span></code>(vfunc, level[, get_tria_idx, ...])</p></td>
+<td><p>Extract a single level set path as an array of 3D points.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_tfunc_to_vfunc</span></code>(tfunc[, weighted])</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_tfunc_to_vfunc</span></code>(tfunc[, weighted])</p></td>
 <td><p>Map triangle function to vertices by attributing 1/3 to each vertex.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_vfunc_to_tfunc</span></code>(vfunc)</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_vfunc_to_tfunc</span></code>(vfunc)</p></td>
 <td><p>Map vertex function to triangles by averaging vertex values.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal_offset_</span></code>(d)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normal_offset_</span></code>(d)</p></td>
 <td><p>Move vertices along their normals by distance d.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_</span></code>()</p></td>
 <td><p>Normalize TriaMesh to unit surface area and centroid at the origin.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">orient_</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">orient_</span></code>()</p></td>
 <td><p>Re-orient triangles of manifold mesh to be consistent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.plot_mesh" title="CorpusCallosum.shape.mesh.CCMesh.plot_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_mesh</span></code></a>([output_path, colormap, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.plot_mesh" title="CorpusCallosum.shape.mesh.CCMesh.plot_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_mesh</span></code></a>([output_path, colormap, ...])</p></td>
 <td><p>Plot the mesh using Plotly for better performance and interactivity.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_fssurf</span></code>(filename)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_fssurf</span></code>(filename)</p></td>
 <td><p>Load triangle mesh from FreeSurfer surface geometry file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_gifti</span></code>(filename)</p></td>
+<td><p>Load triangle mesh from a GIFTI surface file.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_off</span></code>(filename)</p></td>
 <td><p>Load triangle mesh from OFF txt file.</p></td>
@@ -569,7 +603,7 @@ contours.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth_vfunc</span></code>(vfunc[, n])</p></td>
 <td><p>Smooth the mesh or a vertex function iteratively.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snap_cc_picture</span></code></a>(output_path[, fssurf_file, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">snap_cc_picture</span></code></a>(output_path[, ref_header])</p></td>
 <td><p>Snap a picture of the corpus callosum mesh.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.to_vox_coordinates" title="CorpusCallosum.shape.mesh.CCMesh.to_vox_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_vox_coordinates</span></code></a>(mesh_ras2vox)</p></td>
@@ -599,10 +633,13 @@ contours.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.write_fssurf" title="CorpusCallosum.shape.mesh.CCMesh.write_fssurf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_fssurf</span></code></a>(filename[, image])</p></td>
 <td><p>Save as Freesurfer Surface Geometry file (wrap Nibabel).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.write_morph_data" title="CorpusCallosum.shape.mesh.CCMesh.write_morph_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_morph_data</span></code></a>(filename)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_gifti</span></code>(filename)</p></td>
+<td><p>Save mesh as a GIFTI surface file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#CorpusCallosum.shape.mesh.CCMesh.write_morph_data" title="CorpusCallosum.shape.mesh.CCMesh.write_morph_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_morph_data</span></code></a>(filename)</p></td>
 <td><p>Write the thickness values as a FreeSurfer overlay file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_vtk</span></code>(filename)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_vtk</span></code>(filename)</p></td>
 <td><p>Save mesh as VTK file.</p></td>
 </tr>
 </tbody>
@@ -610,7 +647,7 @@ contours.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.from_contours">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L693-L823"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.from_contours" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contours</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L673-L803"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.from_contours" title="Link to this definition">¶</a></dt>
 <dd><p>Create a surface mesh by triangulating between consecutive contours.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -651,7 +688,7 @@ contours.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.plot_mesh">
-<span class="sig-name descname"><span class="pre">plot_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red_to_yellow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_overlay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L227-L459"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_mesh" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colormap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red_to_yellow'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness_overlay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L226-L458"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.plot_mesh" title="Link to this definition">¶</a></dt>
 <dd><p>Plot the mesh using Plotly for better performance and interactivity.</p>
 <p>Creates an interactive 3D visualization of the mesh with optional features like
 thickness overlay, contour display, and grid visualization.</p>
@@ -690,7 +727,7 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.smooth_">
-<span class="sig-name descname"><span class="pre">smooth_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L599-L616"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">smooth_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L579-L596"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.smooth_" title="Link to this definition">¶</a></dt>
 <dd><p>Smooth the mesh while preserving the z-coordinates.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -709,43 +746,31 @@ Options:
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture">
-<span class="sig-name descname"><span class="pre">snap_cc_picture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fssurf_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlay_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L503-L597"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">snap_cc_picture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L503-L577"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.snap_cc_picture" title="Link to this definition">¶</a></dt>
 <dd><p>Snap a picture of the corpus callosum mesh.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>output_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Path where to save the snapshot image.</p>
 </dd>
-<dt><strong>fssurf_file</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to a FreeSurfer surface file to use for the snapshot.
-If None, the mesh is saved to a temporary file.</p>
-</dd>
-<dt><strong>overlay_file</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to a FreeSurfer overlay file to use for the snapshot.
-If None, the mesh is saved to a temporary file.</p>
-</dd>
-<dt><strong>ref_image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabelImage</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to reference image to use for tkr creation. If None, ignores the file for saving.</p>
+<dt><strong>ref_header</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabelHeader</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Path to reference image header to use for tkr creation. If None, ignores the file for saving.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Warning" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Warning</span></code></a></dt><dd><p>If the mesh has no faces and cannot create a snapshot.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ImportError</span></code></a></dt><dd><p>If whippersnappy is not installed or if the version is too old.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If the mesh has no faces and cannot create a snapshot.</p>
 </dd>
 </dl>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The function:
-1. Creates temporary files for mesh and overlay data if needed.
-2. Uses whippersnappy to create a snapshot with:
-- Custom view matrix for standard orientation.
-- Ambient lighting and colorbar settings.
-- Thickness overlay if available.
-3. Cleans up temporary files after use.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.to_vox_coordinates">
-<span class="sig-name descname"><span class="pre">to_vox_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_ras2vox</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L635-L664"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.to_vox_coordinates" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_vox_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_ras2vox</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L615-L644"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.to_vox_coordinates" title="Link to this definition">¶</a></dt>
 <dd><p>Convert mesh coordinates to FreeSurfer coordinate system.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -768,25 +793,34 @@ If None, the mesh is saved to a temporary file.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.write_fssurf">
-<span class="sig-name descname"><span class="pre">write_fssurf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L666-L676"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_fssurf" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_fssurf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L646-L656"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_fssurf" title="Link to this definition">¶</a></dt>
 <dd><p>Save as Freesurfer Surface Geometry file (wrap Nibabel).</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>filename</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Filename to save to.</p>
 </dd>
-<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Path to image, nibabel image object, or image header. If specified, the vertices
-are assumed to be in voxel coordinates and are converted to surface RAS (tkr)
-coordinates before saving. The expected order of coordinates is (x, y, z)
-matching the image voxel indices in nibabel.</p>
+<dt><strong>image</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Path to image, nibabel image object, or image header. If specified, volume_info
+will be extracted from the image header, and by default, vertices are assumed to
+be in voxel coordinates and will be converted to surface RAS (tkr) before saving.
+The expected order of coordinates is (x, y, z) matching the image voxel indices
+in nibabel.</p>
+</dd>
+<dt><strong>coords_are_voxels</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">bool</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, default=None</span></dt><dd><p>Specifies whether vertices are in voxel coordinates. If None (default), the
+behavior is inferred: when image is provided, vertices are assumed to be in
+voxel space and converted to surface RAS; when image is not provided, vertices
+are assumed to already be in surface RAS. Set explicitly to True to force
+conversion (requires image), or False to skip conversion even when image is
+provided (only extracts volume_info).</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IOError</span></code></a></dt><dd><p>If file cannot be written.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If coords_are_voxels is explicitly True but image is None.
+If image header cannot be processed.</p>
 </dd>
-<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If image header cannot be processed.</p>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IOError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IOError</span></code></a></dt><dd><p>If file cannot be written.</p>
 </dd>
 </dl>
 </dd>
@@ -800,7 +834,7 @@ Analyze/SPM, etc.), we attempt conversion via <code class="docutils literal notr
 
 <dl class="py method">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.CCMesh.write_morph_data">
-<span class="sig-name descname"><span class="pre">write_morph_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L678-L691"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_morph_data" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">write_morph_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L658-L671"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.CCMesh.write_morph_data" title="Link to this definition">¶</a></dt>
 <dd><p>Write the thickness values as a FreeSurfer overlay file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -818,7 +852,7 @@ Analyze/SPM, etc.), we attempt conversion via <code class="docutils literal notr
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.shape.mesh.make_triangles_between_contours">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.mesh.</span></span><span class="sig-name descname"><span class="pre">make_triangles_between_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L135-L179"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.make_triangles_between_contours" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.shape.mesh.</span></span><span class="sig-name descname"><span class="pre">make_triangles_between_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contour1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour2</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/shape/mesh.py#L134-L178"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.shape.mesh.make_triangles_between_contours" title="Link to this definition">¶</a></dt>
 <dd><p>Create a triangular mesh between two contours using a robust method.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -860,14 +894,14 @@ Analyze/SPM, etc.), we attempt conversion via <code class="docutils literal notr
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="CorpusCallosum.shape.postprocessing.html">
+          <a class="prev-page" href="CorpusCallosum.shape.endpoint_heuristic.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">CorpusCallosum.shape.postprocessing</div>
+                <div class="title">CorpusCallosum.shape.endpoint_heuristic</div>
                 
               </div>
             </a>

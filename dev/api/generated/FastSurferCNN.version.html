@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="FastSurferCNN.data_loader" href="../FastSurferCNN.data_loader.html"><link rel="prev" title="FastSurferCNN.segstats" href="FastSurferCNN.segstats.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="FastSurferCNN.data_loader" href="../FastSurferCNN.data_loader.html"><link rel="prev" title="FastSurferCNN.train" href="FastSurferCNN.train.html">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>FastSurferCNN.version - FastSurfer</title>
@@ -194,11 +194,10 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../overview/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction to FastSurfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/QUICKSTART.html">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/INSTALL.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/EXAMPLES.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/FLAGS.html">FastSurfer Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
@@ -214,6 +213,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../scripts/index.html">Scripts</a><input aria-label="Toggle navigation of Scripts" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../scripts/RUN_FASTSURFER.html">run_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/long_fastsurfer.html">LONG: long_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/BATCH.html">BATCH: brun_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/SLURM.html">SLURM: srun_fastsurfer.sh</a></li>
@@ -247,10 +247,14 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.download_checkpoints.html">FastSurferCNN.download_checkpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.generate_hdf5.html">FastSurferCNN.generate_hdf5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.inference.html">FastSurferCNN.inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_brainvol_stats.html">FastSurferCNN.mri_brainvol_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_segstats.html">FastSurferCNN.mri_segstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.quick_qc.html">FastSurferCNN.quick_qc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.reduce_to_aseg.html">FastSurferCNN.reduce_to_aseg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_model.html">FastSurferCNN.run_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_prediction.html">FastSurferCNN.run_prediction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.segstats.html">FastSurferCNN.segstats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.train.html">FastSurferCNN.train</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">FastSurferCNN.version</a></li>
 </ul>
 </li>
@@ -266,13 +270,16 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.interpolation_layer.html">FastSurferCNN.models.interpolation_layer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.losses.html">FastSurferCNN.models.losses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.networks.html">FastSurferCNN.models.networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.optimizer.html">FastSurferCNN.models.optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.sub_module.html">FastSurferCNN.models.sub_module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../FastSurferCNN.utils.html">FastSurferCNN.utils</a><input aria-label="Toggle navigation of FastSurferCNN.utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.arg_types.html">FastSurferCNN.utils.arg_types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.brainvolstats.html">FastSurferCNN.utils.brainvolstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.checkpoint.html">FastSurferCNN.utils.checkpoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.common.html">FastSurferCNN.utils.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.dataclasses.html">FastSurferCNN.utils.dataclasses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
@@ -292,7 +299,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.run_prediction.html">CerebNet.run_prediction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.dataloader.html">CerebNet.dataloader</a><input aria-label="Toggle navigation of CerebNet.dataloader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.data_loader.html">CerebNet.data_loader</a><input aria-label="Toggle navigation of CerebNet.data_loader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.augmentation.html">CerebNet.data_loader.augmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.data_utils.html">CerebNet.data_loader.data_utils</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.dataset.html">CerebNet.data_loader.dataset</a></li>
@@ -328,6 +335,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -341,13 +349,14 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.shape.html">CorpusCallosum.shape</a><input aria-label="Toggle navigation of CorpusCallosum.shape" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.curvature.html">CorpusCallosum.shape.curvature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.mesh.html">CorpusCallosum.shape.mesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.metrics.html">CorpusCallosum.shape.metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.subsegment_contour.html">CorpusCallosum.shape.subsegment_contour</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.transforms.html">CorpusCallosum.transforms</a><input aria-label="Toggle navigation of CorpusCallosum.transforms" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -376,19 +385,32 @@
 <li class="toctree-l3"><a class="reference internal" href="HypVINN.models.networks.html">HypVINN.models.networks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a><input aria-label="Toggle navigation of HypVINN.utils" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.checkpoint.html">HypVINN.utils.checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.img_processing_utils.html">HypVINN.utils.img_processing_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.load_config.html">HypVINN.utils.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.misc.html">HypVINN.utils.misc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.mode_config.html">HypVINN.utils.mode_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.preproc.html">HypVINN.utils.preproc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.stats_utils.html">HypVINN.utils.stats_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.visualization_utils.html">HypVINN.utils.visualization_utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_points.html">recon_surf.align_points</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.image_io.html">recon_surf.image_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.long_compat_segmentHA.html">recon_surf.long_compat_segmentHA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_mc_surface.html">recon_surf.rewrite_mc_surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rotate_sphere.html">recon_surf.rotate_sphere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.sample_parc.html">recon_surf.sample_parc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.smooth_aparc.html">recon_surf.smooth_aparc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project.html">recon_surf.spherically_project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project_wrapper.html">recon_surf.spherically_project_wrapper</a></li>
 </ul>
 </li>
@@ -436,7 +458,7 @@
 <span id="fastsurfercnn-version"></span><h1>FastSurferCNN.version<a class="headerlink" href="#module-FastSurferCNN.version" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="FastSurferCNN.version.VersionDict">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">VersionDict</span></span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L46-L52"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.VersionDict" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">VersionDict</span></span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L47-L53"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.VersionDict" title="Link to this definition">¶</a></dt>
 <dd><p>Dictionary with keys ‘version_line’, ‘version’, ‘git_hash’, ‘git_branch’,
 ‘checkpoints’, ‘git_status’, and ‘pypackages’. The last 3 are optional and may
 be missing depending on the content of the file.</p>
@@ -484,7 +506,7 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.filter_git_status">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">filter_git_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">git_process</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L486-L506"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.filter_git_status" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">filter_git_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">git_process</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L485-L505"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.filter_git_status" title="Link to this definition">¶</a></dt>
 <dd><p>Filter the output of a running git status process.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -504,7 +526,7 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.get_default_version_info">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">get_default_version_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L371-L385"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.get_default_version_info" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">get_default_version_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L370-L384"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.get_default_version_info" title="Link to this definition">¶</a></dt>
 <dd><p>Get the blank version information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -518,7 +540,7 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.has_git">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">has_git</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L140-L149"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.has_git" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">has_git</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L141-L150"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.has_git" title="Link to this definition">¶</a></dt>
 <dd><p>Determine whether FastSurfer is installed as a git directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -532,7 +554,7 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.main">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L210-L368"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.main" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefer_cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L211-L367"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.main" title="Link to this definition">¶</a></dt>
 <dd><p>Print version info to stdout or file.</p>
 <p>Prints/writes version info of FastSurfer in the style:
 <code class="docutils literal notranslate"><span class="pre">`</span>
@@ -550,7 +572,7 @@ be missing depending on the content of the file.</p>
 <span class="pre">python</span> <span class="pre">packages:</span>
 <span class="pre">==========</span>
 <span class="pre">Package</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Version</span>&#160;&#160;&#160; <span class="pre">Location</span>&#160;&#160; <span class="pre">[Installer]</span>
-<span class="pre">&lt;package</span> <span class="pre">name&gt;</span>&#160; <span class="pre">&lt;version&gt;</span>&#160; <span class="pre">&lt;path&gt;</span>&#160;&#160;&#160;&#160; <span class="pre">&lt;pip|conda&gt;</span>
+<span class="pre">&lt;package</span> <span class="pre">name&gt;</span>&#160; <span class="pre">&lt;version&gt;</span>&#160; <span class="pre">&lt;path&gt;</span>&#160;&#160;&#160;&#160; <span class="pre">&lt;pip|...&gt;</span>
 <span class="pre">...]</span>
 <span class="pre">`</span></code></p>
 <p>$PROJECT_ROOT is the root directory of the project determined as the parent to this
@@ -585,7 +607,7 @@ If build_cache is None, it defaults to $PROJECT_ROOT/BUILD.info; if it is False,
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.make_parser">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">make_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L96-L137"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.make_parser" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">make_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L97-L138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.make_parser" title="Link to this definition">¶</a></dt>
 <dd><p>Generate the argument parser for the version script.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -599,7 +621,7 @@ If build_cache is None, it defaults to $PROJECT_ROOT/BUILD.info; if it is False,
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.parse_build_file">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">parse_build_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build_file</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L388-L444"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.parse_build_file" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">parse_build_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">build_file</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L387-L443"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.parse_build_file" title="Link to this definition">¶</a></dt>
 <dd><p>Read and parse a build file (same as output of <a class="reference internal" href="#FastSurferCNN.version.main" title="FastSurferCNN.version.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>).</p>
 <p>Read and parse a file with version information in the format that is also the
 output of the <a class="reference internal" href="#FastSurferCNN.version.main" title="FastSurferCNN.version.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a> function. The format is documented in <a class="reference internal" href="#FastSurferCNN.version.main" title="FastSurferCNN.version.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a>.</p>
@@ -625,7 +647,7 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.print_build_file">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">print_build_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_branch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pypackages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L152-L207"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.print_build_file" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">print_build_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">version</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_hash</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_branch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">git_status</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pypackages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L153-L208"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.print_build_file" title="Link to this definition">¶</a></dt>
 <dd><p>Format and print the build file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -653,13 +675,13 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.read_and_close_version">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">read_and_close_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L509-L535"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.read_and_close_version" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">read_and_close_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L508-L534"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.read_and_close_version" title="Link to this definition">¶</a></dt>
 <dd><p>Read and close the version from the pyproject file. Also fill default.</p>
 <p>Always closes the file pointer.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>project_file</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOBase" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextIO</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Project file.</p>
+<dt><strong>project_file</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/io.html#io.TextIOBase" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextIO</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">PathLike</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Project file.</p>
 </dd>
 </dl>
 </dd>
@@ -676,7 +698,7 @@ be missing depending on the content of the file.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.read_version_from_project_file">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">read_version_from_project_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_file</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L447-L483"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.read_version_from_project_file" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">read_version_from_project_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_file</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L446-L482"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.read_version_from_project_file" title="Link to this definition">¶</a></dt>
 <dd><p>Read the version entry from the pyproject file.</p>
 <p>Searches for the [project] section in project_file, therein the version attribute.
 Extracts the Value. The file pointer is right after the version attribute at return
@@ -699,7 +721,7 @@ time.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.version.section">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L66-L93"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.section" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.version.</span></span><span class="sig-name descname"><span class="pre">section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/version.py#L67-L94"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.version.section" title="Link to this definition">¶</a></dt>
 <dd><p>Validate the argument is a valid sections string.</p>
 <p>A valid sections string is either ‘all’ or a concatenated list of ‘+checkpoints’,
 ‘+git’, and ‘+pip’, e.g. ‘+git+checkpoints’. The order does not matter.</p>
@@ -735,14 +757,14 @@ time.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="FastSurferCNN.segstats.html">
+          <a class="prev-page" href="FastSurferCNN.train.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">FastSurferCNN.segstats</div>
+                <div class="title">FastSurferCNN.train</div>
                 
               </div>
             </a>

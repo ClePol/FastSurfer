@@ -194,11 +194,10 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../overview/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../overview/intro.html">Introduction to FastSurfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../overview/intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../overview/QUICKSTART.html">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../overview/INSTALL.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../overview/EXAMPLES.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../overview/FLAGS.html">FastSurfer Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
@@ -214,6 +213,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Scripts</a><input aria-label="Toggle navigation of Scripts" checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="RUN_FASTSURFER.html">run_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="long_fastsurfer.html">LONG: long_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="BATCH.html">BATCH: brun_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SLURM.html">SLURM: srun_fastsurfer.sh</a></li>
@@ -247,10 +247,14 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.download_checkpoints.html">FastSurferCNN.download_checkpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.generate_hdf5.html">FastSurferCNN.generate_hdf5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.inference.html">FastSurferCNN.inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.mri_brainvol_stats.html">FastSurferCNN.mri_brainvol_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.mri_segstats.html">FastSurferCNN.mri_segstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.quick_qc.html">FastSurferCNN.quick_qc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.reduce_to_aseg.html">FastSurferCNN.reduce_to_aseg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.run_model.html">FastSurferCNN.run_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.run_prediction.html">FastSurferCNN.run_prediction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.segstats.html">FastSurferCNN.segstats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.train.html">FastSurferCNN.train</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.version.html">FastSurferCNN.version</a></li>
 </ul>
 </li>
@@ -266,13 +270,16 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.models.interpolation_layer.html">FastSurferCNN.models.interpolation_layer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.models.losses.html">FastSurferCNN.models.losses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.models.networks.html">FastSurferCNN.models.networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.models.optimizer.html">FastSurferCNN.models.optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.models.sub_module.html">FastSurferCNN.models.sub_module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/FastSurferCNN.utils.html">FastSurferCNN.utils</a><input aria-label="Toggle navigation of FastSurferCNN.utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.arg_types.html">FastSurferCNN.utils.arg_types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.brainvolstats.html">FastSurferCNN.utils.brainvolstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.checkpoint.html">FastSurferCNN.utils.checkpoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.common.html">FastSurferCNN.utils.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.dataclasses.html">FastSurferCNN.utils.dataclasses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
@@ -292,7 +299,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.run_prediction.html">CerebNet.run_prediction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/CerebNet.dataloader.html">CerebNet.dataloader</a><input aria-label="Toggle navigation of CerebNet.dataloader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/CerebNet.data_loader.html">CerebNet.data_loader</a><input aria-label="Toggle navigation of CerebNet.data_loader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.data_loader.augmentation.html">CerebNet.data_loader.augmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.data_loader.data_utils.html">CerebNet.data_loader.data_utils</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CerebNet.data_loader.dataset.html">CerebNet.data_loader.dataset</a></li>
@@ -328,6 +335,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -341,13 +349,14 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/CorpusCallosum.shape.html">CorpusCallosum.shape</a><input aria-label="Toggle navigation of CorpusCallosum.shape" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.curvature.html">CorpusCallosum.shape.curvature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.mesh.html">CorpusCallosum.shape.mesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.metrics.html">CorpusCallosum.shape.metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.subsegment_contour.html">CorpusCallosum.shape.subsegment_contour</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/CorpusCallosum.transforms.html">CorpusCallosum.transforms</a><input aria-label="Toggle navigation of CorpusCallosum.transforms" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -376,19 +385,32 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.models.networks.html">HypVINN.models.networks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../api/HypVINN.utils.html">HypVINN.utils</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../api/recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/HypVINN.utils.html">HypVINN.utils</a><input aria-label="Toggle navigation of HypVINN.utils" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.checkpoint.html">HypVINN.utils.checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.img_processing_utils.html">HypVINN.utils.img_processing_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.load_config.html">HypVINN.utils.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.misc.html">HypVINN.utils.misc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.mode_config.html">HypVINN.utils.mode_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.preproc.html">HypVINN.utils.preproc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.stats_utils.html">HypVINN.utils.stats_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/HypVINN.utils.visualization_utils.html">HypVINN.utils.visualization_utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../api/recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.align_points.html">recon_surf.align_points</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.image_io.html">recon_surf.image_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.long_compat_segmentHA.html">recon_surf.long_compat_segmentHA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rewrite_mc_surface.html">recon_surf.rewrite_mc_surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.rotate_sphere.html">recon_surf.rotate_sphere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.sample_parc.html">recon_surf.sample_parc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.smooth_aparc.html">recon_surf.smooth_aparc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.spherically_project.html">recon_surf.spherically_project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.spherically_project_wrapper.html">recon_surf.spherically_project_wrapper</a></li>
 </ul>
 </li>
@@ -436,11 +458,10 @@
 <h1>CorpusCallosum: fastsurfer_cc.py<a class="headerlink" href="#corpuscallosum-fastsurfer-cc-py" title="Link to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>FastSurfer-CC runs with FastSurfer by default, but can be run independently with the advanced interface provided here.
-A FastSurfer segmentation is still required as input.</p>
+<p>We recommend to run FastSurfer-CC with the standard <code class="xref py py-obj docutils literal notranslate"><span class="pre">run_fastsurfer.sh</span></code> interfaces (see <a class="reference internal" href="index.html"><span class="doc">Scripts</span></a>)!</p>
+<p>This is an expert documentation for of FastSurfer CC, which can be run independently with the advanced interface provided here. However, the FastSurfer segmentation is still required as input.</p>
 </div>
-<p>========================
-FastSurfer-CC is a deep learning-based pipeline for automated segmentation, analysis, and shape analysis of the corpus callosum in brain MRI scans.
+<p>FastSurfer-CC is a deep learning-based pipeline for automated segmentation, analysis, and shape analysis of the corpus callosum in brain MRI scans.
 Also segments the fornix, localizes the anterior and posterior commissure (AC and PC) and standardizes the orientation of the brain.</p>
 <p>The documentation is split into three files, please refer to:</p>
 <ul class="simple">
@@ -455,6 +476,9 @@ Also segments the fornix, localizes the anterior and posterior commissure (AC an
 </div>
 <p>Gives all standard outputs. The corpus callosum morphometry can be found at <code class="docutils literal notranslate"><span class="pre">stats/callosum.CC.midslice.json</span></code> including 100 thickness measurements and the areas of sub-segments.</p>
 </section>
+<section id="full-command-line-interface">
+<h2>Full command-line interface<a class="headerlink" href="#full-command-line-interface" title="Link to this heading">¶</a></h2>
+<p>The following section provides a detailed overview of the command-line interface for the FastSurfer-CC pipeline, including all available flags and options.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">fastsurfer_cc</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sd</span> <span class="n">OUT_DIR</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">sid</span> <span class="n">SID</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">conformed_name</span> <span class="n">CONF_NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">aseg_name</span> <span class="n">ASEG_NAME</span><span class="p">]</span>
                         <span class="p">[</span><span class="o">--</span><span class="n">device</span> <span class="n">DEVICE</span><span class="p">]</span>
@@ -482,7 +506,7 @@ Also segments the fornix, localizes the anterior and posterior commissure (AC an
 </pre></div>
 </div>
 <section id="CorpusCallosum.fastsurfer_cc-make_parser-named-arguments">
-<h2>Named Arguments<a class="headerlink" href="#CorpusCallosum.fastsurfer_cc-make_parser-named-arguments" title="Link to this heading">¶</a></h2>
+<h3>Named Arguments<a class="headerlink" href="#CorpusCallosum.fastsurfer_cc-make_parser-named-arguments" title="Link to this heading">¶</a></h3>
 <dl class="option-list">
 <dt><kbd>-v, --verbose</kbd></dt>
 <dd><p>Enable verbose (pass twice for debug-output).</p>
@@ -530,7 +554,7 @@ Also segments the fornix, localizes the anterior and posterior commissure (AC an
 </dl>
 </section>
 <section id="CorpusCallosum.fastsurfer_cc-make_parser-advanced-options">
-<h2>Advanced options<a class="headerlink" href="#CorpusCallosum.fastsurfer_cc-make_parser-advanced-options" title="Link to this heading">¶</a></h2>
+<h3>Advanced options<a class="headerlink" href="#CorpusCallosum.fastsurfer_cc-make_parser-advanced-options" title="Link to this heading">¶</a></h3>
 <p>Custom output paths, useful if no standard case directory is used. Relative paths are always relative to the subject_dir defined via –sd and –sid!</p>
 <dl class="option-list">
 <dt><kbd>--threads</kbd></dt>
@@ -598,12 +622,13 @@ Also segments the fornix, localizes the anterior and posterior commissure (AC an
 </dd>
 </dl>
 </section>
+</section>
 <section id="quality-control">
 <h2>Quality Control<a class="headerlink" href="#quality-control" title="Link to this heading">¶</a></h2>
 <p>The pipeline can produce a dedicated quality control image, showing the CC contour, AC/PC landmarks and thickness estimation.
-For this use the –qc_image flag.
-Additionally, the surface outputs, e.g. –thickness_image, can be used to visualize the CC thickness and also inform quality control.
-Finally, to confirm the alignment of the CC on the mid-sagittal plane, we can output the upright volume with –upright_volume flag.
+For this use the <code class="docutils literal notranslate"><span class="pre">--qc_image</span></code> flag.
+Additionally, the surface outputs, e.g. <code class="docutils literal notranslate"><span class="pre">--thickness_image</span></code>, can be used to visualize the CC thickness and also inform quality control.
+Finally, to confirm the alignment of the CC on the mid-sagittal plane, we can output the upright volume with <code class="docutils literal notranslate"><span class="pre">--upright_volume</span></code> flag.
 In this image the mid-sagittal plane is at voxel coordinate 128 in the LR direction.</p>
 <p>An example call with all quality control outputs is:
 .. code-block:: bash</p>
@@ -616,7 +641,7 @@ In this image the mid-sagittal plane is at voxel coordinate 128 in the LR direct
 </section>
 <section id="custom-subdivision-schemes">
 <h2>Custom Subdivision Schemes<a class="headerlink" href="#custom-subdivision-schemes" title="Link to this heading">¶</a></h2>
-<p>The pipeline supports custom subdivision schemes for the corpus callosum with the –subdivisions flag.
+<p>The pipeline supports custom subdivision schemes for the corpus callosum with the <code class="docutils literal notranslate"><span class="pre">--subdivisions</span></code> flag.
 The fractions are relative to the total length of the corpus callosum (midline length).
 The default is to use the shape-based subdivision scheme (recommended) and the Hofer-Frahms convention.</p>
 <p>We can, for example divide the CC into 4 equal parts with the shape-based subdivision scheme:</p>
@@ -736,8 +761,11 @@ python3<span class="w"> </span>fastsurfer_cc.py<span class="w"> </span>--sd<span
             <ul>
 <li><a class="reference internal" href="#">CorpusCallosum: fastsurfer_cc.py</a><ul>
 <li><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li><a class="reference internal" href="#full-command-line-interface">Full command-line interface</a><ul>
 <li><a class="reference internal" href="#CorpusCallosum.fastsurfer_cc-make_parser-named-arguments">Named Arguments</a></li>
 <li><a class="reference internal" href="#CorpusCallosum.fastsurfer_cc-make_parser-advanced-options">Advanced options</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#quality-control">Quality Control</a></li>
 <li><a class="reference internal" href="#custom-subdivision-schemes">Custom Subdivision Schemes</a></li>
 <li><a class="reference internal" href="#analysis-modes">Analysis Modes</a><ul>

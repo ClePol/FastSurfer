@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="FastSurferCNN.segstats" href="FastSurferCNN.segstats.html"><link rel="prev" title="FastSurferCNN.reduce_to_aseg" href="FastSurferCNN.reduce_to_aseg.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="FastSurferCNN.segstats" href="FastSurferCNN.segstats.html"><link rel="prev" title="FastSurferCNN.run_model" href="FastSurferCNN.run_model.html">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>FastSurferCNN.run_prediction - FastSurfer</title>
@@ -194,11 +194,10 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../overview/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction to FastSurfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/QUICKSTART.html">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/INSTALL.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/EXAMPLES.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/FLAGS.html">FastSurfer Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
@@ -214,6 +213,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../scripts/index.html">Scripts</a><input aria-label="Toggle navigation of Scripts" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../scripts/RUN_FASTSURFER.html">run_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/long_fastsurfer.html">LONG: long_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/BATCH.html">BATCH: brun_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/SLURM.html">SLURM: srun_fastsurfer.sh</a></li>
@@ -247,10 +247,14 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.download_checkpoints.html">FastSurferCNN.download_checkpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.generate_hdf5.html">FastSurferCNN.generate_hdf5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.inference.html">FastSurferCNN.inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_brainvol_stats.html">FastSurferCNN.mri_brainvol_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_segstats.html">FastSurferCNN.mri_segstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.quick_qc.html">FastSurferCNN.quick_qc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.reduce_to_aseg.html">FastSurferCNN.reduce_to_aseg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_model.html">FastSurferCNN.run_model</a></li>
 <li class="toctree-l3 current current-page"><a class="current reference internal" href="#">FastSurferCNN.run_prediction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.segstats.html">FastSurferCNN.segstats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.train.html">FastSurferCNN.train</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.version.html">FastSurferCNN.version</a></li>
 </ul>
 </li>
@@ -266,13 +270,16 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.interpolation_layer.html">FastSurferCNN.models.interpolation_layer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.losses.html">FastSurferCNN.models.losses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.networks.html">FastSurferCNN.models.networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.optimizer.html">FastSurferCNN.models.optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.sub_module.html">FastSurferCNN.models.sub_module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../FastSurferCNN.utils.html">FastSurferCNN.utils</a><input aria-label="Toggle navigation of FastSurferCNN.utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.arg_types.html">FastSurferCNN.utils.arg_types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.brainvolstats.html">FastSurferCNN.utils.brainvolstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.checkpoint.html">FastSurferCNN.utils.checkpoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.common.html">FastSurferCNN.utils.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.dataclasses.html">FastSurferCNN.utils.dataclasses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
@@ -292,7 +299,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.run_prediction.html">CerebNet.run_prediction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.dataloader.html">CerebNet.dataloader</a><input aria-label="Toggle navigation of CerebNet.dataloader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.data_loader.html">CerebNet.data_loader</a><input aria-label="Toggle navigation of CerebNet.data_loader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.augmentation.html">CerebNet.data_loader.augmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.data_utils.html">CerebNet.data_loader.data_utils</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.dataset.html">CerebNet.data_loader.dataset</a></li>
@@ -328,6 +335,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -341,13 +349,14 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.shape.html">CorpusCallosum.shape</a><input aria-label="Toggle navigation of CorpusCallosum.shape" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.curvature.html">CorpusCallosum.shape.curvature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.mesh.html">CorpusCallosum.shape.mesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.metrics.html">CorpusCallosum.shape.metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.subsegment_contour.html">CorpusCallosum.shape.subsegment_contour</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.transforms.html">CorpusCallosum.transforms</a><input aria-label="Toggle navigation of CorpusCallosum.transforms" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -376,19 +385,32 @@
 <li class="toctree-l3"><a class="reference internal" href="HypVINN.models.networks.html">HypVINN.models.networks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a><input aria-label="Toggle navigation of HypVINN.utils" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.checkpoint.html">HypVINN.utils.checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.img_processing_utils.html">HypVINN.utils.img_processing_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.load_config.html">HypVINN.utils.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.misc.html">HypVINN.utils.misc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.mode_config.html">HypVINN.utils.mode_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.preproc.html">HypVINN.utils.preproc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.stats_utils.html">HypVINN.utils.stats_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.visualization_utils.html">HypVINN.utils.visualization_utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_points.html">recon_surf.align_points</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.image_io.html">recon_surf.image_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.long_compat_segmentHA.html">recon_surf.long_compat_segmentHA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_mc_surface.html">recon_surf.rewrite_mc_surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rotate_sphere.html">recon_surf.rotate_sphere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.sample_parc.html">recon_surf.sample_parc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.smooth_aparc.html">recon_surf.smooth_aparc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project.html">recon_surf.spherically_project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project_wrapper.html">recon_surf.spherically_project_wrapper</a></li>
 </ul>
 </li>
@@ -443,7 +465,7 @@
 </section>
 <dl class="py class">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FastSurferCNN.run_prediction.</span></span><span class="sig-name descname"><span class="pre">RunModelOnData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_sag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_cor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_sag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_cor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewagg_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lia'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">async_io</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conform_to_1mm_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L135-L523"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">FastSurferCNN.run_prediction.</span></span><span class="sig-name descname"><span class="pre">RunModelOnData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_sag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt_cor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_sag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg_cor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewagg_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threads</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vox_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lia'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">async_io</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conform_to_1mm_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L135-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData" title="Link to this definition">¶</a></dt>
 <dd><p>Run the model prediction on given data.</p>
 <p class="rubric">Attributes</p>
 <div class="table-wrapper docutils container">
@@ -512,7 +534,7 @@
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.async_save_img">
-<span class="sig-name descname"><span class="pre">async_save_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_as</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L441-L468"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.async_save_img" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">async_save_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_as</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L451-L478"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.async_save_img" title="Link to this definition">¶</a></dt>
 <dd><p>Save the image asynchronously and return a concurrent.futures.Future to track,
 when this finished.</p>
 <dl class="field-list">
@@ -539,7 +561,7 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.conform_and_save_orig">
-<span class="sig-name descname"><span class="pre">conform_and_save_orig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L294-L334"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.conform_and_save_orig" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">conform_and_save_orig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L304-L344"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.conform_and_save_orig" title="Link to this definition">¶</a></dt>
 <dd><p>Conform and saves original image.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -561,7 +583,7 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.get_num_classes">
-<span class="sig-name descname"><span class="pre">get_num_classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L482-L491"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.get_num_classes" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_num_classes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L492-L501"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.get_num_classes" title="Link to this definition">¶</a></dt>
 <dd><p>Return the number of classes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -575,7 +597,7 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.get_prediction">
-<span class="sig-name descname"><span class="pre">get_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L347-L403"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.get_prediction" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zoom</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affine</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L357-L413"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.get_prediction" title="Link to this definition">¶</a></dt>
 <dd><p>Run and get prediction.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -601,7 +623,7 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.pipeline_conform_and_save_orig">
-<span class="sig-name descname"><span class="pre">pipeline_conform_and_save_orig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L493-L523"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.pipeline_conform_and_save_orig" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pipeline_conform_and_save_orig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subjects</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L503-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.pipeline_conform_and_save_orig" title="Link to this definition">¶</a></dt>
 <dd><p>Pipeline for conforming and saving original images asynchronously.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -630,7 +652,7 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.save_img">
-<span class="sig-name descname"><span class="pre">save_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_as</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L405-L439"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.save_img" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">save_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_as</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L415-L449"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.save_img" title="Link to this definition">¶</a></dt>
 <dd><p>Save image as a file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -650,7 +672,7 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.set_model">
-<span class="sig-name descname"><span class="pre">set_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L336-L345"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.set_model" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L346-L355"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.set_model" title="Link to this definition">¶</a></dt>
 <dd><p>Set the current model for the specified plane.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -664,13 +686,13 @@ when this finished.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.set_up_model_params">
-<span class="sig-name descname"><span class="pre">set_up_model_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L470-L480"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.set_up_model_params" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_up_model_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plane</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ckpt</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L480-L490"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.set_up_model_params" title="Link to this definition">¶</a></dt>
 <dd><p>Set up the model parameters from the configuration and checkpoint.</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.RunModelOnData.pool">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool</span></span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L269-L277"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.pool" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pool</span></span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L279-L287"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.RunModelOnData.pool" title="Link to this definition">¶</a></dt>
 <dd><p>Return, and maybe create the objects executor object (with the number of threads
 specified in __init__).</p>
 </dd></dl>
@@ -705,7 +727,7 @@ specified in __init__).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="FastSurferCNN.run_prediction.make_parser">
-<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.run_prediction.</span></span><span class="sig-name descname"><span class="pre">make_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L526-L564"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.make_parser" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">FastSurferCNN.run_prediction.</span></span><span class="sig-name descname"><span class="pre">make_parser</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//FastSurferCNN/run_prediction.py#L536-L575"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#FastSurferCNN.run_prediction.make_parser" title="Link to this definition">¶</a></dt>
 <dd><p>Create the argparse object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -755,14 +777,14 @@ specified in __init__).</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="FastSurferCNN.reduce_to_aseg.html">
+          <a class="prev-page" href="FastSurferCNN.run_model.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">FastSurferCNN.reduce_to_aseg</div>
+                <div class="title">FastSurferCNN.run_model</div>
                 
               </div>
             </a>

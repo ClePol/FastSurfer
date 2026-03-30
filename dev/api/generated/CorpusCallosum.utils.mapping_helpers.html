@@ -194,11 +194,10 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../overview/index.html">User Guide</a><input aria-label="Toggle navigation of User Guide" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction to FastSurfer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../overview/intro.html">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/QUICKSTART.html">Quick Start</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/INSTALL.html">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/EXAMPLES.html">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../overview/FLAGS.html">FastSurfer Flags</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
@@ -214,6 +213,7 @@
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../scripts/index.html">Scripts</a><input aria-label="Toggle navigation of Scripts" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../scripts/RUN_FASTSURFER.html">run_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/long_fastsurfer.html">LONG: long_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/BATCH.html">BATCH: brun_fastsurfer.sh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../scripts/SLURM.html">SLURM: srun_fastsurfer.sh</a></li>
@@ -247,10 +247,14 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.download_checkpoints.html">FastSurferCNN.download_checkpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.generate_hdf5.html">FastSurferCNN.generate_hdf5</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.inference.html">FastSurferCNN.inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_brainvol_stats.html">FastSurferCNN.mri_brainvol_stats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.mri_segstats.html">FastSurferCNN.mri_segstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.quick_qc.html">FastSurferCNN.quick_qc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.reduce_to_aseg.html">FastSurferCNN.reduce_to_aseg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_model.html">FastSurferCNN.run_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.run_prediction.html">FastSurferCNN.run_prediction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.segstats.html">FastSurferCNN.segstats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.train.html">FastSurferCNN.train</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.version.html">FastSurferCNN.version</a></li>
 </ul>
 </li>
@@ -266,13 +270,16 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.interpolation_layer.html">FastSurferCNN.models.interpolation_layer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.losses.html">FastSurferCNN.models.losses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.networks.html">FastSurferCNN.models.networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.optimizer.html">FastSurferCNN.models.optimizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.models.sub_module.html">FastSurferCNN.models.sub_module</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../FastSurferCNN.utils.html">FastSurferCNN.utils</a><input aria-label="Toggle navigation of FastSurferCNN.utils" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.arg_types.html">FastSurferCNN.utils.arg_types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.brainvolstats.html">FastSurferCNN.utils.brainvolstats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.checkpoint.html">FastSurferCNN.utils.checkpoint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.common.html">FastSurferCNN.utils.common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.dataclasses.html">FastSurferCNN.utils.dataclasses</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
@@ -292,7 +299,7 @@
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.run_prediction.html">CerebNet.run_prediction</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.dataloader.html">CerebNet.dataloader</a><input aria-label="Toggle navigation of CerebNet.dataloader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../CerebNet.data_loader.html">CerebNet.data_loader</a><input aria-label="Toggle navigation of CerebNet.data_loader" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.augmentation.html">CerebNet.data_loader.augmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.data_utils.html">CerebNet.data_loader.data_utils</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CerebNet.data_loader.dataset.html">CerebNet.data_loader.dataset</a></li>
@@ -328,6 +335,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -341,13 +349,14 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.shape.html">CorpusCallosum.shape</a><input aria-label="Toggle navigation of CorpusCallosum.shape" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" role="switch" type="checkbox"/><label for="toctree-checkbox-21"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.curvature.html">CorpusCallosum.shape.curvature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.mesh.html">CorpusCallosum.shape.mesh</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.metrics.html">CorpusCallosum.shape.metrics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.postprocessing.html">CorpusCallosum.shape.postprocessing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.subsegment_contour.html">CorpusCallosum.shape.subsegment_contour</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.endpoint_heuristic.html">CorpusCallosum.shape.endpoint_heuristic</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.contour.html">CorpusCallosum.shape.contour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.shape.thickness.html">CorpusCallosum.shape.thickness</a></li>
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.transforms.html">CorpusCallosum.transforms</a><input aria-label="Toggle navigation of CorpusCallosum.transforms" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" role="switch" type="checkbox"/><label for="toctree-checkbox-22"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -376,19 +385,32 @@
 <li class="toctree-l3"><a class="reference internal" href="HypVINN.models.networks.html">HypVINN.models.networks</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../HypVINN.utils.html">HypVINN.utils</a><input aria-label="Toggle navigation of HypVINN.utils" class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" role="switch" type="checkbox"/><label for="toctree-checkbox-27"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.checkpoint.html">HypVINN.utils.checkpoint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.img_processing_utils.html">HypVINN.utils.img_processing_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.load_config.html">HypVINN.utils.load_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.misc.html">HypVINN.utils.misc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.mode_config.html">HypVINN.utils.mode_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.preproc.html">HypVINN.utils.preproc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.stats_utils.html">HypVINN.utils.stats_utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="HypVINN.utils.visualization_utils.html">HypVINN.utils.visualization_utils</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" role="switch" type="checkbox"/><label for="toctree-checkbox-28"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_points.html">recon_surf.align_points</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.image_io.html">recon_surf.image_io</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.long_compat_segmentHA.html">recon_surf.long_compat_segmentHA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.map_surf_label.html">recon_surf.map_surf_label</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.N4_bias_correct.html">recon_surf.N4_bias_correct</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_mc_surface.html">recon_surf.rewrite_mc_surface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.rewrite_oriented_surface.html">recon_surf.rewrite_oriented_surface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.rotate_sphere.html">recon_surf.rotate_sphere</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.sample_parc.html">recon_surf.sample_parc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.smooth_aparc.html">recon_surf.smooth_aparc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project.html">recon_surf.spherically_project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.spherically_project_wrapper.html">recon_surf.spherically_project_wrapper</a></li>
 </ul>
 </li>
@@ -460,7 +482,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.utils.mapping_helpers.apply_transform_to_volume">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">apply_transform_to_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_vox2vox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_vox2ras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L213-L270"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.apply_transform_to_volume" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">apply_transform_to_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_vox2vox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_vox2ras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L213-L271"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.apply_transform_to_volume" title="Link to this definition">¶</a></dt>
 <dd><p>Apply transformation to a volume and save the result.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -495,12 +517,12 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.utils.mapping_helpers.calc_mapping_to_standard_space">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">calc_mapping_to_standard_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords_3d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords_3d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_fsaverage_vox2vox</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L136-L210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.calc_mapping_to_standard_space" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">calc_mapping_to_standard_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ac_coords_3d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pc_coords_3d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_fsaverage_vox2vox</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L136-L210"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.calc_mapping_to_standard_space" title="Link to this definition">¶</a></dt>
 <dd><p>Get transformations to map image to standard space.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>orig</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nibabelImage</span></code></span></dt><dd><p>Original image.</p>
+<dt><strong>target_shape</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Shape3d</span></code></span></dt><dd><p>Shape of the target standardized volume.</p>
 </dd>
 <dt><strong>ac_coords_3d</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">np.ndarray</span></code></a></span></dt><dd><p>AC coordinates in 3D space.</p>
 </dd>
@@ -553,7 +575,7 @@ correcting for head nodding based on AC-PC line orientation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.utils.mapping_helpers.make_affine">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">make_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simpleITKImage</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L273-L300"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.make_affine" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">make_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simpleITKImage</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L274-L301"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.make_affine" title="Link to this definition">¶</a></dt>
 <dd><p>Create an affine transformation matrix from a SimpleITK image.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -602,7 +624,7 @@ correcting for head nodding based on AC-PC line orientation.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="CorpusCallosum.utils.mapping_helpers.map_softlabels_to_orig">
-<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">map_softlabels_to_orig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_fn_softlabels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig2slab_vox2vox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc_subseg_midslice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig2midslice_vox2vox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_space_segmentation_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L325-L397"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.map_softlabels_to_orig" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">CorpusCallosum.utils.mapping_helpers.</span></span><span class="sig-name descname"><span class="pre">map_softlabels_to_orig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cc_fn_softlabels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig2slab_vox2vox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cc_subseg_midslice</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig2midslice_vox2vox</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig_space_segmentation_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/Deep-MI/FastSurfer/blob//CorpusCallosum/utils/mapping_helpers.py#L326-L398"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#CorpusCallosum.utils.mapping_helpers.map_softlabels_to_orig" title="Link to this definition">¶</a></dt>
 <dd><p>Map soft labels back to original image space and apply post-processing.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
