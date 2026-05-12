@@ -201,6 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../overview/modules/LIT.html">Lesion Inpainting Tool (LIT)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../overview/docker.html">Docker Support</a></li>
@@ -283,7 +284,6 @@
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
-<li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.lta.html">FastSurferCNN.utils.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.mapper.html">FastSurferCNN.utils.mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.meters.html">FastSurferCNN.utils.meters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="FastSurferCNN.utils.metrics.html">FastSurferCNN.utils.metrics</a></li>
@@ -335,7 +335,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -401,8 +400,6 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.align_points.html">recon_surf.align_points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
 <li class="toctree-l3"><a class="reference internal" href="recon_surf.image_io.html">recon_surf.image_io</a></li>
@@ -502,7 +499,7 @@ If <code class="xref py py-obj docutils literal notranslate"><span class="pre">a
 <dd class="field-even"><dl class="simple">
 <dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd><p>If ‘auto’ or ‘fov’ is provided, it returns a string(‘auto’ or ‘fov’).
 If a valid image size (greater than 0) is provided, it returns an int.
-If ‘any’, it returns None.</p>
+If ‘any’ or ‘keep’, it returns None.</p>
 </dd>
 </dl>
 </dd>
@@ -702,7 +699,7 @@ If ‘any’, it returns None.</p>
 <dd class="field-even"><dl class="simple">
 <dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></dt><dd><p>If ‘auto’ or ‘min’ is provided, it returns a string(‘auto’ or ‘min’).
 If a valid voxel size (between 0 and 1) is provided, it returns a float.
-If ‘any’, it returns None.</p>
+If ‘any’ or ‘keep’, it returns None.</p>
 </dd>
 </dl>
 </dd>

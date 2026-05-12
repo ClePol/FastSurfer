@@ -201,6 +201,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../overview/OUTPUT_FILES.html">Output files</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../overview/modules/index.html">Modules</a><input aria-label="Toggle navigation of Modules" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../overview/modules/CC.html">Corpus Callosum Pipeline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../overview/modules/LIT.html">Lesion Inpainting Tool (LIT)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../overview/docker.html">Docker Support</a></li>
@@ -283,7 +284,6 @@
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.load_config.html">FastSurferCNN.utils.load_config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.logging.html">FastSurferCNN.utils.logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.lr_scheduler.html">FastSurferCNN.utils.lr_scheduler</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.lta.html">FastSurferCNN.utils.lta</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.mapper.html">FastSurferCNN.utils.mapper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.meters.html">FastSurferCNN.utils.meters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/FastSurferCNN.utils.metrics.html">FastSurferCNN.utils.metrics</a></li>
@@ -335,7 +335,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/CorpusCallosum.data.html">CorpusCallosum.data</a><input aria-label="Toggle navigation of CorpusCallosum.data" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" role="switch" type="checkbox"/><label for="toctree-checkbox-18"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.constants.html">CorpusCallosum.data.constants</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.fsaverage_cc_template.html">CorpusCallosum.data.fsaverage_cc_template</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.generate_fsaverage_centroids.html">CorpusCallosum.data.generate_fsaverage_centroids</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/CorpusCallosum.data.read_write.html">CorpusCallosum.data.read_write</a></li>
 </ul>
 </li>
@@ -401,8 +400,6 @@
 </ul>
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../api/recon_surf.html">recon_surf</a><input aria-label="Toggle navigation of recon_surf" class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" role="switch" type="checkbox"/><label for="toctree-checkbox-29"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.align_points.html">recon_surf.align_points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.align_seg.html">recon_surf.align_seg</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.create_annotation.html">recon_surf.create_annotation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.fs_balabels.html">recon_surf.fs_balabels</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../api/generated/recon_surf.image_io.html">recon_surf.image_io</a></li>
@@ -478,7 +475,7 @@ Here, we have also added the <code class="docutils literal notranslate"><span cl
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--sd</span></code>: Output directory $SUBJECTS_DIR (equivalent to FreeSurfer setup –&gt; $SUBJECTS_DIR/sid/mri; $SUBJECTS_DIR/sid/surf … will be created).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--sid</span></code>: Subject ID for directory inside $SUBJECTS_DIR to be created ($SUBJECTS_DIR/sid/…)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--t1</span></code>: T1 full head input (does not need to be bias corrected, global path). The network was trained with conformed images (UCHAR, 256x256x256, 0.7mm - 1mm voxels and standard slice orientation). These specifications are checked in the run_prediction.py script and the image is automatically conformed if it does not comply. Note, outputs will be in the conformed space (following the FreeSurfer standard).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--t1</span></code>: T1 full head input (does not need to be bias corrected, global path). The network was trained with conformed images (UCHAR, cubic volume, 0.7mm - 1mm voxels and standard slice orientation; typically 256x256x256 at 1mm and larger cubes for higher-resolution isotropic inputs). These specifications are checked in the run_prediction.py script and the image is automatically conformed if it does not comply. Note, outputs will be in the conformed space used by FastSurfer, which is similar to FreeSurfer conform space but not guaranteed to match <code class="docutils literal notranslate"><span class="pre">mri_convert</span> <span class="pre">-c</span></code> exactly.</p></li>
 </ul>
 <section id="conditionally-required">
 <h3>Conditionally required<a class="headerlink" href="#conditionally-required" title="Link to this heading">¶</a></h3>
@@ -501,8 +498,9 @@ Here, we have also added the <code class="docutils literal notranslate"><span cl
 <li><p><code class="docutils literal notranslate"><span class="pre">--no_cereb</span></code>: Switch off the cerebellum sub-segmentation.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--no_hypothal</span></code>: Skip the hypothalamus segmentation.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--no_cc</span></code>: Skip the segmentation and analysis of the corpus callosum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--lesion_mask</span> <span class="pre">&lt;path</span> <span class="pre">to</span> <span class="pre">file&gt;</span></code>: Path to a binary lesion mask in the same space as the T1 input. If provided, FastSurfer will wrap the segmentation and surface pipelines with lesion inpainting using LIT. This experimental feature is useful for images with tumors or other large lesions; review LIT-modified outputs before downstream use.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--cereb_segfile</span></code>: Name of the cerebellum segmentation file. If not provided, this intermediate DL-based segmentation will not be stored, but only the merged segmentation will be stored (see –main_segfile <filename>). Requires an ABSOLUTE Path! Default location: $SUBJECTS_DIR/$sid/mri/cerebellum.CerebNet.nii.gz</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--no_biasfield</span></code>: Deactivate the biasfield correction and calculation of partial volume-corrected statistics in the segmentation modules.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--no_biasfield</span></code>: Deactivate the biasfield correction and calculation of partial volume-corrected statistics in the segmentation modules. HypVINN does run but expects that biasfields are corrected externally.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">--native_image</span></code> or <code class="docutils literal notranslate"><span class="pre">--keepgeom</span></code>: <strong>Only supported for <code class="docutils literal notranslate"><span class="pre">--seg_only</span></code></strong>, segment in native image space (keep orientation, image size and voxel size of the input image), this also includes experimental support for anisotropic images (no extreme anisotropy).</p></li>
 </ul>
 </section>
@@ -556,12 +554,16 @@ FLAGS:
   --sd  &lt;subjects_dir&gt;    Output directory $SUBJECTS_DIR (or pass via env var)
   --t1  &lt;T1_input&gt;        T1 full head input (not bias corrected). Requires an
                             ABSOLUTE Path!
+  --lesion_mask &lt;mask_input&gt;
+                          Lesion mask input for experimental lesion inpainting.
+                            Requires an ABSOLUTE Path!
   --asegdkt_segfile &lt;filename&gt;
                           Name of the segmentation file, which includes the
                           aparc+DKTatlas-aseg segmentations.
                           Requires an ABSOLUTE Path! Default location:
                           $SUBJECTS_DIR/$sid/mri/aparc.DKTatlas+aseg.deep.mgz
-  --vox_size &lt;0.7-1|min&gt;  Forces processing at a specific voxel size.
+  --vox_size &lt;0.7-1|min|keep&gt;
+                          Forces processing at a specific voxel size.
                             If a number between 0.7 and 1 is specified (below
                             is experimental) the T1w image is conformed to
                             that voxel size and processed.
@@ -577,6 +579,9 @@ FLAGS:
                             The voxel size (whether set manually or derived)
                             determines whether the surfaces are processed with
                             highres options (below 1mm) or not.
+                            If &quot;keep&quot; is specified, the native voxel size is
+                            preserved. This is experimental and only compatible
+                            with the segmentation pipeline.
   --edits                 Enables manual edits by replacing select intermediate/
                             result files by manedit substitutes (*.manedit.&lt;ext&gt;).
                             Segmentation: &lt;asegdkt_segfile&gt; and &lt;mask_name&gt;.
@@ -605,8 +610,8 @@ SEGMENTATION PIPELINE:
                             image will be saved. Requires an ABSOLUTE Path!
                             Default location:
                             $SUBJECTS_DIR/$sid/mri/orig.mgz.
-  --no_biasfield          Create a bias field corrected image and enable the
-                            calculation of partial volume-corrected stats-files.
+  --no_biasfield          Deactivate bias field correction and the calculation of
+                            partial volume-corrected stats-files.
   --norm_name &lt;nu.mgz&gt;    Name of the biasfield corrected image
                             Default location:
                             $SUBJECTS_DIR/$sid/mri/orig_nu.mgz
@@ -617,7 +622,7 @@ SEGMENTATION PIPELINE:
   --native_image OR       Output all images and segmentations in the native image space
   --keepgeom                with its image geometry (voxel size, dimensions, orientation).
                             This setting is not compatible with the surface pipeline and
-                            requires isotropic voxels in the native image space.
+                            implies --vox_size keep. Anisotropic voxels are experimental.
 
   MODULES:
   By default, all modules are run.
@@ -660,11 +665,12 @@ SEGMENTATION PIPELINE:
 
   HYPOTHALAMUS MODULE (HypVINN):
   --no_hypothal           Skip the hypothalamus segmentation.
-  --no_biasfield          This option implies --no_hypothal, as the hypothalamus
-                            sub-segmentation requires biasfield-corrected images.
-  --t2 &lt;T2_input&gt;         *Optional* T2 full head input (does not have to be bias
-                            corrected, a mandatory biasfield correction step is
-                            performed). Requires an ABSOLUTE Path!
+  --no_biasfield          Biasfield-corrected inputs are recommended for the
+                            hypothalamus sub-segmentation. This option implies images
+                            were corrected externally.
+  --t2 &lt;T2_input&gt;         *Optional* T2 full head input (must be externally biasfield
+                            corrected when called with --no_biasfield). Requires an
+                            ABSOLUTE Path!
   --reg_mode &lt;none|coreg|robust&gt;
                           Ignored, if no T2 image is passed.
                             Specifies the registration method used to register T1
