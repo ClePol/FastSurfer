@@ -102,7 +102,7 @@ class Inference:
              Lookup table for mapping.
         """
         # Set random seed from configs.
-        configure_torch_determinism()
+        configure_torch_determinism(device)
         np.random.seed(cfg.RNG_SEED)
         torch.manual_seed(cfg.RNG_SEED)
         self.cfg = cfg

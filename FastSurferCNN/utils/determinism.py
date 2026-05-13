@@ -29,13 +29,15 @@ def reproducible_timestamp(fmt: str) -> str | None:
     return time.strftime(fmt, time.localtime(epoch))
 
 
-def configure_torch_determinism() -> None:
+def configure_torch_determinism(device=None) -> None:
     """Configure PyTorch inference backends for deterministic algorithm choices."""
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
 
     import torch
 
-    torch.use_deterministic_algorithms(True, warn_only=True)
+    device_type = getattr(device, "type", device)
+    force_algorithms = device_type != "cpu"
+    torch.use_deterministic_algorithms(force_algorithms, warn_only=True)
     if hasattr(torch.backends, "cudnn"):
         torch.backends.cudnn.benchmark = False
         torch.backends.cudnn.deterministic = True

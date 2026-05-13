@@ -77,7 +77,6 @@ class Inference:
         """
         from FastSurferCNN.utils.parallel import get_num_threads
 
-        configure_torch_determinism()
         torch.set_num_threads(get_num_threads())
         self._async_io = async_io
 
@@ -92,6 +91,7 @@ class Inference:
 
         # Define device and transfer model
         self.device = find_device(device)
+        configure_torch_determinism(self.device)
 
         if self.device.type == "cpu" and viewagg_device == "auto":
             self.viewagg_device = self.device

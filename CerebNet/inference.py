@@ -92,7 +92,6 @@ class Inference:
         self.pool = None
         self._threads = None
         self.threads = threads
-        configure_torch_determinism()
         _threads = get_num_threads() if self._threads is None else self._threads
         torch.set_num_threads(_threads)
         self.pool = ThreadPoolExecutor(self._threads) if async_io else SerialExecutor()
@@ -111,6 +110,7 @@ class Inference:
         torch.manual_seed(cfg.RNG_SEED)
 
         _device = find_device(device)
+        configure_torch_determinism(_device)
         if _device == "cpu" and viewagg_device == "auto":
             _viewagg_device = torch.device("cpu")
         else:
