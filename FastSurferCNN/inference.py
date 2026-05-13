@@ -31,6 +31,7 @@ from FastSurferCNN.data_loader.data_utils import map_prediction_sagittal2full
 from FastSurferCNN.data_loader.dataset import MultiScaleOrigDataThickSlices
 from FastSurferCNN.models.networks import build_model
 from FastSurferCNN.utils import logging
+from FastSurferCNN.utils.determinism import configure_torch_determinism
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +102,7 @@ class Inference:
              Lookup table for mapping.
         """
         # Set random seed from configs.
+        configure_torch_determinism()
         np.random.seed(cfg.RNG_SEED)
         torch.manual_seed(cfg.RNG_SEED)
         self.cfg = cfg

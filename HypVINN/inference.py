@@ -24,6 +24,7 @@ from tqdm import tqdm
 
 import FastSurferCNN.utils.logging as logging
 from FastSurferCNN.data_loader.augmentation import ToTensorTest
+from FastSurferCNN.utils.determinism import configure_torch_determinism
 from FastSurferCNN.utils.common import find_device
 from HypVINN.data_loader.data_utils import hypo_map_prediction_sagittal2full
 from HypVINN.data_loader.dataset import HypVINNDataset
@@ -76,6 +77,7 @@ class Inference:
         """
         from FastSurferCNN.utils.parallel import get_num_threads
 
+        configure_torch_determinism()
         torch.set_num_threads(get_num_threads())
         self._async_io = async_io
 
