@@ -110,7 +110,8 @@ def write_lta(
         Header format missing field (Source or Destination).
     """
     import getpass
-    from datetime import datetime
+
+    from FastSurferCNN.utils.determinism import reproducible_ctime
 
     fields = ("dims", "delta", "Mdc", "Pxyz_c")
     for field in fields:
@@ -129,10 +130,15 @@ def write_lta(
     dst_v2r = dst_header["Mdc"]
     dst_c = dst_header["Pxyz_c"]
 
+    try:
+        username = getpass.getuser()
+    except KeyError:
+        username = "UNKNOWN"
+
     with open(filename, "w") as f:
         f.write(
             (f"# transform file {filename}\n"
-            f"# created by {getpass.getuser()} on {datetime.now().ctime()}\n\n"
+            f"# created by {username} on {reproducible_ctime()}\n\n"
             "type      = 1 # LINEAR_RAS_TO_RAS\n"
             "nxforms   = 1\n"
             "mean      = 0.0 0.0 0.0\n"

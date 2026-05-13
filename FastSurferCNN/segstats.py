@@ -1155,6 +1155,8 @@ def write_statsfile(
     """
     import datetime
 
+    from FastSurferCNN.utils.determinism import reproducible_timestamp
+
     def _title(file: IO) -> None:
         """
         Write the file title to a file.
@@ -1222,10 +1224,14 @@ def write_statsfile(
         """
         if path_to_annotate is not None:
             file.write(f"# {name} {path_to_annotate}\n")
-            stat = path_to_annotate.stat()
-            if stat.st_mtime:
-                mtime = datetime.datetime.fromtimestamp(stat.st_mtime)
-                file.write(f"# {name}Timestamp {mtime:%Y/%m/%d %H:%M:%S}\n")
+            timestamp = reproducible_timestamp("%Y/%m/%d %H:%M:%S")
+            if timestamp is None:
+                stat = path_to_annotate.stat()
+                if stat.st_mtime:
+                    mtime = datetime.datetime.fromtimestamp(stat.st_mtime)
+                    timestamp = f"{mtime:%Y/%m/%d %H:%M:%S}"
+            if timestamp is not None:
+                file.write(f"# {name}Timestamp {timestamp}\n")
 
     def _extra_parameters(
         file: IO,

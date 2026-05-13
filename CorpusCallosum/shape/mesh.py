@@ -653,6 +653,22 @@ class CCMesh(lapy.TriaMesh):
         environ.setdefault("USERNAME", "UNKNOWN")
 
         self.__make_parent_folder(filename)
+        from FastSurferCNN.utils.determinism import reproducible_ctime, source_date_epoch
+
+        if source_date_epoch() is not None:
+            from nibabel.freesurfer import io as fsio
+
+            write_geometry = fsio.write_geometry
+
+            def _write_geometry(filepath, coords, faces, create_stamp=None, volume_info=None):
+                stamp = create_stamp or f"created by {environ.get('USERNAME', 'UNKNOWN')} on {reproducible_ctime()}"
+                return write_geometry(filepath, coords, faces, create_stamp=stamp, volume_info=volume_info)
+
+            fsio.write_geometry = _write_geometry
+            try:
+                return super().write_fssurf(filename, image=image)
+            finally:
+                fsio.write_geometry = write_geometry
         return super().write_fssurf(filename, image=image)
 
     @update_docstring(parent_doc=TriaMesh.write_vtk.__doc__)
