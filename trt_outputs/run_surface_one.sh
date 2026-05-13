@@ -34,7 +34,7 @@ image="deepmi/fastsurfer:validation-fastsurferdev0d9a962-fastsurfer-dev-0d9a962"
 license="${root_dir}/trt_outputs/fs_license.txt"
 data_root="/groups/ag-reuter/datasets/hcp_tr_t1/fs72_hires"
 uid_gid="$(id -u):$(id -g)"
-user_name="$(id -un)"
+user_name="$(id -un 2>/dev/null || printf '%s' "${USER:-pollakc}")"
 log_file="${log_dir}/${sid}.log"
 
 echo "[$(date --iso-8601=seconds)] starting surface ${sid} (${threads} threads)" | tee "${log_file}"

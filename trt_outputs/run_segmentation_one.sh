@@ -18,6 +18,7 @@ image="deepmi/fastsurfer:validation-fastsurferdev0d9a962-fastsurfer-dev-0d9a962"
 license="${root_dir}/trt_outputs/fs_license.txt"
 data_root="/groups/ag-reuter/datasets/hcp_tr_t1/fs72_hires"
 uid_gid="$(id -u):$(id -g)"
+user_name="$(id -un 2>/dev/null || printf '%s' "${USER:-pollakc}")"
 log_file="${log_dir}/${sid}.log"
 
 echo "[$(date --iso-8601=seconds)] starting ${sid} (${threads} threads)" | tee "${log_file}"
@@ -27,8 +28,8 @@ echo "[$(date --iso-8601=seconds)] starting ${sid} (${threads} threads)" | tee "
   --env PYTHONHASHSEED=0 \
   --env SOURCE_DATE_EPOCH=0 \
   --env TQDM_DISABLE=1 \
-  --env USER="$(id -un)" \
-  --env LOGNAME="$(id -un)" \
+  --env USER="${user_name}" \
+  --env LOGNAME="${user_name}" \
   -v "${root_dir}:/fastsurfer-dev:ro" \
   -v "${root_dir}/trt_outputs/checkpoints:/fastsurfer-dev/checkpoints:ro" \
   -v "${data_root}:/data/hcp:ro" \
