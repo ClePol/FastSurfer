@@ -1,0 +1,245 @@
+{
+  "differences": {
+    "mri/aparc.DKTatlas+aseg.deep.mgz": {
+      "different_voxels": 1,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": ">i2",
+      "left_shape": [
+        311,
+        311,
+        311
+      ],
+      "max_abs_diff": 1968.0,
+      "right_dtype": ">i2",
+      "right_shape": [
+        311,
+        311,
+        311
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/aparc.DKTatlas+aseg.deep.withCC.mgz": {
+      "different_voxels": 10,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": ">i2",
+      "left_shape": [
+        311,
+        311,
+        311
+      ],
+      "max_abs_diff": 1968.0,
+      "right_dtype": ">i2",
+      "right_shape": [
+        311,
+        311,
+        311
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/aseg.auto.mgz": {
+      "different_voxels": 10,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": ">i2",
+      "left_shape": [
+        311,
+        311,
+        311
+      ],
+      "max_abs_diff": 252.0,
+      "right_dtype": ">i2",
+      "right_shape": [
+        311,
+        311,
+        311
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/aseg.auto_noCCseg.mgz": {
+      "different_voxels": 1,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": "uint8",
+      "left_shape": [
+        311,
+        311,
+        311
+      ],
+      "max_abs_diff": 16.0,
+      "right_dtype": "uint8",
+      "right_shape": [
+        311,
+        311,
+        311
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/callosum.CC.orig.mgz": {
+      "different_voxels": 10,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": "uint8",
+      "left_shape": [
+        311,
+        311,
+        311
+      ],
+      "max_abs_diff": 254.0,
+      "right_dtype": "uint8",
+      "right_shape": [
+        311,
+        311,
+        311
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/callosum.CC.upright.mgz": {
+      "different_voxels": 4,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": "uint8",
+      "left_shape": [
+        9,
+        366,
+        366
+      ],
+      "max_abs_diff": 250.0,
+      "right_dtype": "uint8",
+      "right_shape": [
+        9,
+        366,
+        366
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/orig_nu.10mm.mgz": {
+      "different_voxels": 170,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": "uint8",
+      "left_shape": [
+        256,
+        256,
+        256
+      ],
+      "max_abs_diff": 3.0,
+      "right_dtype": "uint8",
+      "right_shape": [
+        256,
+        256,
+        256
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/orig_nu.mgz": {
+      "different_voxels": 243,
+      "equal_voxels": false,
+      "kind": "image",
+      "left_dtype": "uint8",
+      "left_shape": [
+        311,
+        311,
+        311
+      ],
+      "max_abs_diff": 1.0,
+      "right_dtype": "uint8",
+      "right_shape": [
+        311,
+        311,
+        311
+      ],
+      "same_dtype": true,
+      "same_shape": true
+    },
+    "mri/transforms/cc_up.lta": {
+      "kind": "file",
+      "left_size": 896,
+      "right_size": 896,
+      "same_sha256": false
+    },
+    "mri/transforms/orient_volume.lta": {
+      "kind": "file",
+      "left_size": 894,
+      "right_size": 894,
+      "same_sha256": false
+    },
+    "stats/aseg+DKT.VINN.stats": {
+      "kind": "file",
+      "left_size": 15563,
+      "right_size": 15563,
+      "same_sha256": false
+    },
+    "stats/aseg+DKT.VINN.withCC.stats": {
+      "kind": "file",
+      "left_size": 15612,
+      "right_size": 15612,
+      "same_sha256": false
+    },
+    "stats/aseg+DKT.stats": {
+      "kind": "file",
+      "left_size": 15563,
+      "right_size": 15563,
+      "same_sha256": false
+    },
+    "stats/aseg.VINN.stats": {
+      "kind": "file",
+      "left_size": 7565,
+      "right_size": 7565,
+      "same_sha256": false
+    },
+    "stats/aseg.auto.mgz": {
+      "image_load_error": "BadGzipFile",
+      "kind": "file",
+      "left_size": 8154,
+      "right_size": 8154,
+      "same_sha256": false
+    },
+    "stats/callosum.CC.all_slices.json": {
+      "kind": "file",
+      "left_size": 43567,
+      "right_size": 43566,
+      "same_sha256": false
+    },
+    "stats/callosum.CC.midslice.json": {
+      "kind": "file",
+      "left_size": 7317,
+      "right_size": 7316,
+      "same_sha256": false
+    },
+    "stats/cerebellum.CerebNet.stats": {
+      "kind": "file",
+      "left_size": 6072,
+      "right_size": 6072,
+      "same_sha256": false
+    },
+    "surf/callosum.surf": {
+      "kind": "file",
+      "left_size": 270268,
+      "right_size": 270268,
+      "same_sha256": false
+    },
+    "surf/callosum.thickness.w": {
+      "kind": "file",
+      "left_size": 32415,
+      "right_size": 32415,
+      "same_sha256": false
+    }
+  },
+  "left": "/fastsurfer-dev/trt_outputs/seg_current_threads1_run1/114823_MR1",
+  "missing_left": [
+    "mri/hypothalamus.HypVINN.nii.gz",
+    "mri/hypothalamus_mask.HypVINN.nii.gz",
+    "stats/hypothalamus.HypVINN.stats"
+  ],
+  "missing_right": [],
+  "right": "/fastsurfer-dev/trt_outputs/seg_current_threads8_run1/114823_MR1"
+}

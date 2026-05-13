@@ -1,0 +1,69 @@
+{
+  "differences": {
+    "mri/transforms/cc_up.lta": {
+      "kind": "file",
+      "left_size": 896,
+      "right_size": 896,
+      "same_sha256": false
+    },
+    "mri/transforms/orient_volume.lta": {
+      "kind": "file",
+      "left_size": 894,
+      "right_size": 894,
+      "same_sha256": false
+    },
+    "stats/aseg+DKT.VINN.stats": {
+      "kind": "file",
+      "left_size": 15563,
+      "right_size": 15563,
+      "same_sha256": false
+    },
+    "stats/aseg+DKT.VINN.withCC.stats": {
+      "kind": "file",
+      "left_size": 15612,
+      "right_size": 15612,
+      "same_sha256": false
+    },
+    "stats/aseg+DKT.stats": {
+      "kind": "file",
+      "left_size": 15563,
+      "right_size": 15563,
+      "same_sha256": false
+    },
+    "stats/aseg.VINN.stats": {
+      "kind": "file",
+      "left_size": 7565,
+      "right_size": 7565,
+      "same_sha256": false
+    },
+    "stats/aseg.auto.mgz": {
+      "image_load_error": "BadGzipFile",
+      "kind": "file",
+      "left_size": 8154,
+      "right_size": 8154,
+      "same_sha256": false
+    },
+    "stats/cerebellum.CerebNet.stats": {
+      "kind": "file",
+      "left_size": 6072,
+      "right_size": 6072,
+      "same_sha256": false
+    },
+    "stats/hypothalamus.HypVINN.stats": {
+      "kind": "file",
+      "left_size": 4973,
+      "right_size": 4973,
+      "same_sha256": false
+    },
+    "surf/callosum.surf": {
+      "kind": "file",
+      "left_size": 270268,
+      "right_size": 270268,
+      "same_sha256": false
+    }
+  },
+  "left": "/fastsurfer-dev/trt_outputs/seg_current_threads8_run1/114823_MR1",
+  "missing_left": [],
+  "missing_right": [],
+  "right": "/fastsurfer-dev/trt_outputs/seg_current_threads8_run2/114823_MR1"
+}
