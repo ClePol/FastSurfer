@@ -1,0 +1,877 @@
+{
+  "differences": {
+    "114823_MR1/mri/transforms/pre2tal_avi.auto.xfm.lta": {
+      "kind": "text",
+      "left_lines": 32,
+      "left_size": 1650,
+      "right_lines": 32,
+      "right_size": 1650,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/mri/transforms/segreg_prealigned.lta": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 1625,
+      "right_lines": 31,
+      "right_size": 1625,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/mri/transforms/talairach.auto.xfm": {
+      "kind": "text",
+      "left_lines": 8,
+      "left_size": 416,
+      "right_lines": 8,
+      "right_size": 416,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/mri/transforms/talairach.auto.xfm.lta": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 1642,
+      "right_lines": 31,
+      "right_size": 1642,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/mri/transforms/talairach.xfm": {
+      "kind": "text",
+      "left_lines": 8,
+      "left_size": 416,
+      "right_lines": 8,
+      "right_size": 416,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/mri/transforms/talairach.xfm.lta": {
+      "kind": "text",
+      "left_lines": 29,
+      "left_size": 1520,
+      "right_lines": 29,
+      "right_size": 1520,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/mri/transforms/talairach_avi.log": {
+      "kind": "text",
+      "left_lines": 1578,
+      "left_size": 83158,
+      "right_lines": 1578,
+      "right_size": 83158,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/deep-seg.log": {
+      "kind": "text",
+      "left_lines": 195,
+      "left_size": 22122,
+      "right_lines": 195,
+      "right_size": 22122,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/defect2seg.log": {
+      "kind": "text",
+      "left_lines": 54,
+      "left_size": 3448,
+      "right_lines": 54,
+      "right_size": 3448,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/exectime.log": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 8658,
+      "right_lines": 31,
+      "right_size": 8658,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/lh.processing.cmdf": {
+      "kind": "file",
+      "left_size": 13792,
+      "right_size": 13792,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/pctsurfcon.log": {
+      "kind": "text",
+      "left_lines": 9,
+      "left_size": 357,
+      "right_lines": 9,
+      "right_size": 357,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/pctsurfcon.log.old": {
+      "kind": "file",
+      "left_size": 357,
+      "right_size": 357,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-all-status.log": {
+      "kind": "text",
+      "left_lines": 173,
+      "left_size": 6057,
+      "right_lines": 173,
+      "right_size": 6057,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-all.cmd": {
+      "kind": "file",
+      "left_size": 17622,
+      "right_size": 17622,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-all.done": {
+      "kind": "file",
+      "left_size": 544,
+      "right_size": 544,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-all.env": {
+      "kind": "file",
+      "left_size": 2171,
+      "right_size": 2171,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-all.env.bak": {
+      "kind": "file",
+      "left_size": 2157,
+      "right_size": 2157,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-all.log": {
+      "kind": "text",
+      "left_lines": 4926,
+      "left_size": 482318,
+      "right_lines": 4926,
+      "right_size": 482317,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-surf.done": {
+      "kind": "file",
+      "left_size": 705,
+      "right_size": 705,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-surf.log": {
+      "kind": "text",
+      "left_lines": 6009,
+      "left_size": 329575,
+      "right_lines": 6009,
+      "right_size": 329921,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/recon-surf_times.yaml": {
+      "kind": "text",
+      "left_lines": 787,
+      "left_size": 33815,
+      "right_lines": 787,
+      "right_size": 33827,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/scripts/rh.processing.cmdf": {
+      "kind": "file",
+      "left_size": 13792,
+      "right_size": 13792,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/aseg.presurf.hypos.stats": {
+      "kind": "text",
+      "left_lines": 117,
+      "left_size": 9769,
+      "right_lines": 117,
+      "right_size": 9769,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/aseg.stats": {
+      "kind": "text",
+      "left_lines": 116,
+      "left_size": 9929,
+      "right_lines": 116,
+      "right_size": 9929,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/lh.BA_exvivo.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4480,
+      "right_lines": 68,
+      "right_size": 4480,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/lh.BA_exvivo.thresh.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4508,
+      "right_lines": 68,
+      "right_size": 4508,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/lh.aparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 86,
+      "left_size": 6538,
+      "right_lines": 86,
+      "right_size": 6538,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/lh.w-g.pct.stats": {
+      "kind": "text",
+      "left_lines": 84,
+      "left_size": 6124,
+      "right_lines": 84,
+      "right_size": 6124,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/rh.BA_exvivo.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4480,
+      "right_lines": 68,
+      "right_size": 4480,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/rh.BA_exvivo.thresh.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4508,
+      "right_lines": 68,
+      "right_size": 4508,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/rh.aparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 86,
+      "left_size": 6538,
+      "right_lines": 86,
+      "right_size": 6538,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/rh.w-g.pct.stats": {
+      "kind": "text",
+      "left_lines": 84,
+      "left_size": 6123,
+      "right_lines": 84,
+      "right_size": 6123,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/stats/wmparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 119,
+      "left_size": 10589,
+      "right_lines": 119,
+      "right_size": 10589,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR1/touch/apas2aseg.touch": {
+      "kind": "file",
+      "left_size": 612,
+      "right_size": 612,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/pre2tal_avi.auto.xfm.lta": {
+      "kind": "text",
+      "left_lines": 32,
+      "left_size": 1650,
+      "right_lines": 32,
+      "right_size": 1650,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/segreg_prealigned.lta": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 1626,
+      "right_lines": 31,
+      "right_size": 1626,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/talairach.auto.xfm": {
+      "kind": "text",
+      "left_lines": 8,
+      "left_size": 418,
+      "right_lines": 8,
+      "right_size": 418,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/talairach.auto.xfm.lta": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 1643,
+      "right_lines": 31,
+      "right_size": 1643,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/talairach.xfm": {
+      "kind": "text",
+      "left_lines": 8,
+      "left_size": 418,
+      "right_lines": 8,
+      "right_size": 418,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/talairach.xfm.lta": {
+      "kind": "text",
+      "left_lines": 29,
+      "left_size": 1520,
+      "right_lines": 29,
+      "right_size": 1520,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/mri/transforms/talairach_avi.log": {
+      "kind": "text",
+      "left_lines": 1590,
+      "left_size": 84044,
+      "right_lines": 1590,
+      "right_size": 84044,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/deep-seg.log": {
+      "kind": "text",
+      "left_lines": 196,
+      "left_size": 22178,
+      "right_lines": 196,
+      "right_size": 22178,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/defect2seg.log": {
+      "kind": "text",
+      "left_lines": 44,
+      "left_size": 3093,
+      "right_lines": 44,
+      "right_size": 3093,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/exectime.log": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 8643,
+      "right_lines": 31,
+      "right_size": 8642,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/lh.processing.cmdf": {
+      "kind": "file",
+      "left_size": 13792,
+      "right_size": 13792,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/pctsurfcon.log": {
+      "kind": "text",
+      "left_lines": 9,
+      "left_size": 357,
+      "right_lines": 9,
+      "right_size": 357,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/pctsurfcon.log.old": {
+      "kind": "file",
+      "left_size": 357,
+      "right_size": 357,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-all-status.log": {
+      "kind": "text",
+      "left_lines": 163,
+      "left_size": 5842,
+      "right_lines": 163,
+      "right_size": 5842,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-all.cmd": {
+      "kind": "file",
+      "left_size": 17342,
+      "right_size": 17342,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-all.done": {
+      "kind": "file",
+      "left_size": 544,
+      "right_size": 544,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-all.env": {
+      "kind": "file",
+      "left_size": 2171,
+      "right_size": 2171,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-all.env.bak": {
+      "kind": "file",
+      "left_size": 2157,
+      "right_size": 2157,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-all.log": {
+      "kind": "text",
+      "left_lines": 4832,
+      "left_size": 462412,
+      "right_lines": 4832,
+      "right_size": 462410,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-surf.done": {
+      "kind": "file",
+      "left_size": 705,
+      "right_size": 705,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-surf.log": {
+      "kind": "text",
+      "left_lines": 6005,
+      "left_size": 327475,
+      "right_lines": 6004,
+      "right_size": 327018,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/recon-surf_times.yaml": {
+      "kind": "text",
+      "left_lines": 787,
+      "left_size": 33823,
+      "right_lines": 787,
+      "right_size": 33824,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/scripts/rh.processing.cmdf": {
+      "kind": "file",
+      "left_size": 13792,
+      "right_size": 13792,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/aseg.presurf.hypos.stats": {
+      "kind": "text",
+      "left_lines": 117,
+      "left_size": 9769,
+      "right_lines": 117,
+      "right_size": 9769,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/aseg.stats": {
+      "kind": "text",
+      "left_lines": 116,
+      "left_size": 9929,
+      "right_lines": 116,
+      "right_size": 9929,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/lh.BA_exvivo.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4480,
+      "right_lines": 68,
+      "right_size": 4480,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/lh.BA_exvivo.thresh.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4508,
+      "right_lines": 68,
+      "right_size": 4508,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/lh.aparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 86,
+      "left_size": 6538,
+      "right_lines": 86,
+      "right_size": 6538,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/lh.w-g.pct.stats": {
+      "kind": "text",
+      "left_lines": 84,
+      "left_size": 6124,
+      "right_lines": 84,
+      "right_size": 6124,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/rh.BA_exvivo.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4480,
+      "right_lines": 68,
+      "right_size": 4480,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/rh.BA_exvivo.thresh.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4508,
+      "right_lines": 68,
+      "right_size": 4508,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/rh.aparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 86,
+      "left_size": 6538,
+      "right_lines": 86,
+      "right_size": 6538,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/rh.w-g.pct.stats": {
+      "kind": "text",
+      "left_lines": 84,
+      "left_size": 6124,
+      "right_lines": 84,
+      "right_size": 6124,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/stats/wmparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 119,
+      "left_size": 10589,
+      "right_lines": 119,
+      "right_size": 10589,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "114823_MR2/touch/apas2aseg.touch": {
+      "kind": "file",
+      "left_size": 612,
+      "right_size": 612,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/pre2tal_avi.auto.xfm.lta": {
+      "kind": "text",
+      "left_lines": 32,
+      "left_size": 1651,
+      "right_lines": 32,
+      "right_size": 1651,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/segreg_prealigned.lta": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 1629,
+      "right_lines": 31,
+      "right_size": 1629,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/talairach.auto.xfm": {
+      "kind": "text",
+      "left_lines": 8,
+      "left_size": 415,
+      "right_lines": 8,
+      "right_size": 415,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/talairach.auto.xfm.lta": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 1643,
+      "right_lines": 31,
+      "right_size": 1643,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/talairach.xfm": {
+      "kind": "text",
+      "left_lines": 8,
+      "left_size": 415,
+      "right_lines": 8,
+      "right_size": 415,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/talairach.xfm.lta": {
+      "kind": "text",
+      "left_lines": 29,
+      "left_size": 1520,
+      "right_lines": 29,
+      "right_size": 1520,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/mri/transforms/talairach_avi.log": {
+      "kind": "text",
+      "left_lines": 1613,
+      "left_size": 85419,
+      "right_lines": 1613,
+      "right_size": 85419,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/deep-seg.log": {
+      "kind": "text",
+      "left_lines": 194,
+      "left_size": 22020,
+      "right_lines": 194,
+      "right_size": 22020,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/defect2seg.log": {
+      "kind": "text",
+      "left_lines": 66,
+      "left_size": 5039,
+      "right_lines": 66,
+      "right_size": 5039,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/exectime.log": {
+      "kind": "text",
+      "left_lines": 31,
+      "left_size": 8642,
+      "right_lines": 31,
+      "right_size": 8642,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/lh.processing.cmdf": {
+      "kind": "file",
+      "left_size": 13792,
+      "right_size": 13792,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/pctsurfcon.log": {
+      "kind": "text",
+      "left_lines": 9,
+      "left_size": 357,
+      "right_lines": 9,
+      "right_size": 357,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/pctsurfcon.log.old": {
+      "kind": "file",
+      "left_size": 357,
+      "right_size": 357,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-all-status.log": {
+      "kind": "text",
+      "left_lines": 163,
+      "left_size": 5842,
+      "right_lines": 163,
+      "right_size": 5842,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-all.cmd": {
+      "kind": "file",
+      "left_size": 17342,
+      "right_size": 17342,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-all.done": {
+      "kind": "file",
+      "left_size": 544,
+      "right_size": 544,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-all.env": {
+      "kind": "file",
+      "left_size": 2171,
+      "right_size": 2171,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-all.env.bak": {
+      "kind": "file",
+      "left_size": 2157,
+      "right_size": 2157,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-all.log": {
+      "kind": "text",
+      "left_lines": 4655,
+      "left_size": 455297,
+      "right_lines": 4656,
+      "right_size": 455298,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-surf.done": {
+      "kind": "file",
+      "left_size": 705,
+      "right_size": 705,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-surf.log": {
+      "kind": "text",
+      "left_lines": 5856,
+      "left_size": 321516,
+      "right_lines": 5856,
+      "right_size": 320882,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/recon-surf_times.yaml": {
+      "kind": "text",
+      "left_lines": 787,
+      "left_size": 33816,
+      "right_lines": 787,
+      "right_size": 33820,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/scripts/rh.processing.cmdf": {
+      "kind": "file",
+      "left_size": 13792,
+      "right_size": 13792,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/aseg.presurf.hypos.stats": {
+      "kind": "text",
+      "left_lines": 117,
+      "left_size": 9767,
+      "right_lines": 117,
+      "right_size": 9767,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/aseg.stats": {
+      "kind": "text",
+      "left_lines": 116,
+      "left_size": 9927,
+      "right_lines": 116,
+      "right_size": 9927,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/lh.BA_exvivo.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4477,
+      "right_lines": 68,
+      "right_size": 4477,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/lh.BA_exvivo.thresh.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4505,
+      "right_lines": 68,
+      "right_size": 4505,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/lh.aparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 86,
+      "left_size": 6533,
+      "right_lines": 86,
+      "right_size": 6533,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/lh.w-g.pct.stats": {
+      "kind": "text",
+      "left_lines": 84,
+      "left_size": 6124,
+      "right_lines": 84,
+      "right_size": 6124,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/rh.BA_exvivo.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4477,
+      "right_lines": 68,
+      "right_size": 4477,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/rh.BA_exvivo.thresh.stats": {
+      "kind": "text",
+      "left_lines": 68,
+      "left_size": 4505,
+      "right_lines": 68,
+      "right_size": 4505,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/rh.aparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 86,
+      "left_size": 6533,
+      "right_lines": 86,
+      "right_size": 6533,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/rh.w-g.pct.stats": {
+      "kind": "text",
+      "left_lines": 84,
+      "left_size": 6124,
+      "right_lines": 84,
+      "right_size": 6124,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/stats/wmparc.DKTatlas.mapped.stats": {
+      "kind": "text",
+      "left_lines": 119,
+      "left_size": 10589,
+      "right_lines": 119,
+      "right_size": 10589,
+      "same_normalized_text": false,
+      "same_sha256": false
+    },
+    "115320_MR1/touch/apas2aseg.touch": {
+      "kind": "file",
+      "left_size": 612,
+      "right_size": 612,
+      "same_sha256": false
+    }
+  },
+  "errors": {
+    "114823_MR1/stats/aseg.auto.mgz": "BadGzipFile: Not a gzipped file (b'# ')",
+    "114823_MR2/stats/aseg.auto.mgz": "BadGzipFile: Not a gzipped file (b'# ')",
+    "115320_MR1/stats/aseg.auto.mgz": "BadGzipFile: Not a gzipped file (b'# ')"
+  },
+  "left": "/fastsurfer-dev/trt_outputs/surf_patched_all_threads8_run1",
+  "missing_left": [],
+  "missing_right": [],
+  "right": "/fastsurfer-dev/trt_outputs/surf_patched_all_threads8_run2"
+}
