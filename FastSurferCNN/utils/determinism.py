@@ -44,3 +44,22 @@ def configure_torch_determinism(device=None) -> None:
         torch.backends.cudnn.allow_tf32 = False
     if hasattr(torch.backends, "cuda") and hasattr(torch.backends.cuda, "matmul"):
         torch.backends.cuda.matmul.allow_tf32 = False
+
+
+def cpu_torch_threads(requested: int | None, device=None) -> int | None:
+    """Cap CPU inference threads to physical cores when more threads were requested."""
+    device_type = getattr(device, "type", device)
+    if device_type != "cpu" or requested is None or requested < 1:
+        return requested
+
+    override = os.environ.get("FASTSURFER_CPU_TORCH_THREADS")
+    if override:
+        try:
+            return max(1, int(override))
+        except ValueError:
+            pass
+
+    cpu_count = os.cpu_count()
+    if cpu_count is None or cpu_count < 2:
+        return requested
+    return min(requested, max(1, cpu_count // 2))

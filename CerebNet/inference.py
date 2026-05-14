@@ -32,7 +32,7 @@ from FastSurferCNN.data_loader.conform import crop_transform
 from FastSurferCNN.utils import PLANES, Plane, logging, nibabelImage
 from FastSurferCNN.utils.arg_types import ImageSizeOption, OrientationType
 from FastSurferCNN.utils.common import SubjectDirectory, SubjectList, find_device
-from FastSurferCNN.utils.determinism import configure_torch_determinism
+from FastSurferCNN.utils.determinism import configure_torch_determinism, cpu_torch_threads
 from FastSurferCNN.utils.mapper import JsonColorLookupTable, Mapper, TSVLookupTable
 from FastSurferCNN.utils.parallel import SerialExecutor, get_num_threads
 
@@ -93,7 +93,6 @@ class Inference:
         self._threads = None
         self.threads = threads
         _threads = get_num_threads() if self._threads is None else self._threads
-        torch.set_num_threads(_threads)
         self.pool = ThreadPoolExecutor(self._threads) if async_io else SerialExecutor()
         self.cfg = cfg
         self._async_io = async_io
@@ -111,6 +110,9 @@ class Inference:
 
         _device = find_device(device)
         configure_torch_determinism(_device)
+        torch_threads = cpu_torch_threads(_threads, _device)
+        if torch_threads is not None:
+            torch.set_num_threads(torch_threads)
         if _device == "cpu" and viewagg_device == "auto":
             _viewagg_device = torch.device("cpu")
         else:

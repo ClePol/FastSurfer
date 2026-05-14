@@ -46,6 +46,7 @@ from FastSurferCNN.utils.arg_types import OrientationType, VoxSizeOption
 from FastSurferCNN.utils.arg_types import vox_size as _vox_size
 from FastSurferCNN.utils.checkpoint import get_checkpoints, get_config_file, load_checkpoint_config_defaults
 from FastSurferCNN.utils.common import SubjectDirectory, SubjectList, find_device, handle_cuda_memory_exception
+from FastSurferCNN.utils.determinism import cpu_torch_threads
 from FastSurferCNN.utils.load_config import load_config
 from FastSurferCNN.utils.parallel import SerialExecutor, pipeline
 from FastSurferCNN.utils.parser_defaults import SubjectDirectoryConfig
@@ -202,7 +203,6 @@ class RunModelOnData:
         """
         # TODO Fix docstring of RunModelOnData.__init__
         self._threads = threads
-        torch.set_num_threads(self._threads)
         self._async_io = async_io
         self.orientation = orientation
         self.image_size = image_size
@@ -210,6 +210,9 @@ class RunModelOnData:
         self.sf = 1.0
 
         self.device = find_device(device)
+        torch_threads = cpu_torch_threads(self._threads, self.device)
+        if torch_threads is not None:
+            torch.set_num_threads(torch_threads)
 
         if self.device.type == "cpu" and viewagg_device in ("auto", "cpu"):
             self.viewagg_device = self.device
