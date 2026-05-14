@@ -794,7 +794,7 @@ for hemi in lh rh ; do
       echo "echo \"\""
     } | tee -a "$CMDF"
 
-    cmd="env OMP_NUM_THREADS=1 ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1 recon-all -subject $subject -hemi $hemi -fix -no-isrunning -umask $(umask) $hiresflag -threads 1 -itkthreads 1"
+    cmd="env OMP_NUM_THREADS=$threads_hemi ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1 recon-all -subject $subject -hemi $hemi -fix -no-isrunning -umask $(umask) $hiresflag $fsthreads"
     RunIt "$cmd" "$LF" "$CMDF"
 
     # fix the surfaces if they are corrupt
