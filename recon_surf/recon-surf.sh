@@ -750,8 +750,28 @@ if [[ "$long" == "true" ]] ; then
   RunIt "$cmd" "$LF"
 else # cross and base
   # filled is needed to generate initial WM surfaces
-  cmd="recon-all -s $subject -asegmerge -normalization2 -maskbfs -segmentation -fill -umask $(umask) $hiresflag $fsthreads"
-  RunIt "$cmd" "$LF"
+  # Keep the FreeSurfer normalization, mask, segmentation, edit, and pretess
+  # steps, but replace mri_fill with a FastSurfer Python implementation. This
+  # is not byte-identical to FreeSurfer mri_fill: small midsagittal surface
+  # differences were observed during validation.
+  pushd "$mdir" > /dev/null || ( echo "Could not cd to $mdir" ; exit 1 )
+    run_it "$LF" cp aseg.auto.mgz aseg.presurf.mgz
+    run_it "$LF" mri_normalize -seed 1234 -mprage "${noconform_if_hires[@]}" \
+      -aseg aseg.presurf.mgz -mask brainmask.mgz norm.mgz brain.mgz
+    run_it "$LF" mri_mask -T 5 brain.mgz brainmask.mgz brain.finalsurfs.mgz
+    run_it "$LF" cp brain.finalsurfs.mgz brain.finalsurfs.manedit.mgz
+    run_it "$LF" AntsDenoiseImageFs -i brain.mgz -o antsdn.brain.mgz
+    run_it "$LF" mri_segment -wsizemm 13 -mprage antsdn.brain.mgz wm.seg.mgz
+    run_it "$LF" mri_edit_wm_with_aseg -keep-in wm.seg.mgz brain.mgz aseg.presurf.mgz wm.asegedit.mgz
+    run_it "$LF" mri_pretess wm.asegedit.mgz wm norm.mgz wm.mgz
+    {
+      echo "INFO: Running fast approximate fill_with_aseg.py."
+      echo "INFO: Validation observed small midsagittal surface changes versus FreeSurfer mri_fill."
+    } | tee -a "$LF"
+    cmd="$python ${binpath}/fill_with_aseg.py --wm wm.mgz --aseg aseg.presurf.mgz --out filled.mgz"
+    RunIt "$cmd" "$LF"
+    run_it "$LF" cp filled.mgz filled.auto.mgz
+  popd > /dev/null || (echo "Could not popd" ; exit 1 )
 fi
 
 
