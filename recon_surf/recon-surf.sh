@@ -771,8 +771,8 @@ else # cross and base
       echo "INFO: Running fast approximate fill_with_aseg.py."
       echo "INFO: Validation observed small midsagittal surface changes versus FreeSurfer mri_fill."
     } | tee -a "$LF"
-    cmd="$python ${binpath}/fill_with_aseg.py --wm wm.mgz --aseg aseg.presurf.mgz --out filled.mgz"
-    RunIt "$cmd" "$LF"
+    cmda=($python "${binpath}/fill_with_aseg.py" --wm wm.mgz --aseg aseg.presurf.mgz --out filled.mgz)
+    run_it "$LF" "${cmda[@]}"
     run_it "$LF" cp filled.mgz filled.auto.mgz
   popd > /dev/null || (echo "Could not popd" ; exit 1 )
 fi
