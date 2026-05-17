@@ -797,8 +797,10 @@ else # cross and base
       -aseg aseg.presurf.mgz -mask brainmask.mgz norm.mgz brain.mgz
     run_it "$LF" mri_mask -T 5 brain.mgz brainmask.mgz brain.finalsurfs.mgz
     run_it "$LF" cp brain.finalsurfs.mgz brain.finalsurfs.manedit.mgz
-    run_it "$LF" AntsDenoiseImageFs -i brain.mgz -o antsdn.brain.mgz
-    run_it "$LF" mri_segment -wsizemm 13 -mprage antsdn.brain.mgz wm.seg.mgz
+    cmda=($python "${binpath}/cropped_ants_denoise.py" --in brain.mgz --out antsdn.brain.mgz --margin 24)
+    run_it "$LF" "${cmda[@]}"
+    cmda=($python "${binpath}/cropped_mri_segment.py" --brain antsdn.brain.mgz --out wm.seg.mgz --margin 8)
+    run_it "$LF" "${cmda[@]}"
     cmda=($python "${binpath}/cropped_mri_edit_wm_with_aseg.py" --wm wm.seg.mgz --brain brain.mgz --aseg aseg.presurf.mgz --out wm.asegedit.mgz --margin 0)
     run_it "$LF" "${cmda[@]}"
     run_it "$LF" mri_pretess wm.asegedit.mgz wm norm.mgz wm.mgz
