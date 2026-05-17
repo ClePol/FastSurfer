@@ -324,6 +324,16 @@ elif [[ "$threads" -gt 1 ]]; then ParallelHemi="true" ; threads_hemi=$((threads 
 else ParallelHemi="false" ; threads_hemi="$threads"
 fi
 
+generated_t1="$SUBJECTS_DIR/$subject/mri/orig.mgz"
+generated_asegdkt="$SUBJECTS_DIR/$subject/mri/aparc.DKTatlas+aseg.deep.mgz"
+if [[ "$(readlink -f "$t1")" == "$(readlink -f "$generated_t1")" ]] \
+  && [[ "$(readlink -f "$asegdkt_segfile")" == "$(readlink -f "$generated_asegdkt")" ]]
+then
+  fastsurfer_generated_inputs="true"
+else
+  fastsurfer_generated_inputs="false"
+fi
+
 # set threads for openMP and itk
 # if OMP_NUM_THREADS is not set and available resources are too vast, mc will fail with segmentation fault!
 # Therefore we set it to 1 as default above, if nothing is specified.
@@ -535,12 +545,19 @@ function wait_async_cmdfs()
   echo " RUNNING $ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS number of ITK THREADS"
   echo " "
 
-  # Check input segmentation quality
-  echo "Checking Input Segmentation Quality ..."
+  if [[ "$fastsurfer_generated_inputs" == "true" ]]
+  then
+    echo "Skipping duplicate input QC checks for FastSurfer-generated inputs."
+  else
+    echo "Checking Input Segmentation Quality ..."
+  fi
 } | tee -a "$LF"
 
-cmd="$python $FASTSURFER_HOME/FastSurferCNN/quick_qc.py --asegdkt_segfile $asegdkt_segfile"
-RunIt "$cmd" "$LF"
+if [[ "$fastsurfer_generated_inputs" != "true" ]]
+then
+  cmd="$python $FASTSURFER_HOME/FastSurferCNN/quick_qc.py --asegdkt_segfile $asegdkt_segfile"
+  RunIt "$cmd" "$LF"
+fi
 
 ########################################## START ########################################################
 
@@ -550,15 +567,18 @@ RunIt "$cmd" "$LF"
   echo " "
 } | tee -a "$LF"
 
-# check for input conformance
-cmd="$python $FASTSURFER_HOME/FastSurferCNN/data_loader/conform.py -i $t1 --check_only --vox_size min --verbose"
-RunIt "$cmd" "$LF"
-
 vox_size=$($python -c "from nibabel import load; print(load('$t1').header.get_zooms()[0])")
 
-# here, we check the correct vox_size by passing it to the next conform, so errors in this line might be caused above
-cmd="$python $FASTSURFER_HOME/FastSurferCNN/data_loader/conform.py -i $asegdkt_segfile --check_only --vox_size $vox_size --dtype any --verbose"
-RunIt "$cmd" "$LF"
+if [[ "$fastsurfer_generated_inputs" != "true" ]]
+then
+  # check for input conformance
+  cmd="$python $FASTSURFER_HOME/FastSurferCNN/data_loader/conform.py -i $t1 --check_only --vox_size min --verbose"
+  RunIt "$cmd" "$LF"
+
+  # here, we check the correct vox_size by passing it to the next conform, so errors in this line might be caused above
+  cmd="$python $FASTSURFER_HOME/FastSurferCNN/data_loader/conform.py -i $asegdkt_segfile --check_only --vox_size $vox_size --dtype any --verbose"
+  RunIt "$cmd" "$LF"
+fi
 
 if (( $(echo "$vox_size < $hires_voxsize_threshold" | bc -l) ))
 then
@@ -575,8 +595,13 @@ fi
 
 # create orig.mgz and aparc.DKTatlas+aseg.orig.mgz (copy of T1 and segmentation)
 # also ensures .mgz format (in case inputs are nifti)
-cmd="mri_convert $t1 $mdir/orig.mgz"
-RunIt "$cmd" "$LF"
+if [[ "$(readlink -f "$t1")" == "$(readlink -f "$mdir/orig.mgz")" ]]
+then
+  echo "Input T1 is already $mdir/orig.mgz; skipping duplicate mri_convert." | tee -a "$LF"
+else
+  cmd="mri_convert $t1 $mdir/orig.mgz"
+  RunIt "$cmd" "$LF"
+fi
 
 asegdkt_segfile_manedit=$(add_file_suffix "$asegdkt_segfile" "manedit")
 # do not add a second manedit
@@ -941,8 +966,26 @@ for hemi in lh rh ; do
       echo "echo \"\""
     } | tee -a "$CMDF"
 
-    cmd="env OMP_NUM_THREADS=$threads_hemi ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1 recon-all -subject $subject -hemi $hemi -fix -no-isrunning -umask $(umask) $hiresflag $fsthreads"
-    RunIt "$cmd" "$LF" "$CMDF"
+    if [[ "$fastsurfer_generated_inputs" == "true" ]]
+    then
+      echo "pushd $sdir > /dev/null || exit 1" >> "$CMDF"
+      cmd="env OMP_NUM_THREADS=$threads_hemi ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1 \
+        mris_fix_topology -mgz -sphere qsphere.nofix -inflated inflated.nofix \
+        -orig orig.nofix -out orig.premesh -ga -seed 1234 $subject $hemi"
+      RunIt "$cmd" "$LF" "$CMDF"
+      cmd="mris_euler_number $sdir/$hemi.orig.premesh"
+      RunIt "$cmd" "$LF" "$CMDF"
+      cmd="mris_remesh --remesh --iters 3 --input $sdir/$hemi.orig.premesh --output $sdir/$hemi.orig"
+      RunIt "$cmd" "$LF" "$CMDF"
+      cmd="mris_remove_intersection $sdir/$hemi.orig $sdir/$hemi.orig"
+      RunIt "$cmd" "$LF" "$CMDF"
+      cmd="rm -f $sdir/$hemi.inflated"
+      RunIt "$cmd" "$LF" "$CMDF"
+      echo "popd > /dev/null || exit 1" >> "$CMDF"
+    else
+      cmd="env OMP_NUM_THREADS=$threads_hemi ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=1 recon-all -subject $subject -hemi $hemi -fix -no-isrunning -umask $(umask) $hiresflag $fsthreads"
+      RunIt "$cmd" "$LF" "$CMDF"
+    fi
 
     # fix the surfaces if they are corrupt
     cmd="$python ${binpath}rewrite_oriented_surface.py --file $sdir/$hemi.orig.premesh --backup $sdir/$hemi.orig.premesh.noorient"
@@ -1368,7 +1411,7 @@ if [[ "$ParallelHemi" == "true" ]] ; then
       } > "$RIBBON_HEMI_CMDF"
 
       cmd="mris_volmask --aseg_name aseg.presurf --label_left_white 2 --label_left_ribbon 3 \
-        --label_right_white 41 --label_right_ribbon 42 --save_ribbon --cap_distance 2 \
+        --label_right_white 41 --label_right_ribbon 42 --cap_distance 2 \
         --out_root $ribbon_out_root $ribbon_only_flag $subject"
       RunIt "$cmd" "$LF" "$RIBBON_HEMI_CMDF"
       start_async_cmdf "$RIBBON_HEMI_CMDF"
