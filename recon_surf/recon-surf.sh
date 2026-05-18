@@ -427,6 +427,30 @@ function write_cmdf_header()
   } > "$cmdf"
 }
 
+function prepare_async_cmdf()
+{
+  local cmdf=$1
+  shift
+  rm -f "$cmdf"
+  write_cmdf_header "$cmdf" "$@"
+}
+
+function begin_async_cmdf_command()
+{
+  local cmdf=$1
+  local title=$2
+  local cmd=$3
+  shift 3
+  prepare_async_cmdf "$cmdf" "$title" "$@"
+  RunIt "$cmd" "$LF" "$cmdf"
+}
+
+function enqueue_async_cmdf_command()
+{
+  begin_async_cmdf_command "$@"
+  start_async_cmdf "$1"
+}
+
 function start_async_cmdf()
 {
   local cmdf=$1
@@ -1421,14 +1445,13 @@ if [[ "$ParallelHemi" == "true" ]] ; then
         ribbon_only_flag="--rh-only"
         ribbon_out_root="ribbon.rhonly"
       fi
-      write_cmdf_header "$RIBBON_HEMI_CMDF" \
-        "============================ Creating surfaces $hemi - ribbon ===========================" \
-        "while [[ ! -f $SUBJECTS_DIR/$subject/touch/${hemi}.pial.ready ]] ; do sleep 1 ; done"
-
       cmd="$python ${binpath}cropped_mris_volmask.py --sd $SUBJECTS_DIR --sid $subject --hemi $hemi \
         --aseg-name aseg.presurf --out-root $ribbon_out_root --cap-distance 2 \
         --label-left-white 2 --label-left-ribbon 3 --label-right-white 41 --label-right-ribbon 42"
-      RunIt "$cmd" "$LF" "$RIBBON_HEMI_CMDF"
+      begin_async_cmdf_command "$RIBBON_HEMI_CMDF" \
+        "============================ Creating surfaces $hemi - ribbon ===========================" \
+        "$cmd" \
+        "while [[ ! -f $SUBJECTS_DIR/$subject/touch/${hemi}.pial.ready ]] ; do sleep 1 ; done"
       start_async_cmdf "$RIBBON_HEMI_CMDF"
     done
     ASYNC_RIBBON_STARTED="true"
@@ -1437,13 +1460,12 @@ if [[ "$ParallelHemi" == "true" ]] ; then
   if [[ "$base" != "true" && "$fsaparc" == "false" ]]
   then
     HYPORELABEL_CMDF="$SUBJECTS_DIR/$subject/scripts/hyporelabel.cmdf"
-    rm -f "$HYPORELABEL_CMDF"
-    write_cmdf_header "$HYPORELABEL_CMDF" \
+    cmd="mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz"
+    begin_async_cmdf_command "$HYPORELABEL_CMDF" \
       "===================== Creating surfaces - hyporelabel ==========================" \
+      "$cmd" \
       "while [[ ! -f $SUBJECTS_DIR/$subject/touch/lh.pial.ready || ! -f $SUBJECTS_DIR/$subject/touch/rh.pial.ready ]] ; do sleep 1 ; done" \
       "pushd $mdir > /dev/null || exit 1"
-    cmd="mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz"
-    RunIt "$cmd" "$LF" "$HYPORELABEL_CMDF"
     {
       echo "mkdir -p $SUBJECTS_DIR/$subject/touch"
       echo "echo \"mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz\" > $SUBJECTS_DIR/$subject/touch/relabelhypos.touch"
@@ -1465,26 +1487,21 @@ ASYNC_BALABELS_STARTED="false"
 if [[ "$base" != "true" && "$fssurfreg" == "true" ]]
 then
   BALABELS_CMDF="$SUBJECTS_DIR/$subject/scripts/balabels.cmdf"
-  rm -f "$BALABELS_CMDF"
-  write_cmdf_header "$BALABELS_CMDF" "===================== Creating surfaces - BA labels ============================"
-
   # BA labels depend on completed surface registration and geometry, not on the
   # ribbon volume, so overlap them with ribbon construction.
   cmd="$python ${binpath}/fs_balabels.py --sd $SUBJECTS_DIR --sid $subject"
-  RunIt "$cmd" "$LF" "$BALABELS_CMDF"
-  start_async_cmdf "$BALABELS_CMDF"
+  enqueue_async_cmdf_command "$BALABELS_CMDF" "===================== Creating surfaces - BA labels ============================" "$cmd"
   ASYNC_BALABELS_STARTED="true"
 fi
 
 if [[ "$ASYNC_HYPORELABEL_STARTED" != "true" && "$base" != "true" && "$fsaparc" == "false" ]]
 then
   HYPORELABEL_CMDF="$SUBJECTS_DIR/$subject/scripts/hyporelabel.cmdf"
-  rm -f "$HYPORELABEL_CMDF"
-  write_cmdf_header "$HYPORELABEL_CMDF" \
-    "===================== Creating surfaces - hyporelabel ==========================" \
-    "pushd $mdir > /dev/null || exit 1"
   cmd="mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz"
-  RunIt "$cmd" "$LF" "$HYPORELABEL_CMDF"
+  begin_async_cmdf_command "$HYPORELABEL_CMDF" \
+    "===================== Creating surfaces - hyporelabel ==========================" \
+    "$cmd" \
+    "pushd $mdir > /dev/null || exit 1"
   {
     echo "mkdir -p $SUBJECTS_DIR/$subject/touch"
     echo "echo \"mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz\" > $SUBJECTS_DIR/$subject/touch/relabelhypos.touch"
@@ -1605,24 +1622,20 @@ then
   for hemi in lh rh
   do
     MAPPED_STATS_CMDF="$SUBJECTS_DIR/$subject/scripts/mapped_stats.$hemi.cmdf"
-    rm -f "$MAPPED_STATS_CMDF"
-    write_cmdf_header "$MAPPED_STATS_CMDF" "===================== Creating surfaces $hemi - mapped stats ========================="
     cmd="mris_anatomical_stats -th3 -mgz -cortex $ldir/$hemi.cortex.label -f $statsdir/$hemi.aparc.DKTatlas.mapped.stats -b -a $ldir/$hemi.aparc.DKTatlas.mapped.annot -c $ldir/aparc.annot.mapped.ctab $subject $hemi white"
-    RunIt "$cmd" "$LF" "$MAPPED_STATS_CMDF"
-    start_async_cmdf "$MAPPED_STATS_CMDF"
+    enqueue_async_cmdf_command "$MAPPED_STATS_CMDF" \
+      "===================== Creating surfaces $hemi - mapped stats =========================" \
+      "$cmd"
   done
 
   if [[ "$fssurfreg" == "true" && "$ASYNC_BALABELS_STARTED" != "true" ]]
   then
     BALABELS_CMDF="$SUBJECTS_DIR/$subject/scripts/balabels.cmdf"
-    rm -f "$BALABELS_CMDF"
-    write_cmdf_header "$BALABELS_CMDF" "===================== Creating surfaces - BA labels ============================"
 
     # BA labels only depend on completed surface registration and surface geometry, so run
     # them while the main process creates the mapped volumes and segmentation statistics.
     cmd="$python ${binpath}/fs_balabels.py --sd $SUBJECTS_DIR --sid $subject"
-    RunIt "$cmd" "$LF" "$BALABELS_CMDF"
-    start_async_cmdf "$BALABELS_CMDF"
+    enqueue_async_cmdf_command "$BALABELS_CMDF" "===================== Creating surfaces - BA labels ============================" "$cmd"
   fi
 
 # ============================= FASTSURFER - surfcon hypo stats =========================================
@@ -1642,11 +1655,10 @@ then
 
     for hemi in lh rh ; do
       PCTSURFCON_CMDF="$SUBJECTS_DIR/$subject/scripts/pctsurfcon.$hemi.cmdf"
-      rm -f "$PCTSURFCON_CMDF"
-      write_cmdf_header "$PCTSURFCON_CMDF" "===================== Creating surfaces $hemi - pctsurfcon ====================="
       cmd="pctsurfcon --s $subject --$hemi-only"
-      RunIt "$cmd" "$LF" "$PCTSURFCON_CMDF"
-      start_async_cmdf "$PCTSURFCON_CMDF"
+      enqueue_async_cmdf_command "$PCTSURFCON_CMDF" \
+        "===================== Creating surfaces $hemi - pctsurfcon =====================" \
+        "$cmd"
     done
 
     # -hyporelabel creates aseg.presurf.hypos.mgz from aseg.presurf.mgz.
@@ -1673,8 +1685,7 @@ then
   if [[ "$segstats_legacy" != "true" ]]
   then
     ASEG_STATS_CMDF="$SUBJECTS_DIR/$subject/scripts/aseg_stats.cmdf"
-    rm -f "$ASEG_STATS_CMDF"
-    write_cmdf_header "$ASEG_STATS_CMDF" "===================== Creating surfaces - aseg stats ====================="
+    prepare_async_cmdf "$ASEG_STATS_CMDF" "===================== Creating surfaces - aseg stats ====================="
 
     printf -v mask_measure "%q" "Mask($mask)"
     cmda=($python "$FASTSURFER_HOME/FastSurferCNN/segstats.py" --sid "$subject"
@@ -1721,8 +1732,6 @@ then
 # ============================= MAPPED-TO-VOL =========================================
 
   WMPARC_VOL_CMDF="$SUBJECTS_DIR/$subject/scripts/wmparc_volume.cmdf"
-  rm -f "$WMPARC_VOL_CMDF"
-  write_cmdf_header "$WMPARC_VOL_CMDF" "===================== Creating wmparc from aseg ======================="
 
   # The WM-labeling pass only changes voxels that are cerebral WM or WM hypointensities.
   # Run it from aseg.mgz while the main process creates aparc.DKTatlas+aseg.mapped.mgz,
@@ -1731,8 +1740,7 @@ then
   if [[ "$wmparc_threads" -gt 2 ]] ; then wmparc_threads=2 ; fi
   if [[ "$wmparc_threads" -lt 1 ]] ; then wmparc_threads=1 ; fi
   cmd="mri_surf2volseg --o $mdir/wmparc.DKTatlas.mapped.wmonly.mgz --label-wm --i $mdir/aseg.mgz --threads $wmparc_threads --hashres 5 --lh-annot $ldir/lh.aparc.DKTatlas.mapped.annot 3000 --lh-cortex-mask $ldir/lh.cortex.label --lh-white $sdir/lh.white --lh-pial $sdir/lh.pial --rh-annot $ldir/rh.aparc.DKTatlas.mapped.annot 4000 --rh-cortex-mask $ldir/rh.cortex.label --rh-white $sdir/rh.white --rh-pial $sdir/rh.pial"
-  RunIt "$cmd" "$LF" "$WMPARC_VOL_CMDF"
-  start_async_cmdf "$WMPARC_VOL_CMDF"
+  enqueue_async_cmdf_command "$WMPARC_VOL_CMDF" "===================== Creating wmparc from aseg =======================" "$cmd"
 
   # creating aparc.DKTatlas+aseg.mapped.mgz by mapping aparc.DKTatlas.mapped from surface to aseg.mgz
   # (should be a nicer aparc+aseg compared to orig CNN segmentation, due to surface updates)
