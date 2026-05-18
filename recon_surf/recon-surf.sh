@@ -412,6 +412,21 @@ ASYNC_PIDS=()
 ASYNC_LOGS=()
 ASYNC_CMDFS=()
 
+function write_cmdf_header()
+{
+  local cmdf=$1
+  local title=$2
+  shift 2
+  local line
+  {
+    echo "#!/bin/bash"
+    echo "echo \"\""
+    echo "echo \"$title\""
+    echo "echo \"\""
+    for line in "$@"; do echo "$line" ; done
+  } > "$cmdf"
+}
+
 function start_async_cmdf()
 {
   local cmdf=$1
@@ -1406,13 +1421,9 @@ if [[ "$ParallelHemi" == "true" ]] ; then
         ribbon_only_flag="--rh-only"
         ribbon_out_root="ribbon.rhonly"
       fi
-      {
-        echo "#!/bin/bash"
-        echo "echo \"\""
-        echo "echo \"============================ Creating surfaces $hemi - ribbon ===========================\""
-        echo "echo \"\""
-        echo "while [[ ! -f $SUBJECTS_DIR/$subject/touch/${hemi}.pial.ready ]] ; do sleep 1 ; done"
-      } > "$RIBBON_HEMI_CMDF"
+      write_cmdf_header "$RIBBON_HEMI_CMDF" \
+        "============================ Creating surfaces $hemi - ribbon ===========================" \
+        "while [[ ! -f $SUBJECTS_DIR/$subject/touch/${hemi}.pial.ready ]] ; do sleep 1 ; done"
 
       cmd="$python ${binpath}cropped_mris_volmask.py --sd $SUBJECTS_DIR --sid $subject --hemi $hemi \
         --aseg-name aseg.presurf --out-root $ribbon_out_root --cap-distance 2 \
@@ -1427,14 +1438,10 @@ if [[ "$ParallelHemi" == "true" ]] ; then
   then
     HYPORELABEL_CMDF="$SUBJECTS_DIR/$subject/scripts/hyporelabel.cmdf"
     rm -f "$HYPORELABEL_CMDF"
-    {
-      echo "#!/bin/bash"
-      echo "echo \"\""
-      echo "echo \"===================== Creating surfaces - hyporelabel ==========================\""
-      echo "echo \"\""
-      echo "while [[ ! -f $SUBJECTS_DIR/$subject/touch/lh.pial.ready || ! -f $SUBJECTS_DIR/$subject/touch/rh.pial.ready ]] ; do sleep 1 ; done"
-      echo "pushd $mdir > /dev/null || exit 1"
-    } > "$HYPORELABEL_CMDF"
+    write_cmdf_header "$HYPORELABEL_CMDF" \
+      "===================== Creating surfaces - hyporelabel ==========================" \
+      "while [[ ! -f $SUBJECTS_DIR/$subject/touch/lh.pial.ready || ! -f $SUBJECTS_DIR/$subject/touch/rh.pial.ready ]] ; do sleep 1 ; done" \
+      "pushd $mdir > /dev/null || exit 1"
     cmd="mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz"
     RunIt "$cmd" "$LF" "$HYPORELABEL_CMDF"
     {
@@ -1459,12 +1466,7 @@ if [[ "$base" != "true" && "$fssurfreg" == "true" ]]
 then
   BALABELS_CMDF="$SUBJECTS_DIR/$subject/scripts/balabels.cmdf"
   rm -f "$BALABELS_CMDF"
-  {
-    echo "#!/bin/bash"
-    echo "echo \"\""
-    echo "echo \"===================== Creating surfaces - BA labels ============================\""
-    echo "echo \"\""
-  } > "$BALABELS_CMDF"
+  write_cmdf_header "$BALABELS_CMDF" "===================== Creating surfaces - BA labels ============================"
 
   # BA labels depend on completed surface registration and geometry, not on the
   # ribbon volume, so overlap them with ribbon construction.
@@ -1478,13 +1480,9 @@ if [[ "$ASYNC_HYPORELABEL_STARTED" != "true" && "$base" != "true" && "$fsaparc" 
 then
   HYPORELABEL_CMDF="$SUBJECTS_DIR/$subject/scripts/hyporelabel.cmdf"
   rm -f "$HYPORELABEL_CMDF"
-  {
-    echo "#!/bin/bash"
-    echo "echo \"\""
-    echo "echo \"===================== Creating surfaces - hyporelabel ==========================\""
-    echo "echo \"\""
-    echo "pushd $mdir > /dev/null || exit 1"
-  } > "$HYPORELABEL_CMDF"
+  write_cmdf_header "$HYPORELABEL_CMDF" \
+    "===================== Creating surfaces - hyporelabel ==========================" \
+    "pushd $mdir > /dev/null || exit 1"
   cmd="mri_relabel_hypointensities aseg.presurf.mgz ../surf aseg.presurf.hypos.mgz"
   RunIt "$cmd" "$LF" "$HYPORELABEL_CMDF"
   {
@@ -1608,12 +1606,7 @@ then
   do
     MAPPED_STATS_CMDF="$SUBJECTS_DIR/$subject/scripts/mapped_stats.$hemi.cmdf"
     rm -f "$MAPPED_STATS_CMDF"
-    {
-      echo "#!/bin/bash"
-      echo "echo \"\""
-      echo "echo \"===================== Creating surfaces $hemi - mapped stats =========================\""
-      echo "echo \"\""
-    } > "$MAPPED_STATS_CMDF"
+    write_cmdf_header "$MAPPED_STATS_CMDF" "===================== Creating surfaces $hemi - mapped stats ========================="
     cmd="mris_anatomical_stats -th3 -mgz -cortex $ldir/$hemi.cortex.label -f $statsdir/$hemi.aparc.DKTatlas.mapped.stats -b -a $ldir/$hemi.aparc.DKTatlas.mapped.annot -c $ldir/aparc.annot.mapped.ctab $subject $hemi white"
     RunIt "$cmd" "$LF" "$MAPPED_STATS_CMDF"
     start_async_cmdf "$MAPPED_STATS_CMDF"
@@ -1623,12 +1616,7 @@ then
   then
     BALABELS_CMDF="$SUBJECTS_DIR/$subject/scripts/balabels.cmdf"
     rm -f "$BALABELS_CMDF"
-    {
-      echo "#!/bin/bash"
-      echo "echo \"\""
-      echo "echo \"===================== Creating surfaces - BA labels ============================\""
-      echo "echo \"\""
-    } > "$BALABELS_CMDF"
+    write_cmdf_header "$BALABELS_CMDF" "===================== Creating surfaces - BA labels ============================"
 
     # BA labels only depend on completed surface registration and surface geometry, so run
     # them while the main process creates the mapped volumes and segmentation statistics.
@@ -1655,12 +1643,7 @@ then
     for hemi in lh rh ; do
       PCTSURFCON_CMDF="$SUBJECTS_DIR/$subject/scripts/pctsurfcon.$hemi.cmdf"
       rm -f "$PCTSURFCON_CMDF"
-      {
-        echo "#!/bin/bash"
-        echo "echo \"\""
-        echo "echo \"===================== Creating surfaces $hemi - pctsurfcon =====================\""
-        echo "echo \"\""
-      } > "$PCTSURFCON_CMDF"
+      write_cmdf_header "$PCTSURFCON_CMDF" "===================== Creating surfaces $hemi - pctsurfcon ====================="
       cmd="pctsurfcon --s $subject --$hemi-only"
       RunIt "$cmd" "$LF" "$PCTSURFCON_CMDF"
       start_async_cmdf "$PCTSURFCON_CMDF"
@@ -1691,12 +1674,7 @@ then
   then
     ASEG_STATS_CMDF="$SUBJECTS_DIR/$subject/scripts/aseg_stats.cmdf"
     rm -f "$ASEG_STATS_CMDF"
-    {
-      echo "#!/bin/bash"
-      echo "echo \"\""
-      echo "echo \"===================== Creating surfaces - aseg stats =====================\""
-      echo "echo \"\""
-    } > "$ASEG_STATS_CMDF"
+    write_cmdf_header "$ASEG_STATS_CMDF" "===================== Creating surfaces - aseg stats ====================="
 
     printf -v mask_measure "%q" "Mask($mask)"
     cmda=($python "$FASTSURFER_HOME/FastSurferCNN/segstats.py" --sid "$subject"
@@ -1744,12 +1722,7 @@ then
 
   WMPARC_VOL_CMDF="$SUBJECTS_DIR/$subject/scripts/wmparc_volume.cmdf"
   rm -f "$WMPARC_VOL_CMDF"
-  {
-    echo "#!/bin/bash"
-    echo "echo \"\""
-    echo "echo \"===================== Creating wmparc from aseg =======================\""
-    echo "echo \"\""
-  } > "$WMPARC_VOL_CMDF"
+  write_cmdf_header "$WMPARC_VOL_CMDF" "===================== Creating wmparc from aseg ======================="
 
   # The WM-labeling pass only changes voxels that are cerebral WM or WM hypointensities.
   # Run it from aseg.mgz while the main process creates aparc.DKTatlas+aseg.mapped.mgz,
