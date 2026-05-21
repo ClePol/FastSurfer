@@ -1094,7 +1094,7 @@ then
     if [[ "$native_image" != "false" ]] ; then cmd+=(--orientation native --image_size fov) ; fi
     echo_quoted "${cmd[@]}" | tee -a "$seg_log"
     "${wrap[@]}" "${cmd[@]}"
-    exit_code="${PIPESTATUS[0]}"
+    exit_code=$?
     if [[ "${exit_code}" == 2 ]]
     then
       echo "ERROR: FastSurfer asegdkt segmentation failed QC checks." | tee -a "$seg_log"
@@ -1392,10 +1392,11 @@ then
     if [[ "$native_image" != "false" ]] ; then cmd+=(--orientation native --image_size fov --vox_size none) ; fi
     echo_quoted "${cmd[@]}" | tee -a "$seg_log"
     "${wrap[@]}" "${cmd[@]}"  # no tee, directly logging to $seg_log
-    if [[ "${PIPESTATUS[0]}" != 0 ]]
+    exit_code=$?
+    if [[ "$exit_code" != 0 ]]
     then
       echo "ERROR: Cerebellum Segmentation failed!" | tee -a "$seg_log"
-      exit 1
+      exit "$exit_code"
     fi
   fi
 
@@ -1420,10 +1421,11 @@ then
     fi
     echo_quoted "${cmd[@]}" | tee -a "$seg_log"
     "${wrap[@]}" "${cmd[@]}" # no tee, directly logging to $seg_log
-    if [[ "${PIPESTATUS[0]}" != 0 ]]
+    exit_code=$?
+    if [[ "$exit_code" != 0 ]]
     then
       echo "ERROR: Hypothalamus Segmentation failed!" | tee -a "$seg_log"
-      exit 1
+      exit "$exit_code"
     fi
   fi
 

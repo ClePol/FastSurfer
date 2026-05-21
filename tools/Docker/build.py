@@ -76,6 +76,10 @@ class DEFAULTS:
     CUDA="cu128"
     CUDA_VERSION="12.8"
     ROCM="rocm6.3"
+    DeprecatedDeviceType: dict[str, str] = {
+        "xpu": "Intel XPU Docker builds are deprecated and not supported for this release. "
+               "Use --device cpu or a supported CUDA/ROCm backend instead."
+    }
     MapDeviceType: dict[AllDeviceType, DeviceType] = dict(
         ((d, d) for d in get_args(DeviceType)),
         rocm=ROCM,
@@ -208,7 +212,7 @@ def make_parser() -> argparse.ArgumentParser:
                 - cuda: defaults to {DEFAULTS.CUDA}, cuda {DEFAULTS.CUDA_VERSION}<br>
                 - cpu: only cpu support<br>
                 - rocm: defaults to {DEFAULTS.ROCM} (experimental)<br>
-                - xpu: intel xpu (VERY experimental)""",
+                - xpu: deprecated and not released""",
     )
     parser.add_argument(
         "--tag",
@@ -632,7 +636,7 @@ def singularity_build_image(
 
 
 def main(
-        device: DeviceType,
+        device: AllDeviceType,
         cache: CacheSpec | None = None,
         target: Target = "runtime",
         debug: bool = False,
@@ -666,11 +670,13 @@ def main(
         raise ValueError(f"Invalid target: {target}")
     if device not in get_args(AllDeviceType):
         raise ValueError(f"Invalid device: {device}")
+    if device in DEFAULTS.DeprecatedDeviceType:
+        raise ValueError(DEFAULTS.DeprecatedDeviceType[device])
     mapped_device = DEFAULTS.MapDeviceType.get(device, "cpu")
     if keywords.get("action", "load") == "push":
         kwargs["action"] = "push"
-    # special case to add extra environment variables to better support AWS and ROCm
-    if device.startswith("cu") and target == "runtime":
+    # CUDA runtime images need additional environment variables for cloud runtimes.
+    if mapped_device.startswith("cu") and target == "runtime":
         target = "runtime_cuda"
     kwargs["target"] = target
     kwargs["build_arg"] = [

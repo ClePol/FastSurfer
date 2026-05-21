@@ -11,12 +11,14 @@ docker pull deepmi/fastsurfer
 
 This will download the newest, official FastSurfer image with support for nVidia GPUs.
 
-Image are named and tagged as follows: `deepmi/fastsurfer:<support>-<version>`, where `<support>` is `gpu` for support of NVIDIA GPUs and `cpu` without hardware acceleration (the latter is smaller and thus faster to download).
+Images are named and tagged as follows: `deepmi/fastsurfer:<support>-<version>`, where `<support>` is `cuda` for the default NVIDIA GPU image, `cpu` without hardware acceleration, or a specific backend tag such as `cu118`, `cu126`, `cu128`, or `rocm6.3`.
 Similarly, `<version>` can be a version string (`latest` or `v#.#.#`, where `#` are digits, for example `v2.5.0`), for example:
 
 ```bash 
 docker pull deepmi/fastsurfer:cpu-v2.5.0
 ```
+
+For NVIDIA GPUs, `cuda-v#.#.#`, `gpu-latest`, and `latest` point to the current recommended CUDA backend. For FastSurfer 2.5.0, this is CUDA 12.8 (`cu128`). NVIDIA Blackwell / RTX 50-series GPUs require the `cuda` or `cu128` images; older `cu118` and `cu126` images use PyTorch wheels that do not support compute capability `sm_120`.
 
 Running the (official) Docker Image
 -----------------------------------
@@ -70,6 +72,8 @@ Within this directory, we currently provide a build script and Dockerfile to cre
 * Nvidia / CUDA (Example 1)
 * CPU (Example 2)
 * AMD / rocm (experimental, Example 3)
+
+Intel XPU Docker builds are deprecated and are not released.
 
 To run only the surface pipeline or only the segmentation pipeline, the entrypoint to these images has to be adapted, which is possible through
 -  for the segmentation pipeline: `--entrypoint "python /fastsurfer/FastSurferCNN/run_prediction.py"`
@@ -226,7 +230,7 @@ img=deepmi/fastsurfer
 version=2.5.0
 # the cuda and rocm version can be identified with: python $build_dir/tools/Docker/build.py --help | grep -E ^[[:space:]]+--device
 cuda=128
-cudas=("cuda118" "cuda126" "cuda$cuda")
+cudas=("cu118" "cu126" "cu$cuda")
 rocm=6.3
 rocms=("rocm$rocm")
 # end of config
@@ -235,8 +239,8 @@ rocms=("rocm$rocm")
 git clone --branch stable --single-branch github.com/Deep-MI/FastSurfer $build_dir
 cd $build_dir
 all_tags=("latest" "gpu-latest" "cuda-v$version" "rocm-v$version" "cpu-latest")
-# build all distinct images
-for dev in cpu xpu "${rocms[@]}" "${cudas[@]}"
+# build all distinct images; xpu is deprecated and intentionally not published
+for dev in cpu "${rocms[@]}" "${cudas[@]}"
 do
   python3 tools/Docker/build.py --tag $img:$dev-v$version --freesurfer_build_image $img-build:freesurfer741 --attest --device $dev
   all_tags+=("$dev-v$version")

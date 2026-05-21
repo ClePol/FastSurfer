@@ -60,6 +60,7 @@ function time_it()
   local TF="$1"
   shift
   local cmd=("$@")
+  local exit_code=0
   if [[ -n "$timecmd" ]]
   then
     timecmd_pos=-1
@@ -71,11 +72,13 @@ function time_it()
     # timecmd is non-empty here, so time/fs_time does not fail
     printf -v key "%s\n-> " "$(echo_quoted "${cmd[@]}")"
     "${binpath}fs_time" -k "$key" --no-load -o "$TF" -a "${cmd[@]}"
+    exit_code=$?
   else
     echo "WARNING: Using time_it, but time seems to fail. Not timing..."
     "${cmd[@]}"
+    exit_code=$?
   fi
-  if [[ "${PIPESTATUS[0]}" != 0 ]] ; then exit "${PIPESTATUS[0]}" ; fi
+  return "$exit_code"
 }
 
 function RunIt()

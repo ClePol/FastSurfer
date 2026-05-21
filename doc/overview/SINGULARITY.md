@@ -29,6 +29,7 @@ singularity build $HOME/my_singlarity_images/fastsurfer-2.5.0.sif docker://deepm
 ```
 Singularity images are files with extension `.sif`. Here, we save the image in `$HOME/my_singlarity_images`.
 If you want to pick a specific FastSurfer version, you can also change `cuda-v2.5.0` in the `<source>`. For example to use the [cpu image](https://hub.docker.com/r/deepmi/fastsurfer/tags?name=cpu) (`cpu-v2.5.0`) or a [specific CUDA version](https://hub.docker.com/r/deepmi/fastsurfer/tags?name=cu1) (check, which version is available the current FastSurfer version, for example `cu118-v2.5.0`).
+For NVIDIA Blackwell / RTX 50-series GPUs, use the default CUDA image (`cuda-v2.5.0`) or the explicit CUDA 12.8 image (`cu128-v2.5.0`). Older `cu118` and `cu126` images use PyTorch wheels that do not support compute capability `sm_120`.
 
 Creating your own FastSurfer Singularity image
 ----------------------------------------------
