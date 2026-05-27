@@ -659,6 +659,8 @@ class CC_Mesh(lapy.TriaMesh):
 
             # Find indices of points with known thickness
             known_idx = np.where(~np.isnan(thickness))[0]
+            if len(known_idx) == 0:
+                continue
 
             # For each point with unknown thickness
             for j in range(len(thickness)):
@@ -677,6 +679,15 @@ class CC_Mesh(lapy.TriaMesh):
                 # Get indices of two closest points
                 closest_indices = known_idx[np.argsort(distances)[:2]]
                 closest_distances = np.sort(distances)[:2]
+
+                zero_distance = closest_distances <= 1e-10
+                if np.any(zero_distance):
+                    thickness[j] = np.mean(thickness[closest_indices[zero_distance]])
+                    continue
+
+                if len(closest_distances) == 1:
+                    thickness[j] = thickness[closest_indices[0]]
+                    continue
 
                 # Calculate weights based on inverse distance
                 weights = 1.0 / closest_distances

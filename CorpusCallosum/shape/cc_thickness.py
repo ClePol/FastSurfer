@@ -128,6 +128,18 @@ def insert_point_to_contour(contour_with_thickness, point, thickness_value, get_
     Returns:
         Updated contour_with_thickness
     """
+    existing_distances = np.linalg.norm(contour_with_thickness[0][:, :2] - point[:2], axis=1)
+    existing_matches = np.where(existing_distances <= 1e-10)[0]
+    if len(existing_matches) > 0:
+        point_idx = existing_matches[0]
+        if np.isnan(contour_with_thickness[1][point_idx]):
+            contour_with_thickness[1][point_idx] = thickness_value
+
+        if get_index:
+            return contour_with_thickness, point_idx, False
+        else:
+            return contour_with_thickness
+
     # Find closest edge for the point
     edge_idx = find_closest_edge(point, contour_with_thickness[0])
     
@@ -136,7 +148,7 @@ def insert_point_to_contour(contour_with_thickness, point, thickness_value, get_
     contour_with_thickness[1] = np.insert(contour_with_thickness[1], edge_idx+1, thickness_value)
     
     if get_index:
-        return contour_with_thickness, edge_idx+1
+        return contour_with_thickness, edge_idx+1, True
     else:
         return contour_with_thickness
 
@@ -264,19 +276,25 @@ def cc_thickness(contour_2d, anterior_endpoint_idx, posterior_endpoint_idx, n_po
         levelpath_start = lvlpath[0,:2]
         levelpath_end = lvlpath[-1,:2]
 
-        contour_with_thickness, inserted_idx_start = insert_point_to_contour(contour_with_thickness, levelpath_start, lvlpath_length, get_index=True)
-        contour_with_thickness, inserted_idx_end = insert_point_to_contour(contour_with_thickness, levelpath_end, lvlpath_length, get_index=True)
+        contour_with_thickness, inserted_idx_start, inserted_start = insert_point_to_contour(contour_with_thickness, levelpath_start, lvlpath_length, get_index=True)
 
         # keep track of start and end indices
-        if inserted_idx_start <= anterior_endpoint_idx:
-            anterior_endpoint_idx += 1
-        if inserted_idx_end <= anterior_endpoint_idx:
-            anterior_endpoint_idx += 1
+        if inserted_start:
+            if inserted_idx_start <= anterior_endpoint_idx:
+                anterior_endpoint_idx += 1
 
-        if inserted_idx_start >= posterior_endpoint_idx:
-            posterior_endpoint_idx += 1
-        if inserted_idx_end >= posterior_endpoint_idx:
-            posterior_endpoint_idx += 1
+            if inserted_idx_start >= posterior_endpoint_idx:
+                posterior_endpoint_idx += 1
+
+        contour_with_thickness, inserted_idx_end, inserted_end = insert_point_to_contour(contour_with_thickness, levelpath_end, lvlpath_length, get_index=True)
+
+        # keep track of start and end indices
+        if inserted_end:
+            if inserted_idx_end <= anterior_endpoint_idx:
+                anterior_endpoint_idx += 1
+
+            if inserted_idx_end >= posterior_endpoint_idx:
+                posterior_endpoint_idx += 1
 
 
     
@@ -365,4 +383,3 @@ def cc_thickness(contour_2d, anterior_endpoint_idx, posterior_endpoint_idx, n_po
     # plt.show()
 
     return midline_length, np.mean(levelpath_lengths), out_curvature, midline_equidistant, levelpaths, contour_with_thickness, anterior_endpoint_idx, posterior_endpoint_idx
-
