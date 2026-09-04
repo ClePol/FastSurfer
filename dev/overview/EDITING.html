@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Longitudinal Processing" href="LONG.html"><link rel="prev" title="Running FastSurfer as MacOS package" href="MACOS.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Longitudinal Processing" href="LONG.html"><link rel="prev" title="Singularity Support" href="SINGULARITY.html">
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2025.12.19 -->
         <title>Manual Edits - FastSurfer</title>
@@ -206,7 +206,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="docker.html">Docker Support</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SINGULARITY.html">Singularity Support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="MACOS.html">Running FastSurfer as MacOS package</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Manual Edits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="LONG.html">Longitudinal Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SECURITY.html">Security Policy</a></li>
@@ -632,15 +631,15 @@ the editable CC segmentation. For example:</p>
 <li><p>Copy <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/callosum.CC.upright.mgz</span></code> to
 <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/callosum.CC.upright.manedit.mgz</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">SUBJECT_DIR</span><span class="o">=</span>/data/subjects/sub001
-cp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/callosum.CC.upright.mgz&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">   </span><span class="s2">&quot;</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/callosum.CC.upright.manedit.mgz&quot;</span>
+cp<span class="w"> </span><span class="s2">"</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/callosum.CC.upright.mgz"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span><span class="s2">"</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/callosum.CC.upright.manedit.mgz"</span>
 </pre></div>
 </div>
 </li>
 <li><p>Edit label 192 in the manedit file using <code class="docutils literal notranslate"><span class="pre">mri/upright_volume.mgz</span></code> as the reference image. For example:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>freeview<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/upright_volume.mgz&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/callosum.CC.upright.manedit.mgz&quot;</span>:colormap<span class="o">=</span>lut:opacity<span class="o">=</span><span class="m">0</span>.5
+<span class="w">    </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/upright_volume.mgz"</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$SUBJECT_DIR</span><span class="s2">/mri/callosum.CC.upright.manedit.mgz"</span>:colormap<span class="o">=</span>lut:opacity<span class="o">=</span><span class="m">0</span>.5
 </pre></div>
 </div>
 <p>A manual file containing any fornix label-250 voxels is self-contained and authoritative for the entire fornix. To
@@ -713,7 +712,7 @@ same coordinates on the edit rerun so the edited slab geometry remains valid.</p
 <h3>What to do<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
 <p>Often, these errors should be fixed in <a class="reference internal" href="#asegdkt-segfile">asegdkt_segfile</a> <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/aparc.DKTatlas+aseg.deep.manedit.mgz</span></code>, but if that is not successful:</p>
 <ol class="arabic simple">
-<li><p>Open end edit <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/brain.finalsurfs.manedit.mgz</span></code> (overwriting values in <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/brain.finalsurfs.mgz</span></code>).</p></li>
+<li><p>Open and edit <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/brain.finalsurfs.manedit.mgz</span></code> (overwriting values in <code class="docutils literal notranslate"><span class="pre">&lt;subject_dir&gt;/mri/brain.finalsurfs.mgz</span></code>).</p></li>
 <li><p><a class="reference internal" href="#general-process"><span class="std std-ref">Re-run FastSurfer</span></a> to fix the pial surface.
 The manual label 255 indicates a voxel should be included in the gray matter and a voxel labeled 1 should not.</p></li>
 </ol>
@@ -771,14 +770,14 @@ Thanks for using FastSurfer.</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="MACOS.html">
+          <a class="prev-page" href="SINGULARITY.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Running FastSurfer as MacOS package</div>
+                <div class="title">Singularity Support</div>
                 
               </div>
             </a>
