@@ -11,9 +11,39 @@ from neuroreg import LTA
 from CorpusCallosum.data.fsaverage_cc_template import load_fsaverage_cc_template
 from CorpusCallosum.shape.contour import CCContour, contours_for_analysis_width
 from CorpusCallosum.shape.mesh import CCMesh
+from CorpusCallosum.utils.colormaps import PREDEFINED_COLORMAPS, get_colormap
 from FastSurferCNN.utils.logging import get_logger, setup_logging
 
 logger = get_logger(__name__)
+
+
+def colormap_name(value: str) -> str:
+    """Validate a command-line colormap name."""
+    try:
+        get_colormap(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from error
+    return value
+
+
+def nonnegative_float(value: str) -> float:
+    """Parse a non-negative command-line float."""
+    parsed = float(value)
+    if not np.isfinite(parsed) or parsed < 0:
+        raise argparse.ArgumentTypeError("Threshold must be a finite, non-negative value.")
+    return parsed
+
+
+def thickness_profile_for_plot(contour: CCContour) -> np.ndarray:
+    """Return one side of the paired original thickness measurements."""
+    if contour.original_thickness_vertices is None:
+        raw_values = contour.thickness_values
+    else:
+        raw_values = contour.thickness_values[contour.original_thickness_vertices]
+    raw_values = raw_values[~np.isnan(raw_values)]
+    if len(raw_values) % 2 != 0:
+        raise ValueError(f"Expected paired thickness measurements, but found {len(raw_values)} values.")
+    return raw_values[len(raw_values) // 2:]
 
 
 def make_parser() -> argparse.ArgumentParser:
@@ -77,10 +107,13 @@ def make_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--colormap",
-        type=str,
+        type=colormap_name,
         default="red_to_yellow",
-        choices=["red_to_blue", "blue_to_red", "red_to_yellow", "yellow_to_red"],
-        help="Colormap progression from lower to higher values.",
+        help=(
+            "Colormap to use for thickness visualization, from lower to higher values. "
+            f"Predefined options: {', '.join(PREDEFINED_COLORMAPS)}. "
+            "Any registered Matplotlib colormap name is also accepted."
+        ),
     )
     parser.add_argument(
         "--color_range",
@@ -131,6 +164,13 @@ def make_parser() -> argparse.ArgumentParser:
         default=None,
         metavar="FILENAME",
         help="Filename for the 2D PNG within --output_dir.",
+    )
+    parser.add_argument(
+        "--threshold",
+        type=nonnegative_float,
+        default=None,
+        metavar="VALUE",
+        help="Show values with absolute magnitude below VALUE in neutral gray.",
     )
     parser.add_argument(
         "--twoD",
@@ -284,6 +324,7 @@ def main(
         threshold_color: str = "gray",
         title: str | None = None,
         output_name: str | None = None,
+        threshold: float | None = None,
 ) -> Literal[0] | str:
     """Visualize corpus callosum templates in 2D or 3D."""
     if values_file is None and mode != "thickness":
@@ -312,6 +353,8 @@ def main(
             upper_threshold=upper_threshold,
             threshold_color=threshold_color,
             colorbar_label=legend,
+            color_range=color_range,
+            threshold=threshold,
         )
         plt.close(figure)
         return 0
@@ -335,7 +378,11 @@ def main(
         title=None,
         save_path=str(output_dir / "cc_thickness_2d.png"),
         colorbar=True,
-        mode=mode
+        mode=mode,
+        colormap=colormap,
+        color_range=color_range,
+        legend=legend,
+        threshold=threshold,
     )
     if twoD:
         return 0
@@ -366,6 +413,7 @@ def main(
         color_range=color_range,
         thickness_overlay=True,
         legend=legend or "",
+        threshold=threshold,
     )
     surface_mesh.plot_mesh(**plot_kwargs)
     surface_mesh.plot_mesh(output_path=str(output_dir / "cc_mesh.html"), **plot_kwargs)
@@ -400,6 +448,7 @@ if __name__ == "__main__":
         colormap=options.colormap,
         color_range=options.color_range,
         legend=options.legend,
+        threshold=options.threshold,
         twoD=options.twoD,
         values_file=options.values_file,
         mode=options.mode,

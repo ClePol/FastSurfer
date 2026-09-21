@@ -40,12 +40,31 @@ import FastSurferCNN.utils.logging as logging
 from CorpusCallosum.data.constants import CC_ANALYSIS_WIDTH_MM
 from CorpusCallosum.shape.endpoint_heuristic import find_cc_endpoints, smooth_contour
 from CorpusCallosum.shape.thickness import cc_thickness
+from CorpusCallosum.utils.colormaps import get_colormap, with_neutral_range
 from CorpusCallosum.utils.types import Points2dType
 from FastSurferCNN.utils import AffineMatrix4x4, Mask2d, Vector2d
 
 logger = logging.get_logger(__name__)
 
 Self = TypeVar("Self", bound="CCContour")
+
+
+def _interpolate_and_smooth_values(
+    points_x: np.ndarray,
+    points_y: np.ndarray,
+    values: np.ndarray,
+    x_grid: np.ndarray,
+    y_grid: np.ndarray,
+) -> np.ndarray:
+    """Interpolate values without introducing artificial zero-valued edges."""
+    linear_values = scipy.interpolate.griddata(
+        (points_x, points_y), values, (x_grid, y_grid), method="linear", fill_value=np.nan,
+    )
+    nearest_values = scipy.interpolate.griddata(
+        (points_x, points_y), values, (x_grid, y_grid), method="nearest",
+    )
+    grid_values = np.where(np.isnan(linear_values), nearest_values, linear_values)
+    return scipy.ndimage.gaussian_filter(grid_values, sigma=5, radius=5)
 
 
 # FIXME: Maybe CCContur should inherit from Polygon at a later date?
@@ -450,6 +469,9 @@ class CCContour:
         upper_threshold: float | None = None,
         threshold_color: str = "gray",
         colorbar_label: str | None = None,
+        color_range: tuple[float, float] | None = None,
+        legend: str | None = None,
+        threshold: float | None = None,
     ) -> matplotlib.figure.Figure:
         """Plot a contour with levelset visualization.
 
@@ -468,7 +490,7 @@ class CCContour:
             Whether to show the colorbar.
         mode : {"p-value", "icc", "thickness"}, default="p-value"
             Mode of the plot.
-        colormap : {"red_to_blue", "blue_to_red", "red_to_yellow", "yellow_to_red"}, optional
+        colormap : str, optional
             Color progression from lower to higher values. If omitted, use the
             mode-specific legacy colormap.
         log_scale : bool, default=False
@@ -480,6 +502,12 @@ class CCContour:
             Matplotlib color used for values above ``upper_threshold``.
         colorbar_label : str, optional
             Override the mode-specific colorbar label.
+        color_range : tuple of float, optional
+            Fixed minimum and maximum for the color scale in thickness mode.
+        legend : str, optional
+            Colorbar label in thickness mode. Defaults to ``"Thickness (mm)"``.
+        threshold : float, optional
+            Show values with an absolute magnitude below this value in neutral gray.
         
         Returns
         -------
@@ -575,31 +603,23 @@ class CCContour:
         all_level_points_y = np.array(all_level_points_y)
         all_level_values = np.array(all_level_values)
 
-        # Use griddata to perform smooth interpolation - using 'linear' instead of 'cubic'
-        # and properly formatting the input points
-        grid_values = scipy.interpolate.griddata(
-            (all_level_points_x, all_level_points_y), all_level_values, (x_grid, y_grid), method="linear", fill_value=0,
+        # Linear interpolation does not cover the tips beyond the outermost
+        # level paths. Fill those locations from the nearest level path before
+        # smoothing; filling with zero would create false neutral-colored areas
+        # when a diverging colormap is used.
+        grid_values = _interpolate_and_smooth_values(
+            all_level_points_x,
+            all_level_points_y,
+            all_level_values,
+            x_grid,
+            y_grid,
         )
-
-        # smooth the grid_values
-        grid_values = scipy.ndimage.gaussian_filter(grid_values, sigma=5, radius=5)
 
         # Apply the mask to only show values inside the contour
         masked_values = np.where(mask, grid_values, np.nan)
 
-        named_colormaps = {
-            "red_to_blue": plt.cm.coolwarm_r,
-            "blue_to_red": plt.cm.coolwarm,
-            "red_to_yellow": plt.cm.YlOrRd_r,
-            "yellow_to_red": plt.cm.YlOrRd,
-        }
         if colormap is not None:
-            try:
-                cmap = named_colormaps[colormap]
-            except KeyError as err:
-                raise ValueError(
-                    f"Invalid colormap '{colormap}', expected one of {tuple(named_colormaps)}"
-                ) from err
+            cmap = get_colormap(colormap)
         elif mode == "p-value":
             # Sample colormaps
             colors1 = plt.cm.binary([0.4] * 128)
@@ -622,6 +642,8 @@ class CCContour:
 
         default_vmin = 0 if mode != "thickness" else np.nanmin(plot_values)
         default_vmax = 0.10 if mode == "p-value" else (1 if mode == "icc" else np.nanmax(plot_values))
+        if color_range is not None:
+            default_vmin, default_vmax = color_range
         plot_vmax = upper_threshold if upper_threshold is not None else default_vmax
         if log_scale:
             plot_vmin = float(np.nanmin(finite_values))
@@ -630,6 +652,8 @@ class CCContour:
             norm = matplotlib.colors.LogNorm(vmin=plot_vmin, vmax=plot_vmax)
         else:
             norm = matplotlib.colors.Normalize(vmin=default_vmin, vmax=plot_vmax)
+        if mode == "thickness" and threshold is not None:
+            cmap = with_neutral_range(cmap, (norm.vmin, norm.vmax), (-threshold, threshold))
 
         # Plot CC contour with levelsets
         fig = plt.figure(figsize=(10, 3))
@@ -671,11 +695,8 @@ class CCContour:
                 cbar.ax.set_yticks([0, 0.25, 0.5, 0.75, 1])
                 cbar.set_label(colorbar_label or "Intraclass correlation coefficient")
             elif mode == "thickness":
-                # Set limits based on actual thickness values
-                thickness_min = np.nanmin(plot_values)
-                thickness_max = np.nanmax(plot_values)
-                cbar.ax.set_ylim(thickness_min, thickness_max)
-                cbar.set_label(colorbar_label or "Thickness (mm)")
+                cbar.ax.set_ylim(norm.vmin, norm.vmax)
+                cbar.set_label(colorbar_label or legend or "Thickness (mm)")
 
         # Plot the outside contour on top for clear boundary
         plt.plot(outside_contour[0], outside_contour[1], "k-", linewidth=2, label="CC Contour", transform=transform)

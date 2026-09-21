@@ -31,7 +31,19 @@ To visualize a 2D template (using ``--slice_selection middle --save_template_dir
     python3 -m CorpusCallosum.cc_visualization \
         --template_dir /data/templates/sub001/cc_template \
         --output_dir /data/visualizations/sub001 \
-        --twoD
+        --twoD \
+        --colormap diverging
+
+The ``diverging`` preset uses WhipperSnapPy's FreeSurfer-style heat colors:
+negative values run from cyan to dark blue and positive values run from dark
+red to yellow. The four legacy FastSurfer presets remain available, and any
+registered Matplotlib colormap name can be passed directly, for example
+``--colormap viridis``, ``--colormap BrBG``, or ``--colormap RdBu_r``.
+
+For signed overlays, ``--threshold VALUE`` displays values with
+``abs(value) <= VALUE`` in neutral gray. For example,
+``--threshold 0.2 --color_range -1 1`` retains the diverging colors outside
+``[-0.2, 0.2]`` and shows that central interval in gray.
 
 The template's ``thickness_values_<slice>.txt`` is a per-contour-vertex file,
 not a one-value-per-level-path profile. Each thickness measurement occurs at
