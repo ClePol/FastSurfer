@@ -26,6 +26,7 @@ from scipy.ndimage import gaussian_filter1d
 import FastSurferCNN.utils.logging as logging
 from CorpusCallosum.shape.contour import CCContour
 from CorpusCallosum.shape.thickness import make_mesh_from_contour
+from CorpusCallosum.utils.colormaps import as_plotly_colorscale, get_colormap, with_neutral_range
 from FastSurferCNN.utils import AffineMatrix4x4, nibabelHeader, nibabelImage
 from FastSurferCNN.utils.common import update_docstring
 
@@ -231,7 +232,7 @@ class CCMesh(lapy.TriaMesh):
         show_grid: bool = False,
         color_range: tuple[float, float] | None = None,
         legend: str = "",
-        threshold: tuple[float, float] | None = None,
+        threshold: float | tuple[float, float] | None = None,
     ):
         """Plot the mesh using Plotly for better performance and interactivity.
 
@@ -244,11 +245,9 @@ class CCMesh(lapy.TriaMesh):
             Path to save the plot. If None, displays the plot interactively.
         colormap : str, optional
             Which colormap to use, by default "red_to_yellow".
-            Options:
-            - "red_to_blue": Red -> Orange -> Grey -> Light Blue -> Blue
-            - "red_to_yellow": Red -> Yellow -> Light Blue -> Blue
-            - "yellow_to_red": Yellow -> Light Blue -> Blue -> Red
-            - "blue_to_red": Blue -> Light Blue -> Grey -> Orange -> Red
+            Accepts the predefined FastSurfer colormaps, including the
+            WhipperSnapPy/FreeSurfer-style ``"diverging"`` heat map, or any
+            registered Matplotlib colormap name.
         thickness_overlay : bool, optional
             Whether to overlay thickness values on the mesh, by default True.
         show_contours : bool, optional
@@ -261,8 +260,9 @@ class CCMesh(lapy.TriaMesh):
             Whether to show the mesh edges, by default False.
         legend : str, optional
             Legend text for the colorbar, by default "".
-        threshold : tuple[float, float], optional
-            Values between these thresholds will be shown in grey, by default None.
+        threshold : float or tuple of float, optional
+            A scalar shows values between its negative and positive magnitude
+            in gray. A tuple explicitly defines the gray interval.
 
         Notes
         -----
@@ -278,81 +278,13 @@ class CCMesh(lapy.TriaMesh):
             logger.warning("Warning: No faces in mesh to plot")
             return
 
-        # Define available colormaps
-        colormaps = {
-            "red_to_blue": [
-                [0.0, "rgb(255,0,0)"],  # Bright red
-                [0.25, "rgb(255,165,0)"],  # Light orange
-                [0.5, "rgb(150,150,150)"],  # Dark grey for middle
-                [0.75, "rgb(173,216,230)"],  # Light blue
-                [1.0, "rgb(0,0,255)"],  # Bright blue
-            ],
-            "blue_to_red": [
-                [0.0, "rgb(0,0,255)"],  # Bright blue
-                [0.25, "rgb(173,216,230)"],  # Light blue
-                [0.5, "rgb(150,150,150)"],  # Dark grey for middle
-                [0.75, "rgb(255,165,0)"],  # Light orange
-                [1.0, "rgb(255,0,0)"],  # Bright red
-            ],
-            "red_to_yellow": [
-                [0.0, "rgb(255,0,0)"],  # Bright red
-                [0.33, "rgb(255,85,0)"],  # Red-orange
-                [0.66, "rgb(255,170,0)"],  # Orange
-                [1.0, "rgb(255,255,0)"],  # Yellow
-            ],
-            "yellow_to_red": [
-                [0.0, "rgb(255,255,0)"],  # Yellow
-                [0.33, "rgb(255,170,0)"],  # Orange
-                [0.66, "rgb(255,85,0)"],  # Red-orange
-                [1.0, "rgb(255,0,0)"],  # Bright red
-            ],
-        }
-
-        # Select the colormap
-        if colormap not in colormaps:
-            logger.warning(f"Warning: Unknown colormap '{colormap}'. Using 'red_to_blue' instead.")
-            colormap = "red_to_blue"
-
-        selected_colormap = colormaps[colormap]
-
-        # If threshold is provided, modify the colormap to include grey region
-        if threshold is not None and thickness_overlay and hasattr(self, "mesh_vertex_colors"):
+        selected_cmap = get_colormap(colormap)
+        if threshold is not None and thickness_overlay and self.mesh_vertex_colors is not None:
             data_min = np.min(self.mesh_vertex_colors) if color_range is None else color_range[0]
             data_max = np.max(self.mesh_vertex_colors) if color_range is None else color_range[1]
-            data_range = data_max - data_min
-
-            # Calculate normalized threshold positions
-            thresh_low = (threshold[0] - data_min) / data_range
-            thresh_high = (threshold[1] - data_min) / data_range
-
-            # Ensure thresholds are within [0,1]
-            thresh_low = max(0, min(1, thresh_low))
-            thresh_high = max(0, min(1, thresh_high))
-
-            # Create new colormap with grey threshold region
-            grey_color = "rgb(150,150,150)"  # Medium grey
-            new_colormap = []
-
-            # Add colors before threshold with adjusted positions
-            if thresh_low > 0:
-                for pos, color in selected_colormap:
-                    if pos < 1:  # Only use positions less than 1
-                        new_pos = pos * thresh_low
-                        new_colormap.append([new_pos, color])
-
-            # Add threshold boundaries with grey
-            new_colormap.extend([[thresh_low, grey_color], [thresh_high, grey_color]])
-
-            # Add colors after threshold with adjusted positions
-            if thresh_high < 1:
-                remaining_range = 1 - thresh_high
-                for pos, color in selected_colormap:
-                    if pos > 0:  # Only use positions greater than 0
-                        new_pos = thresh_high + pos * remaining_range
-                        if new_pos <= 1:  # Ensure we don't exceed 1
-                            new_colormap.append([new_pos, color])
-
-            selected_colormap = new_colormap
+            neutral_range = (-threshold, threshold) if np.isscalar(threshold) else threshold
+            selected_cmap = with_neutral_range(selected_cmap, (data_min, data_max), neutral_range)
+        selected_colormap = as_plotly_colorscale(selected_cmap)
 
         # Calculate data ranges and center
         xyz_min = self.v.min(axis=0)
