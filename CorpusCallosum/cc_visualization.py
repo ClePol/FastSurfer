@@ -36,18 +36,6 @@ def nonnegative_float(value: str) -> float:
     return parsed
 
 
-def thickness_profile_for_plot(contour: CCContour) -> np.ndarray:
-    """Return one side of the paired original thickness measurements."""
-    if contour.original_thickness_vertices is None:
-        raw_values = contour.thickness_values
-    else:
-        raw_values = contour.thickness_values[contour.original_thickness_vertices]
-    raw_values = raw_values[~np.isnan(raw_values)]
-    if len(raw_values) % 2 != 0:
-        raise ValueError(f"Expected paired thickness measurements, but found {len(raw_values)} values.")
-    return raw_values[len(raw_values) // 2:]
-
-
 def make_parser() -> argparse.ArgumentParser:
     """Create a command line parser for the visualization pipeline."""
     parser = argparse.ArgumentParser(description="Visualize corpus callosum from template files.")
@@ -113,7 +101,7 @@ def make_parser() -> argparse.ArgumentParser:
         default="red_to_yellow",
         metavar="COLORMAP",
         help=(
-            "Colormap to use for thickness visualization, from lower to higher values. "
+            "Colormap progression from lower to higher values. "
             f"Predefined options: {', '.join(PREDEFINED_COLORMAPS)}. "
             "Any registered Matplotlib colormap name is also accepted."
         ),
@@ -201,10 +189,10 @@ def options_parse() -> argparse.Namespace:
 
 def load_plot_values(values_file: str | Path) -> np.ndarray:
     """Load a one-column CSV with one header row."""
-    values = np.loadtxt(values_file, delimiter=",", skiprows=1, dtype=float)
-    values = np.atleast_1d(values)
-    if values.ndim != 1:
+    values = np.loadtxt(values_file, delimiter=",", skiprows=1, dtype=float, ndmin=2)
+    if values.shape[1] != 1:
         raise ValueError(f"Values file must contain exactly one column, found shape {values.shape}")
+    values = values[:, 0]
     if len(values) < 2:
         raise ValueError("Values file must contain at least two values")
     return values
@@ -375,6 +363,8 @@ def main(
     """Visualize corpus callosum templates in 2D or 3D."""
     if values_file is None and mode != "thickness":
         raise ValueError("--mode is only supported with --values_file")
+    if values_file is None and (log_scale or upper_threshold is not None):
+        raise ValueError("--log_scale and --upper_threshold require --values_file")
 
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -419,7 +409,7 @@ def main(
     logger.info(f"Writing output to {output_dir / 'cc_thickness_2d.png'}")
 
     raw_thickness_values = mid_contour.get_thickness_profile()
-    mid_contour.plot_contour_colorfill(
+    figure = mid_contour.plot_contour_colorfill(
         plot_values=raw_thickness_values,
         title=None,
         save_path=str(output_dir / "cc_thickness_2d.png"),
@@ -430,6 +420,7 @@ def main(
         legend=legend,
         threshold=threshold,
     )
+    plt.close(figure)
     if twoD:
         return 0
 

@@ -65,6 +65,8 @@ class NeutralRangeColormap(Colormap):
         self.neutral_min = neutral_min
         self.neutral_max = neutral_max
         self.neutral_rgba = np.asarray(to_rgba(neutral_color))
+        self._preserve_over = False
+        self._preserve_under = False
 
     def __call__(self, values, alpha=None, bytes=False):
         """Map normalized values, replacing the neutral interval exactly."""
@@ -73,7 +75,15 @@ class NeutralRangeColormap(Colormap):
         neutral = self.neutral_rgba.copy()
         if alpha is not None and np.isscalar(alpha):
             neutral[3] = alpha
-        mask = (normalized >= self.neutral_min) & (normalized <= self.neutral_max)
+        mask = (
+            (normalized >= self.neutral_min)
+            & (normalized <= self.neutral_max)
+            & ~np.ma.getmaskarray(values)
+        )
+        if self._preserve_over:
+            mask &= normalized <= 1.0
+        if self._preserve_under:
+            mask &= normalized >= 0.0
         if colors.ndim == 1:
             if bool(mask):
                 colors = neutral
@@ -82,6 +92,16 @@ class NeutralRangeColormap(Colormap):
         if bytes:
             return np.asarray(np.round(colors * 255), dtype=np.uint8)
         return colors
+
+    def with_extremes(self, *, bad=None, under=None, over=None):
+        """Preserve special colors when wrapping the base colormap."""
+        result = NeutralRangeColormap(
+            self.base.with_extremes(bad=bad, under=under, over=over),
+            self.neutral_min, self.neutral_max, self.neutral_rgba, self.N,
+        )
+        result._preserve_over = self._preserve_over or over is not None
+        result._preserve_under = self._preserve_under or under is not None
+        return result
 
 
 def get_colormap(name: str) -> Colormap:

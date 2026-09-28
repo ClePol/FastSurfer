@@ -16,6 +16,21 @@ from CorpusCallosum.cc_visualization import load_contours_from_template_dir
 from CorpusCallosum.data.constants import THIRD_VENTRICLE_LABEL
 
 
+def test_single_row_csv_with_multiple_columns_is_rejected(tmp_path) -> None:
+    """A two-column row is not an anterior-to-posterior value profile."""
+    path = tmp_path / "values.csv"
+    path.write_text("first,second\n1,2\n")
+    with pytest.raises(ValueError, match="exactly one column"):
+        cc_visualization.load_plot_values(path)
+
+
+@pytest.mark.parametrize("kwargs", [{"log_scale": True}, {"upper_threshold": 0.05}])
+def test_values_only_options_cannot_be_silently_ignored(tmp_path, kwargs) -> None:
+    """Unsupported template options fail before producing misleading output."""
+    with pytest.raises(ValueError, match="require --values_file"):
+        cc_visualization.main(tmp_path, tmp_path / "output", **kwargs)
+
+
 class ImmediateExecutor:
     """Executor that exposes failures through Future.result()."""
 
@@ -71,9 +86,10 @@ def test_slice_failure_does_not_discard_later_results(monkeypatch: pytest.Monkey
             raise RuntimeError("synthetic middle-slice failure")
         return {"slice_index": slice_idx}, object()
 
-    results, _io_futures, contours, failed = _run_multi_slice_reconstruction(monkeypatch, worker)
+    results, _io_futures, contours, failed, indices = _run_multi_slice_reconstruction(monkeypatch, worker)
 
-    assert [result["slice_index"] for result in results] == [0, 1, 3, 4]
+    assert [result["slice_index"] if result else None for result in results] == [0, 1, None, 3, 4]
+    assert indices == [0, 1, 2, 3, 4]
     assert len(contours) == 4
     assert failed == 1
 
