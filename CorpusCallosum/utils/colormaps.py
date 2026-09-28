@@ -1,10 +1,11 @@
 """Shared colormap helpers for corpus callosum visualizations."""
 
 from collections.abc import Sequence
+from numbers import Real
 
 import matplotlib
 import numpy as np
-from matplotlib.colors import Colormap, LinearSegmentedColormap, to_hex, to_rgba
+from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap, to_hex, to_rgba
 
 _PREDEFINED_COLORS: dict[str, Sequence[tuple[float, str]]] = {
     "red_to_blue": (
@@ -50,7 +51,7 @@ _WHIPPERSNAPPY_HEAT_COLORS: Sequence[tuple[float, tuple[float, float, float]]] =
 
 
 class NeutralRangeColormap(Colormap):
-    """Colormap wrapper that applies an exact neutral interval."""
+    """Matplotlib colormap with an exact, rather than quantized, neutral interval."""
 
     def __init__(
         self,
@@ -61,46 +62,124 @@ class NeutralRangeColormap(Colormap):
         samples: int,
     ) -> None:
         super().__init__(name=f"{base.name}_thresholded", N=samples)
-        self.base = base
+        self.base = base.copy()
         self.neutral_min = neutral_min
         self.neutral_max = neutral_max
         self.neutral_rgba = np.asarray(to_rgba(neutral_color))
-        self._preserve_over = False
-        self._preserve_under = False
+        # Matplotlib distinguishes explicit extremes from endpoint defaults only
+        # through these attributes. Explicit colors take precedence over neutrality.
+        self._preserve_over = base._rgba_over is not None
+        self._preserve_under = base._rgba_under is not None
+        self.colorbar_extend = base.colorbar_extend
+
+    def _init(self):
+        """Initialize the table used by inherited queries, equality, and previews."""
+        self._lut = np.empty((self.N + 3, 4))
+        self._lut[:self.N] = self(np.linspace(0.0, 1.0, self.N))
+        self._lut[self._i_bad] = self.base.get_bad()
+        self._lut[self._i_under] = self.base.get_under() if self._preserve_under else self(np.nextafter(0.0, -np.inf))
+        self._lut[self._i_over] = self.base.get_over() if self._preserve_over else self(np.nextafter(1.0, np.inf))
+        self._isinit = True
 
     def __call__(self, values, alpha=None, bytes=False):
         """Map normalized values, replacing the neutral interval exactly."""
         normalized = np.asarray(values)
-        colors = np.array(self.base(values, alpha=alpha, bytes=False), copy=True)
-        neutral = self.neutral_rgba.copy()
-        if alpha is not None and np.isscalar(alpha):
-            neutral[3] = alpha
+        indexed = normalized.dtype.kind in "biu"
+        mask_under = normalized < 0
+        mask_over = normalized >= self.N if indexed else normalized > 1.0
+        if indexed:
+            normalized = normalized.astype(float) / max(self.N - 1, 1)
+            base_values = np.where(mask_over, np.maximum(normalized, np.nextafter(1.0, np.inf)), normalized)
+        else:
+            base_values = values
+        mask_bad = np.ma.getmaskarray(values) | np.isnan(normalized)
+        colors = np.array(self.base(np.ma.array(base_values, mask=mask_bad), alpha=alpha), copy=True)
         mask = (
             (normalized >= self.neutral_min)
             & (normalized <= self.neutral_max)
-            & ~np.ma.getmaskarray(values)
+            & ~mask_bad
         )
         if self._preserve_over:
-            mask &= normalized <= 1.0
+            mask &= ~mask_over
         if self._preserve_under:
-            mask &= normalized >= 0.0
-        if colors.ndim == 1:
-            if bool(mask):
-                colors = neutral
-        else:
-            colors[mask] = neutral
+            mask &= ~mask_under
+        colors[..., :3][mask] = self.neutral_rgba[:3]
+        if alpha is None:
+            colors[..., 3][mask] = self.neutral_rgba[3]
         if bytes:
-            return np.asarray(np.round(colors * 255), dtype=np.uint8)
-        return colors
+            colors = (colors * 255).astype(np.uint8)
+        return colors if np.iterable(values) else tuple(colors)
+
+    def __copy__(self):
+        """Keep the base map and neutral color independent when copying."""
+        result = super().__copy__()
+        result.base = self.base.copy()
+        result.neutral_rgba = self.neutral_rgba.copy()
+        return result
+
+    def set_bad(self, color="k", alpha=None):
+        """Set the missing-data color on this map only."""
+        self.set_extremes(bad=to_rgba(color, alpha))
+
+    def set_under(self, color="k", alpha=None):
+        """Set an explicit below-range color, overriding the neutral band."""
+        self.set_extremes(under=to_rgba(color, alpha))
+
+    def set_over(self, color="k", alpha=None):
+        """Set an explicit above-range color, overriding the neutral band."""
+        self.set_extremes(over=to_rgba(color, alpha))
+
+    def set_extremes(self, *, bad=None, under=None, over=None):
+        """Update special colors and invalidate the cached query table."""
+        self.base = self.base.with_extremes(bad=bad, under=under, over=over)
+        self._preserve_over |= over is not None
+        self._preserve_under |= under is not None
+        self._isinit = False
 
     def with_extremes(self, *, bad=None, under=None, over=None):
         """Preserve special colors when wrapping the base colormap."""
+        result = self.copy()
+        result.set_extremes(bad=bad, under=under, over=over)
+        return result
+
+    def resampled(self, lutsize):
+        """Resample the base map without quantizing the neutral interval."""
         result = NeutralRangeColormap(
-            self.base.with_extremes(bad=bad, under=under, over=over),
-            self.neutral_min, self.neutral_max, self.neutral_rgba, self.N,
+            self.base.resampled(lutsize), self.neutral_min, self.neutral_max, self.neutral_rgba, lutsize,
         )
-        result._preserve_over = self._preserve_over or over is not None
-        result._preserve_under = self._preserve_under or under is not None
+        result.name = self.name
+        result._preserve_over = self._preserve_over
+        result._preserve_under = self._preserve_under
+        result.colorbar_extend = self.colorbar_extend
+        return result
+
+    def reversed(self, name=None):
+        """Reverse the base colors, neutral interval, and explicit extremes."""
+        result = NeutralRangeColormap(
+            self.base.reversed(), 1.0 - self.neutral_max, 1.0 - self.neutral_min, self.neutral_rgba, self.N,
+        )
+        result.name = f"{self.name}_r" if name is None else name
+        result._preserve_over = self._preserve_under
+        result._preserve_under = self._preserve_over
+        result.colorbar_extend = self.colorbar_extend
+        return result
+
+    def with_alpha(self, alpha):
+        """Return a copy with uniform transparency, including neutral and bad colors."""
+        if not isinstance(alpha, Real):
+            raise TypeError("'alpha' must be numeric")
+        if not 0 <= alpha <= 1:
+            raise ValueError("'alpha' must be between 0 and 1, inclusive")
+        result = self.copy()
+        colors = self.base(np.linspace(0.0, 1.0, self.base.N))
+        colors[:, 3] = alpha
+        result.base = ListedColormap(colors, name=self.base.name).with_extremes(
+            bad=to_rgba(self.base.get_bad(), alpha),
+            under=to_rgba(self.base.get_under(), alpha),
+            over=to_rgba(self.base.get_over(), alpha),
+        )
+        result.neutral_rgba[3] = alpha
+        result._isinit = False
         return result
 
 
@@ -188,7 +267,7 @@ def with_neutral_range(
     neutral_color: str = "#969696",
     samples: int = 256,
 ) -> Colormap:
-    """Return a sampled colormap with a neutral interval in data coordinates."""
+    """Return a colormap with an exact neutral interval in data coordinates."""
     data_min, data_max = color_range
     neutral_min, neutral_max = neutral_range
     if data_min >= data_max:
