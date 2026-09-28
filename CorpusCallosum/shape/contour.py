@@ -40,7 +40,7 @@ import FastSurferCNN.utils.logging as logging
 from CorpusCallosum.data.constants import CC_ANALYSIS_WIDTH_MM
 from CorpusCallosum.shape.endpoint_heuristic import find_cc_endpoints, smooth_contour
 from CorpusCallosum.shape.thickness import cc_thickness
-from CorpusCallosum.utils.colormaps import get_colormap, with_neutral_range
+from CorpusCallosum.utils.colormaps import get_colormap, resolve_color_range, with_neutral_range
 from CorpusCallosum.utils.types import Points2dType
 from FastSurferCNN.utils import AffineMatrix4x4, Mask2d, Vector2d
 

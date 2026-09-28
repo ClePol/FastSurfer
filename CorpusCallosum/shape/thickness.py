@@ -152,13 +152,12 @@ def insert_point_with_thickness(
     existing_matches = np.where(existing_distances <= 1e-10)[0]
     if len(existing_matches) > 0:
         point_idx = int(existing_matches[0])
-        if np.isnan(contour_thickness[point_idx]):
-            contour_thickness[point_idx] = thickness_value
 
         # Keep the contour cardinality stable across slices, but avoid inserting
         # an exact duplicate vertex. Exact duplicates create zero-length edges in
         # visualization/mesh code, while skipping the point breaks the equal
-        # point-count invariant expected by CCMesh.from_contours().
+        # point-count invariant expected by CCMesh.from_contours(). The inserted
+        # vertex alone carries this level-path measurement
         before_idx = (point_idx - 1) % len(contour_in_as_space)
         after_idx = (point_idx + 1) % len(contour_in_as_space)
         before_vector = contour_in_as_space[before_idx, :2] - contour_in_as_space[point_idx, :2]

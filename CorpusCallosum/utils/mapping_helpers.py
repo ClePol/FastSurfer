@@ -3,7 +3,6 @@ from typing import overload
 
 import nibabel as nib
 import numpy as np
-import SimpleITK as sitk
 from scipy.ndimage import affine_transform
 
 from CorpusCallosum.data.constants import CC_LABEL, FORNIX_LABEL, SUBSEGMENT_LABELS
@@ -24,37 +23,6 @@ from FastSurferCNN.utils import (
 from FastSurferCNN.utils.parallel import thread_executor
 
 logger = logging.get_logger(__name__)
-
-
-def make_midplane_affine(
-        orig_affine: AffineMatrix4x4,
-        slices_to_analyze: int = 1,
-        offset: int = 4,
-    ) -> AffineMatrix4x4:
-    """Create affine transformation matrix for midplane slices.
-
-    Parameters
-    ----------
-    orig_affine : AffineMatrix4x4
-        Original image affine matrix (4x4).
-    slices_to_analyze : int, default=1
-        Number of slices to analyze around midplane.
-    offset : int, default=4
-        Additional offset in x direction.
-
-    Returns
-    -------
-    AffineMatrix4x4
-        4x4 affine matrix for midplane slices.
-    """
-    # Create translation matrix to center on midplane
-    orig_to_seg = np.eye(4)
-    orig_to_seg[0, 3] = -256 // 2 + slices_to_analyze // 2 + offset
-
-    # Combine with original affine
-    seg_affine = orig_affine @ np.linalg.inv(orig_to_seg)
-
-    return seg_affine
 
 
 def correct_nodding(ac_pt: Vector2d, pc_pt: Vector2d) -> AffineMatrix3x3:
@@ -270,36 +238,6 @@ def apply_transform_to_volume(
         resampled_typecast = resampled.astype((header if header else orig_image).get_data_dtype())
         nib.save(as_mgh_image(resampled_typecast, save_vox2ras, header), output_path)
     return resampled
-
-
-def make_affine(simpleITKImage: sitk.Image) -> AffineMatrix4x4:
-    """Create an affine transformation matrix from a SimpleITK image.
-
-    Parameters
-    ----------
-    simpleITKImage : sitk.Image
-        Input SimpleITK image.
-
-    Returns
-    -------
-    np.ndarray
-        4x4 affine transformation matrix in RAS coordinates.
-
-    Notes
-    -----
-    The function:
-    1. Gets affine transform in LPS coordinates
-    2. Converts to RAS coordinates to match nibabel
-    3. Returns the final 4x4 transformation matrix
-    """
-    # get affine transform in LPS
-    c = [simpleITKImage.TransformContinuousIndexToPhysicalPoint(p) for p in np.eye(4)[:, :3]]
-    c = np.array(c)
-    affine = np.append(np.append(c[0:3] - c[3:], c[3:], axis=0), np.eye(4)[3], axis=1)
-    affine = np.transpose(affine)
-    # convert to RAS to match nibabel
-    affine = np.matmul(np.diag([-1.0, -1.0, 1.0, 1.0]), affine)
-    return affine
 
 
 @overload

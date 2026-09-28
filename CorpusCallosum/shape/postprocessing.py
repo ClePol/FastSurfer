@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import concurrent.futures
+import json
 from copy import copy
 from functools import partial
 from pathlib import Path
@@ -21,7 +22,12 @@ import numpy as np
 from numpy import typing as npt
 
 import FastSurferCNN.utils.logging as logging
-from CorpusCallosum.data.constants import CC_LABEL, SUBSEGMENT_LABELS
+from CorpusCallosum.data.constants import (
+    CC_ANALYSIS_WIDTH_MM,
+    CC_LABEL,
+    CC_TEMPLATE_METADATA_FILENAME,
+    SUBSEGMENT_LABELS,
+)
 from CorpusCallosum.shape.contour import CCContour, contours_for_analysis_width
 from CorpusCallosum.shape.curvature import calculate_curvature_metrics
 from CorpusCallosum.shape.endpoint_heuristic import connect_diagonally_connected_components
@@ -79,6 +85,11 @@ def offset_affine(offset: npt.ArrayLike) -> AffineMatrix4x4:
     vox2vox: AffineMatrix4x4 = np.eye(4, dtype=float)
     vox2vox[0:3, 3] = _offset
     return vox2vox
+
+
+def _write_template_metadata(path: Path, metadata: dict) -> None:
+    """Write metadata required to detect incomplete exported slice sets."""
+    path.write_text(json.dumps(metadata, indent=2) + "\n")
 
 
 @update_docstring(SubdivisionMethod=str(get_args(SubdivisionMethod))[1:-1])
@@ -185,6 +196,7 @@ def recon_cc_surf_measures_multi(
     else:  # specific slice number
         num_slices = 1
         slices_to_recon = [int(slice_selection)]
+    selected_center_slice = slices_to_recon[len(slices_to_recon) // 2]
 
     def _gen_slice2slab_vox2vox(_slice_idx: int) -> AffineMatrix4x4:
         # The slice_idx offset must be negative, because we are going from left to right.
@@ -228,7 +240,7 @@ def recon_cc_surf_measures_multi(
         cc_contours_by_slice[i] = _contour
         slice_cc_measures[i] = cc_measures
         is_debug = logger.getEffectiveLevel() <= logging.DEBUG
-        is_midslice = i == num_slices // 2
+        is_midslice = slice_idx == selected_center_slice
         if wants_output("cc_qc_image") and (is_debug or is_midslice):
             qc_imgs: list[Path] = [output_path("cc_qc_image")]
             if is_debug:
@@ -236,7 +248,7 @@ def recon_cc_surf_measures_multi(
                 qc_imgs = (qc_imgs if is_midslice else []) + [qc_slice_img]
 
             logger.info(f"Saving segmentation qc image to {', '.join(map(str, qc_imgs))}")
-            current_slice_in_volume = midslices.shape[0] // 2 - num_slices // 2 + slice_idx
+            current_slice_in_volume = midslices.shape[0] // 2 - segmentation.shape[0] // 2 + slice_idx
             # Create visualization for this slice
             io_futures.append(
                 run(
@@ -263,11 +275,25 @@ def recon_cc_surf_measures_multi(
         template_dir.mkdir(parents=True, exist_ok=True)
         logger.info("Saving template files (contours.txt, thickness_values.txt, "
                     f"thickness_measurement_points.txt) to {template_dir}")
-        for j, contour in enumerate(cc_contours_by_slice):
+        for slice_idx, contour in zip(slices_to_recon, cc_contours_by_slice, strict=True):
             if contour is None:
                 continue
-            io_futures.append(run(contour.save_contour, template_dir / f"contour_{j}.txt"))
-            io_futures.append(run(contour.save_thickness_values, template_dir / f"thickness_values_{j}.txt"))
+            io_futures.append(run(contour.save_contour, template_dir / f"contour_{slice_idx}.txt"))
+            io_futures.append(run(contour.save_thickness_values, template_dir / f"thickness_values_{slice_idx}.txt"))
+        metadata = {
+            "schema_version": 1,
+            "analysis_width_mm": CC_ANALYSIS_WIDTH_MM,
+            "requested_slice_indices": slices_to_recon,
+            "successful_slice_indices": [
+                idx for idx, contour in zip(slices_to_recon, cc_contours_by_slice, strict=True) if contour is not None
+            ],
+            "selected_slice_index": selected_center_slice,
+            "slice_positions_mm": {
+                str(idx): contour.z_position
+                for idx, contour in zip(slices_to_recon, cc_contours_by_slice, strict=True) if contour is not None
+            },
+        }
+        io_futures.append(run(_write_template_metadata, template_dir / CC_TEMPLATE_METADATA_FILENAME, metadata))
 
     num_failed_slices = slice_cc_measures.count(None)
 
@@ -472,16 +498,15 @@ def recon_cc_surf_measure(
         slice_vox2ras=slice_lia_vox2midslice_ras, contour_smoothing=contour_smoothing,
     )
 
-    levelpaths, thickness, midline_len, midline_equi, contour_with_thickness, endpoint_idxs, curvature = \
+    levelpaths, thickness, midline_len, midline_equi, _, endpoint_idxs, _ = \
         _contour.create_levelpaths(num_thickness_points, inplace=True)
 
     contour_as = _contour.points.T
-    # thickness values in contour_with_thickness is not equally sampled, different shape
     # to compute length of paths: diff between consecutive points (N-1, 2) => norm (N-1,) => sum (1,)
     thickness_profile = np.stack([np.sum(np.linalg.norm(np.diff(x[:, :2], axis=0), axis=1)) for x in levelpaths])
 
     acpc_contour_coords_as = contour_as[:, list(endpoint_idxs)].T
-    contour_in_acpc_space, ac_pt_acpc, pc_pt_acpc, rotate_back_acpc = transform_to_acpc_standard(
+    contour_in_acpc_space, ac_pt_acpc, _, rotate_back_acpc = transform_to_acpc_standard(
         contour_as,
         *acpc_contour_coords_as,
     )
@@ -490,7 +515,6 @@ def recon_cc_surf_measure(
     # Apply different subdivision methods based on user choice
     split_contours: ContourList
     subdivision_lines: list[Points2dType]
-    split_points_midline: np.ndarray | None = None
 
     # Transform midline to ACPC space for subdivision
     midline_acpc, _, _, _ = transform_to_acpc_standard(

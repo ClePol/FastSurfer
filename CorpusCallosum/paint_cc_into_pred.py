@@ -332,7 +332,7 @@ def _fill_gaps_between_structures_(
 
 def correct_wm_ventricles(
     aseg_cc: np.ndarray[Shape3d, np.dtype[int]],
-    fornix_mask: Mask3d,
+    *,
     voxel_size: tuple[float, float, float],
     close_gap_size_mm: float = 3.0
 ) -> np.ndarray[Shape3d, np.dtype[int]]:
@@ -341,16 +341,11 @@ def correct_wm_ventricles(
     This function performs two gap-filling operations:
     1. Fills WM and background gaps between CC and ventricles with ventricle labels
     2. Fills WM gaps between CC and background with background label
-    
-    Note: Fornix and non-CC-connected WM component removal are intentionally not implemented
-    in this function as they have been removed from the processing pipeline.
 
     Parameters
     ----------
     aseg_cc : np.ndarray
         Aseg segmentation with CC already painted in.
-    fornix_mask : np.ndarray
-        Mask of the fornix. Not currently used (kept for interface compatibility).
     voxel_size : tuple[float, float, float]
         Voxel size of the aseg image in mm.
     close_gap_size_mm : float, default=3.0
@@ -390,7 +385,7 @@ def correct_wm_ventricles(
 
 def correct_wm_ventricles_in_lia(
     aseg_cc: np.ndarray[Shape3d, np.dtype[int]],
-    fornix_mask: Mask3d,
+    *,
     affine: np.ndarray,
     voxel_size: tuple[float, float, float],
     close_gap_size_mm: float = 3.0,
@@ -401,8 +396,6 @@ def correct_wm_ventricles_in_lia(
     ----------
     aseg_cc : np.ndarray
         Segmentation with CC already painted in, in native orientation.
-    fornix_mask : np.ndarray
-        Fornix mask in native orientation.
     affine : np.ndarray
         Native image affine.
     voxel_size : tuple[float, float, float]
@@ -429,13 +422,11 @@ def correct_wm_ventricles_in_lia(
         )
 
     aseg_cc_lia = native_to_lia(aseg_cc, order=0)
-    fornix_mask_lia = native_to_lia(fornix_mask, order=0)
     voxel_size_lia = tuple(native_to_lia.reorder_axes(np.asarray(voxel_size)).tolist())
 
     corrected_lia = correct_wm_ventricles(
         aseg_cc_lia,
-        fornix_mask_lia,
-        voxel_size_lia,
+        voxel_size=voxel_size_lia,
         close_gap_size_mm=close_gap_size_mm,
     )
     corrected_native = native_to_lia.inverse(corrected_lia, order=0)
@@ -496,13 +487,11 @@ if __name__ == "__main__":
     aseg_data = paint_in_cc(aseg_data, cc_seg_data)
 
     # Apply ventricle gap filling corrections
-    fornix_mask = cc_seg_data == FORNIX_LABEL
     voxel_size = tuple(aseg_image.header.get_zooms()[:3])
     pred_corrected = correct_wm_ventricles_in_lia(
         aseg_data,
-        fornix_mask,
-        aseg_image.affine,
-        voxel_size,
+        affine=aseg_image.affine,
+        voxel_size=voxel_size,
     )
 
     logger.info(f"Writing segmentation with corpus callosum to: {options.output}")
@@ -538,4 +527,3 @@ if __name__ == "__main__":
     io_fut.result()
     if rta_fut is not None:
         rta_fut.result()
-

@@ -1,4 +1,5 @@
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Literal
@@ -8,6 +9,7 @@ import nibabel as nib
 import numpy as np
 from neuroreg import LTA
 
+from CorpusCallosum.data.constants import CC_TEMPLATE_METADATA_FILENAME
 from CorpusCallosum.data.fsaverage_cc_template import load_fsaverage_cc_template
 from CorpusCallosum.shape.contour import CCContour, contours_for_analysis_width
 from CorpusCallosum.shape.mesh import CCMesh
@@ -207,12 +209,65 @@ def load_plot_values(values_file: str | Path) -> np.ndarray:
     return values
 
 
+def _indexed_thickness_files(template_dir: Path) -> list[tuple[int, Path]]:
+    """Return valid thickness files sorted by their numeric slice suffix."""
+    indexed_files: list[tuple[int, Path]] = []
+    for thickness_file in template_dir.glob("thickness_values_*.txt"):
+        try:
+            idx = int(thickness_file.stem.split("_")[-1])
+        except ValueError:
+            continue
+        indexed_files.append((idx, thickness_file))
+    return sorted(indexed_files, key=lambda item: item[0])
+
+
+def _load_template_metadata(template_dir: Path) -> dict | None:
+    """Load optional metadata written by the FastSurfer CC pipeline."""
+    metadata_path = template_dir / CC_TEMPLATE_METADATA_FILENAME
+    if not metadata_path.exists():
+        return None
+    with metadata_path.open() as file:
+        metadata = json.load(file)
+    if metadata.get("schema_version") != 1:
+        raise ValueError(f"Unsupported CC template metadata schema in {metadata_path}")
+    return metadata
+
+
+def _template_midslice_position(template_dir: Path, two_d: bool) -> int:
+    """Return the selected contour position and reject incomplete 3D templates."""
+    indices = [idx for idx, _ in _indexed_thickness_files(template_dir)]
+    metadata = _load_template_metadata(template_dir)
+    if metadata is None:
+        return len(indices) // 2
+
+    requested = [int(idx) for idx in metadata["requested_slice_indices"]]
+    successful = [int(idx) for idx in metadata["successful_slice_indices"]]
+    selected = int(metadata["selected_slice_index"])
+    if successful != indices:
+        raise ValueError(
+            "CC template metadata does not match the available thickness files: "
+            f"metadata lists {successful}, files contain {indices}."
+        )
+    if selected not in indices:
+        raise ValueError(
+            f"The selected anatomical slice {selected} is missing from this incomplete CC template; "
+            "a neighboring slice will not be substituted."
+        )
+    if not two_d and successful != requested:
+        missing = [idx for idx in requested if idx not in successful]
+        raise ValueError(
+            f"Cannot create a full-slab 3D visualization from an incomplete CC template; missing slices: {missing}."
+        )
+    return indices.index(selected)
+
+
 def load_contours_from_template_dir(
         template_dir: Path, resolution: float, smoothing_window: int
 ) -> list[CCContour]:
     """Load all contours and thickness data from a template directory."""
-    thickness_files = sorted(template_dir.glob("thickness_values_*.txt"))
-    if not thickness_files:
+    indexed_thickness_files = _indexed_thickness_files(template_dir)
+
+    if not indexed_thickness_files:
         raise FileNotFoundError(
             f"No thickness files found in template directory {template_dir}. "
             "Expected files named thickness_values_<idx>.txt and "
@@ -221,29 +276,19 @@ def load_contours_from_template_dir(
 
     fsaverage_contour = None
     contours: list[CCContour] = []
-    # First pass: collect all indices to determine the range
-    indices = []
-    for thickness_file in thickness_files:
-        try:
-            idx = int(thickness_file.stem.split("_")[-1])
-            indices.append(idx)
-        except ValueError:
-            # skip files that do not follow the expected naming
-            continue
+    indices = [idx for idx, _ in indexed_thickness_files]
+    metadata = _load_template_metadata(template_dir)
+    stored_positions = {} if metadata is None else {
+        int(idx): float(position) for idx, position in metadata.get("slice_positions_mm", {}).items()
+    }
 
     # Calculate z_positions centered around the middle slice
     num_slices = len(indices)
     middle_idx = num_slices // 2
 
-    for thickness_file in thickness_files:
-        try:
-            idx = int(thickness_file.stem.split("_")[-1])
-        except ValueError:
-            # skip files that do not follow the expected naming
-            continue
-
+    for idx, thickness_file in indexed_thickness_files:
         # Calculate z_position: use the index offset from middle, scaled by resolution
-        z_position = (idx - indices[middle_idx]) * resolution
+        z_position = stored_positions.get(idx, (idx - indices[middle_idx]) * resolution)
 
         contour_file = template_dir / f"contour_{idx}.txt"
 
@@ -368,7 +413,7 @@ def main(
     )
 
     # 2D visualization
-    mid_contour = contours[len(contours) // 2]
+    mid_contour = contours[_template_midslice_position(template_dir, twoD)]
 
     logger.info(f"Writing output to {output_dir / 'cc_thickness_2d.png'}")
 
@@ -378,7 +423,7 @@ def main(
         title=None,
         save_path=str(output_dir / "cc_thickness_2d.png"),
         colorbar=True,
-        mode=mode,
+        mode="thickness",
         colormap=colormap,
         color_range=color_range,
         legend=legend,
@@ -424,13 +469,8 @@ def main(
     freeview_mesh.write_fssurf(str(output_dir / "cc_mesh.fssurf"), image=header)
     logger.info(f"Writing freesurfer overlay file to {output_dir / 'cc_mesh_overlay.curv'}")
     surface_mesh.write_morph_data(str(output_dir / "cc_mesh_overlay.curv"))
-    try:
-        freeview_mesh.snap_cc_picture(str(output_dir / "cc_mesh_snap.png"), ref_header=header)
-        logger.info(f"Writing 3D snapshot image to {output_dir / 'cc_mesh_snap.png'}")
-    except Exception:
-        logger.warning("The cc_visualization script requires whippersnappy>=2.1 to makes screenshots, install with "
-                       "`pip install whippersnappy>=2.1` !")
-        raise
+    freeview_mesh.snap_cc_picture(str(output_dir / "cc_mesh_snap.png"), ref_header=header)
+    logger.info(f"Writing 3D snapshot image to {output_dir / 'cc_mesh_snap.png'}")
     return 0
 
 
