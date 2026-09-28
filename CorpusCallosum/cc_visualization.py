@@ -102,7 +102,8 @@ def make_parser() -> argparse.ArgumentParser:
         help=(
             "Colormap progression from lower to higher values. "
             f"Predefined options: {', '.join(PREDEFINED_COLORMAPS)}. "
-            "Any registered Matplotlib colormap name is also accepted."
+            "Any registered Matplotlib colormap name is also accepted for PNG/Plotly HTML. "
+            "WhipperSnapPy snapshots use native heat colors, matching the diverging preset."
         ),
     )
     parser.add_argument(
@@ -112,14 +113,14 @@ def make_parser() -> argparse.ArgumentParser:
         default=None,
         metavar=("MIN", "MAX"),
         required=False,
-        help="Specify the range for the colorbar (2 values: min max). Defaults to automatic choice. \
-              (e.g. --color_range 0 10).",
+        help=("Specify colorbar limits (min max); defaults to automatic choice. "
+              "Native snapshots support symmetric limits (-M M) only."),
     )
     parser.add_argument(
         "--legend",
         type=str,
         default=None,
-        help="Override the colorbar label.",
+        help="Override the colorbar label and native snapshot caption.",
         metavar="LEGEND")
     parser.add_argument(
         "--mode",
@@ -160,7 +161,8 @@ def make_parser() -> argparse.ArgumentParser:
         type=nonnegative_float,
         default=None,
         metavar="VALUE",
-        help="Show values with absolute magnitude below VALUE in neutral gray.",
+        help=("Show values with absolute magnitude below VALUE in neutral gray. "
+              "Native snapshots also rescale colors above this absolute-value cutoff."),
     )
     parser.add_argument(
         "--twoD",
@@ -460,7 +462,10 @@ def main(
     freeview_mesh.write_fssurf(str(output_dir / "cc_mesh.fssurf"), image=header)
     logger.info(f"Writing freesurfer overlay file to {output_dir / 'cc_mesh_overlay.curv'}")
     surface_mesh.write_morph_data(str(output_dir / "cc_mesh_overlay.curv"))
-    freeview_mesh.snap_cc_picture(str(output_dir / "cc_mesh_snap.png"), ref_header=header)
+    freeview_mesh.snap_cc_picture(
+        str(output_dir / "cc_mesh_snap.png"), ref_header=header,
+        colormap=colormap, color_range=color_range, legend=legend, threshold=threshold,
+    )
     logger.info(f"Writing 3D snapshot image to {output_dir / 'cc_mesh_snap.png'}")
     return 0
 
