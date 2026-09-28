@@ -39,6 +39,66 @@ except ImportError:
 logger = logging.get_logger(__name__)
 
 
+def _snapshot_color_options(
+    vertex_values: np.ndarray | None,
+    *,
+    colormap: str | None = None,
+    color_range: tuple[float, float] | None = None,
+    legend: str | None = None,
+    threshold: float | None = None,
+) -> dict:
+    """Translate CC controls into supported WhipperSnapPy native heat options."""
+    if threshold is not None and not np.isscalar(threshold):
+        raise ValueError("Snapshot threshold must be a finite, non-negative scalar.")
+    fthresh = 0.0 if threshold is None else float(threshold)
+    if not np.isfinite(fthresh) or fthresh < 0:
+        raise ValueError("Snapshot threshold must be a finite, non-negative scalar.")
+
+    options = dict(
+        overlay=vertex_values, fthresh=fthresh, fmax=None, colorbar=True,
+        caption="Corpus Callosum thickness (mm)" if legend is None else legend,
+    )
+    if colormap is not None:
+        get_colormap(colormap)
+        if colormap != "diverging":
+            logger.warning(
+                "WhipperSnapPy snapshots cannot use colormap '%s'; using native heat colors. "
+                "PNG and Plotly HTML still use the selected colormap.", colormap,
+            )
+    if color_range is not None:
+        data_min, data_max = resolve_color_range(np.asarray([]), color_range)
+        if data_min == -data_max:
+            options["fmax"] = data_max
+        else:
+            logger.warning(
+                "WhipperSnapPy snapshots require a symmetric color_range (-M, M); ignoring %s "
+                "for the snapshot and using automatic magnitude limits. PNG and Plotly HTML retain it.", color_range,
+            )
+
+    if vertex_values is not None:
+        values = np.ma.asarray(vertex_values, dtype=float).filled(np.nan)
+        if values.ndim != 1 or np.isinf(values).any():
+            raise ValueError("Snapshot overlay must be one-dimensional and cannot contain infinite values.")
+        finite_values = values[np.isfinite(values)]
+        if finite_values.size == 0:
+            raise ValueError("Snapshot overlay must contain at least one finite value.")
+        options["overlay"] = values
+        if not np.any(np.abs(finite_values) > fthresh):
+            # WhipperSnapPy rejects overlays with no sign left after thresholding.
+            # Render the explicitly all-neutral result as its plain gray mesh.
+            options.update(overlay=None, colorbar=False)
+            logger.info(
+                "All snapshot values are zero or at/below the threshold; rendering a gray mesh without a colorbar."
+            )
+        elif options["fmax"] is not None and options["fmax"] <= fthresh:
+            logger.warning(
+                "WhipperSnapPy snapshot saturation must exceed its threshold; ignoring color_range %s "
+                "for the snapshot and using automatic magnitude limits.", color_range,
+            )
+            options["fmax"] = None
+    return options
+
+
 def make_triangles_between_contours(contour1: np.ndarray, contour2: np.ndarray) -> np.ndarray:
     """Create a triangular mesh between two contours using a robust method.
 
@@ -341,6 +401,11 @@ class CCMesh(lapy.TriaMesh):
         self,
         output_path: Path | str,
         ref_header: Path | str | nibabelHeader | None = None,
+        *,
+        colormap: str | None = None,
+        color_range: tuple[float, float] | None = None,
+        legend: str | None = None,
+        threshold: float | None = None,
     ) -> None:
         """Snap a picture of the corpus callosum mesh.
 
@@ -350,13 +415,26 @@ class CCMesh(lapy.TriaMesh):
             Path where to save the snapshot image.
         ref_header : Path, str, nibabelHeader, optional
             Path to reference image header to use for tkr creation. If None, ignores the file for saving.
+        colormap : str, optional
+            ``diverging`` uses the matching native heat palette. Other valid
+            colormap names produce a warning and retain native snapshot colors.
+        color_range : tuple of float, optional
+            A symmetric range ``(-M, M)`` sets native saturation to ``M``.
+            Unsupported ranges produce a warning and use automatic native limits.
+        legend : str, optional
+            Snapshot caption. Defaults to "Corpus Callosum thickness (mm)".
+            An empty string hides the caption.
+        threshold : float, optional
+            Non-negative native absolute-value threshold; defaults to zero.
+            Unlike PNG/HTML neutrality, native thresholding also rescales colors
+            above the cutoff and uses the native background gray below it.
 
         Raises
         ------
         ImportError
             If whippersnappy is not installed or if the version is too old.
         ValueError
-            If the mesh has no faces and cannot create a snapshot.
+            If the mesh has no faces, or the overlay or numeric settings are invalid.
         """
         from packaging.version import parse
         try:
@@ -380,6 +458,11 @@ class CCMesh(lapy.TriaMesh):
         if len(self.t) == 0:
             raise ValueError("Cannot create snapshot - no faces in mesh")
 
+        if self.mesh_vertex_colors is not None and np.shape(self.mesh_vertex_colors) != (len(self.v),):
+            raise ValueError("Snapshot overlay must contain exactly one value per mesh vertex.")
+        color_options = _snapshot_color_options(
+            self.mesh_vertex_colors, colormap=colormap, color_range=color_range, legend=legend, threshold=threshold,
+        )
         self.__make_parent_folder(output_path)
 
         if ref_header is None:
@@ -396,7 +479,7 @@ class CCMesh(lapy.TriaMesh):
 
         whippersnappy.snap1(
             mesh=(v, self.t),
-            overlay=self.mesh_vertex_colors,
+            **color_options,
             view=self.__create_cc_viewmat(),
             width=3 * 500,
             height=3 * 300,
@@ -406,8 +489,6 @@ class CCMesh(lapy.TriaMesh):
             colorbar_y=0.88,
             colorbar_x=0.19,
             scale=2.1,
-            fthresh=0,
-            caption="Corpus Callosum thickness (mm)",
             caption_y=0.85,
             caption_x=0.17,
             caption_scale=0.5,

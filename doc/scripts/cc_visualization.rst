@@ -22,6 +22,33 @@ point the script to the exported template directory:
         --template_dir $HOME/my_fastsurfer_analysis/subjectX/cc_template \
         --output_dir $HOME/my_fastsurfer_analysis/subjectX/cc_visualization
 
+Native 3D Snapshot Color Controls
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``cc_mesh_snap.png`` output uses WhipperSnapPy's native heat palette.
+``--colormap diverging`` selects the matching palette in PNG and Plotly HTML;
+other Matplotlib or legacy presets remain supported there, but produce a
+warning that native snapshots cannot use the selected palette.
+
+The following settings are forwarded to WhipperSnapPy:
+
+* ``--color_range -M M`` sets its saturation magnitude to ``M``. Asymmetric
+  ranges cannot be represented by native magnitude-based scaling; the snapshot
+  uses automatic limits with a warning, while PNG/HTML keep the requested range.
+* ``--threshold VALUE`` sets its native absolute-value cutoff. Unlike the
+  PNG/HTML neutral band, WhipperSnapPy also rescales the remaining colors above
+  the cutoff and uses its background gray for sub-threshold values. Identical
+  threshold settings therefore do not imply identical colors across renderers.
+* ``--legend TEXT`` replaces the snapshot caption as well as the PNG/HTML
+  colorbar label.
+
+When a requested saturation is at or below the native threshold, but some data
+remain above that threshold, the snapshot uses automatic saturation with a
+warning. Zero-valued or entirely thresholded overlays produce a plain gray
+mesh without a misleading colorbar. Invalid thresholds, ranges, and overlays
+produce explicit errors. These display controls do not alter exported scalar
+values or geometry.
+
 2D Visualization
 ~~~~~~~~~~~~~~~~
 
