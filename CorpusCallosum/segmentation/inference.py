@@ -11,15 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from collections.abc import Iterator
 from pathlib import Path
-from typing import cast, overload
+from typing import overload
 
-import nibabel as nib
 import numpy as np
 import torch
 from monai import transforms
-from numpy import typing as npt
 
 from CorpusCallosum.data import constants
 from CorpusCallosum.transforms.segmentation import CropAroundACPC
@@ -91,7 +88,6 @@ def run_inference(
     pc_center: Vector2d,
     voxel_size: tuple[float, float],
     device: torch.device | None = None,
-    transform: transforms.Transform | None = None
 ) -> tuple[np.ndarray[Shape4d, np.dtype[np.int_]], Image4d, Image4d]:
     """Run inference on a single image slice.
 
@@ -109,16 +105,14 @@ def run_inference(
         Voxel size of inferior/superior and anterior/posterior direction in mm.
     device : torch.device, optional
         Device to run inference on. If None, uses the device of the model.
-    transform : transforms.Transform, optional
-        Custom transform pipeline.
 
     Returns
     -------
-    seg_labels : npt.NDArray[int]
+    seg_labels : np.ndarray of int
         The segmentation result.
-    inputs : npt.NDArray[float]
+    inputs : np.ndarray of float
         The inputs to the model.
-    soft_labels : npt.NDArray[float]
+    soft_labels : np.ndarray of float
         The softlabel output.
     """
     if device is None:
@@ -157,77 +151,6 @@ def run_inference(
     return tuple(x.transpose(0, 2, 3, 1) for x in (labels, _inputs.cpu().numpy(), softlabels))
 
 
-def load_validation_data(
-    path: str | Path,
-) -> tuple[npt.NDArray[str], npt.NDArray[float], npt.NDArray[float], Iterator[int], npt.NDArray[str], list[str]]:
-    """Load validation data from CSV file and compute label widths.
-
-    Reads a CSV file containing image paths, label paths, and AC/PC coordinates,
-    then computes the width (number of slices with non-zero labels) for each label file.
-
-    Parameters
-    ----------
-    path : str or Path
-        Path to the CSV file containing validation data. The CSV should have columns:
-        image, label, AC_center_x, AC_center_y, AC_center_z,
-        PC_center_x, PC_center_y, PC_center_z.
-
-    Returns
-    -------
-    images : npt.NDArray[str]
-        Array of image file paths.
-    ac_centers : npt.NDArray[float]
-        Array of anterior commissure coordinates (x, y, z).
-    pc_centers : npt.NDArray[float]
-        Array of posterior commissure coordinates (x, y, z).
-    label_widths : Iterator[int]
-        Iterator yielding the number of slices with non-zero labels for each label file.
-    labels : npt.NDArray[str]
-        Array of label file paths.
-    subj_ids : list[str]
-        List of subject IDs (from CSV index).
-    """
-    import pandas as pd
-
-    data = pd.read_csv(path, index_col=0, header=None)
-    data.columns = ["image", "label", "AC_center_x", "AC_center_y", "AC_center_z",
-                    "PC_center_x", "PC_center_y", "PC_center_z"]
-
-    ac_centers = data[["AC_center_x", "AC_center_y", "AC_center_z"]].values
-    pc_centers = data[["PC_center_x", "PC_center_y", "PC_center_z"]].values
-    images = data["image"].values
-    labels = data["label"].values
-    subj_ids = data.index.values.tolist()
-
-    def _load(label_path: str | Path) -> int:
-        """Compute the width of non-zero slices in a label image.
-
-        Parameters
-        ----------
-        label_path : str or Path
-            Path to the label image file
-
-        Returns
-        -------
-        int
-            Number of slices containing non-zero labels, or total slices if <= 100
-        """
-        label_img = cast(nibabelImage, nib.load(label_path))
-
-        if label_img.shape[0] > 100:
-            # check which slices have non-zero values
-            label_data = np.asarray(label_img.dataobj)
-            non_zero_slices = np.any(label_data > 0, axis=(1,2))
-            first_nonzero = np.argmax(non_zero_slices)
-            last_nonzero = len(non_zero_slices) - np.argmax(non_zero_slices[::-1])
-            return last_nonzero - first_nonzero
-        else:
-            return label_img.shape[0]
-
-    label_widths = thread_executor().map(_load, data["label"])
-
-    return images, ac_centers, pc_centers, label_widths, labels, subj_ids
-
 @overload
 def one_hot_to_label(one_hot: Image4d, label_ids: list[int] | None = None) \
         -> np.ndarray[Shape3d, np.dtype[np.int_]]: ...
@@ -250,12 +173,12 @@ def one_hot_to_label(
     one_hot : np.ndarray of floats
         One-hot encoded segmentation array of shape (..., num_classes).
     label_ids : array_like of ints, optional
-        List of label IDs to map classes to. If None, defaults to [0, FORNIX_LABEL, CC_LABEL].
+        List of label IDs to map classes to. If None, defaults to [0, CC_LABEL, FORNIX_LABEL].
         The index in this list corresponds to the class index from argmax.
 
     Returns
     -------
-    npt.NDArray[int]
+    np.ndarray of int
         Label map with discrete integer labels.
     """
     if label_ids is None:
@@ -263,10 +186,7 @@ def one_hot_to_label(
         label_ids = [0, CC_LABEL, FORNIX_LABEL]
 
     label = np.argmax(one_hot, axis=3)
-    if label_ids is not None:
-        label = np.asarray(label_ids)[label]
-
-    return label
+    return np.asarray(label_ids)[label]
 
 
 def run_inference_on_slice(
@@ -284,9 +204,9 @@ def run_inference_on_slice(
         Trained model for inference.
     test_slab : np.ndarray
         Input image slice.
-    ac_center : npt.NDArray[float]
+    ac_center : np.ndarray of float
         Anterior commissure coordinates (Inferior and Anterior values).
-    pc_center : npt.NDArray[float]
+    pc_center : np.ndarray of float
         Posterior commissure coordinates (Inferior and Posterior values).
     voxel_size : a pair of floats
         Voxel sizes in superior/inferior and anterior/posterior direction in mm.
@@ -297,7 +217,7 @@ def run_inference_on_slice(
         Label map after one-hot conversion.
     inputs: np.ndarray
         Preprocessed input image.
-    outputs_soft: npt.NDArray[float]
+    outputs_soft: np.ndarray of float
         Softlabel outputs (non-discrete).
     
     """

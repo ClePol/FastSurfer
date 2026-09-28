@@ -13,11 +13,10 @@
 # limitations under the License.
 
 import numpy as np
-import skimage.measure
 from scipy.ndimage import label
 
-from CorpusCallosum.utils.types import Points2dType, Polygon2dType
-from FastSurferCNN.utils import Image2d, Mask2d, Vector2d
+from CorpusCallosum.utils.types import Points2dType
+from FastSurferCNN.utils import Image2d, Vector2d
 
 
 def smooth_contour(x: np.ndarray, y: np.ndarray, window_size: int) -> tuple[np.ndarray, np.ndarray]:
@@ -125,29 +124,6 @@ def connect_diagonally_connected_components(cc_mask: Image2d) -> Image2d:
     
     # Fill the identified diagonal gaps that actually improve connectivity
     return np.where(connects_diagonals, 1, cc_mask)
-
-
-def extract_cc_contour(cc_mask: Mask2d, contour_smoothing: int = 5) -> Polygon2dType:
-    """Extract the contour of the CC from the mask using a marching squares approach.
-
-    Parameters
-    ----------
-    cc_mask : np.ndarray
-        Binary mask of the corpus callosum.
-    contour_smoothing : int, default=5
-        Window size for contour smoothing.
-
-    Returns
-    -------
-    lapy.Polygon
-        A lapy Polygon object with a closed polygon contour.
-    """
-    cc_mask = connect_diagonally_connected_components(cc_mask)
-
-    contour = skimage.measure.find_contours(cc_mask, level=0.5)[0].T
-    contour = np.array(smooth_contour(contour[0], contour[1], contour_smoothing))
-
-    return contour
 
 
 def find_cc_endpoints(

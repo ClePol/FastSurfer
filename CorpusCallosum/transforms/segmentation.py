@@ -70,11 +70,6 @@ class CropAroundACPC(RandomizableTransform, MapTransform):
         """
         d = dict(data)
 
-        if "AC_center_original" not in d:
-            d["AC_center_original"] = d["AC_center"].copy()
-        if "PC_center_original" not in d:
-            d["PC_center_original"] = d["PC_center"].copy()
-
         if self.random_translate > 0:
             random_translate = np.random.randint(-self.random_translate, self.random_translate, size=2)
         else:
@@ -112,69 +107,3 @@ class CropAroundACPC(RandomizableTransform, MapTransform):
             d[key] = d[key][:, :, crop_left:crop_right, crop_top:crop_bottom]
 
         return d
-
-
-class CropAroundACPCtrack(CropAroundACPC):
-    """Crop image around AC-PC points and update their coordinates.
-
-    Extends CropAroundACPC to also adjust the AC and PC center coordinates
-    after cropping to maintain their correct positions in the cropped image.
-
-    Parameters
-    ----------
-    keys : list[str]
-        Keys of the data dictionary to apply the transform to.
-    allow_missing_keys : bool, optional
-        Whether to allow missing keys in the data dictionary, by default False.
-    padding_mm : float, optional
-        Padding around AC-PC region in millimeters, by default 10.
-    random_translate : float, optional
-        Maximum random translation in voxels, by default 0.
-
-    Notes
-    -----
-    The transform expects the following keys in the data dictionary:
-
-    - AC_center : np.ndarray
-        Coordinates of anterior commissure
-    - PC_center : np.ndarray
-        Coordinates of posterior commissure
-    - AC_center_original : np.ndarray
-        Original coordinates of anterior commissure
-    - PC_center_original : np.ndarray
-        Original coordinates of posterior commissure
-
-    """
-
-    def __call__(self, data: dict) -> dict:
-        """Apply the transform to the data.
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing the data to transform.
-
-        Returns
-        -------
-        dict
-            Transformed data dictionary with updated AC and PC coordinates.
-        """
-
-        
-        # First call parent class to get cropped image
-        d = super().__call__(data)
-        
-        # Get the crop coordinates that were used
-        pad_left, pad_right, pad_top, pad_bottom = d["to_pad"]
-
-        # Adjust AC and PC center coordinates based on cropping
-        if "AC_center" in d:
-            d["AC_center"][1] = d["AC_center_original"][1] - pad_left.item()
-            d["AC_center"][2] = d["AC_center_original"][2] - pad_top.item()
-            
-        if "PC_center" in d:
-            d["PC_center"][1] = d["PC_center_original"][1] - pad_left.item()
-            d["PC_center"][2] = d["PC_center_original"][2] - pad_top.item()
-
-        return d
-    

@@ -46,6 +46,8 @@ For signed overlays, ``--threshold VALUE`` displays values with
 ``abs(value) <= VALUE`` in neutral gray. For example,
 ``--threshold 0.2 --color_range -1 1`` retains the diverging colors outside
 ``[-0.2, 0.2]`` and shows that central interval in gray.
+A threshold of zero disables the neutral interval consistently in the 2D and
+interactive 3D renderers.
 
 The template's ``thickness_values_<slice>.txt`` is a per-contour-vertex file,
 not a one-value-per-level-path profile. Each thickness measurement occurs at

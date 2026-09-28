@@ -4,7 +4,7 @@ from collections.abc import Sequence
 
 import matplotlib
 import numpy as np
-from matplotlib.colors import Colormap, LinearSegmentedColormap, ListedColormap, to_hex, to_rgba
+from matplotlib.colors import Colormap, LinearSegmentedColormap, to_hex, to_rgba
 
 _PREDEFINED_COLORS: dict[str, Sequence[tuple[float, str]]] = {
     "red_to_blue": (
@@ -49,6 +49,41 @@ _WHIPPERSNAPPY_HEAT_COLORS: Sequence[tuple[float, tuple[float, float, float]]] =
 )
 
 
+class NeutralRangeColormap(Colormap):
+    """Colormap wrapper that applies an exact neutral interval."""
+
+    def __init__(
+        self,
+        base: Colormap,
+        neutral_min: float,
+        neutral_max: float,
+        neutral_color: str,
+        samples: int,
+    ) -> None:
+        super().__init__(name=f"{base.name}_thresholded", N=samples)
+        self.base = base
+        self.neutral_min = neutral_min
+        self.neutral_max = neutral_max
+        self.neutral_rgba = np.asarray(to_rgba(neutral_color))
+
+    def __call__(self, values, alpha=None, bytes=False):
+        """Map normalized values, replacing the neutral interval exactly."""
+        normalized = np.asarray(values)
+        colors = np.array(self.base(values, alpha=alpha, bytes=False), copy=True)
+        neutral = self.neutral_rgba.copy()
+        if alpha is not None and np.isscalar(alpha):
+            neutral[3] = alpha
+        mask = (normalized >= self.neutral_min) & (normalized <= self.neutral_max)
+        if colors.ndim == 1:
+            if bool(mask):
+                colors = neutral
+        else:
+            colors[mask] = neutral
+        if bytes:
+            return np.asarray(np.round(colors * 255), dtype=np.uint8)
+        return colors
+
+
 def get_colormap(name: str) -> Colormap:
     """Return a predefined or Matplotlib colormap.
 
@@ -76,7 +111,54 @@ def as_plotly_colorscale(colormap: str | Colormap, samples: int = 256) -> list[l
         raise ValueError("A Plotly colorscale requires at least two samples.")
     cmap = get_colormap(colormap) if isinstance(colormap, str) else colormap
     positions = np.linspace(0.0, 1.0, samples)
-    return [[float(position), to_hex(cmap(position), keep_alpha=False)] for position in positions]
+    scale = [[float(position), to_hex(cmap(position), keep_alpha=False)] for position in positions]
+    if isinstance(cmap, NeutralRangeColormap):
+        lower = max(0.0, cmap.neutral_min)
+        upper = min(1.0, cmap.neutral_max)
+        if lower <= upper:
+            neutral = to_hex(cmap.neutral_rgba, keep_alpha=False)
+            if 0.0 < lower < 1.0:
+                scale.extend(
+                    [
+                        [lower, to_hex(cmap.base(lower), keep_alpha=False)],
+                        [lower, neutral],
+                    ]
+                )
+            if 0.0 < upper < 1.0:
+                scale.extend(
+                    [
+                        [upper, neutral],
+                        [upper, to_hex(cmap.base(upper), keep_alpha=False)],
+                    ]
+                )
+            scale.sort(key=lambda entry: float(entry[0]))
+    return scale
+
+
+def resolve_color_range(
+    values: np.ndarray,
+    color_range: tuple[float, float] | None = None,
+) -> tuple[float, float]:
+    """Return finite, non-degenerate color limits for an overlay."""
+    if color_range is not None:
+        data_min, data_max = map(float, color_range)
+        if not np.isfinite((data_min, data_max)).all():
+            raise ValueError("Color range values must be finite.")
+        if data_min >= data_max:
+            raise ValueError("Color range minimum must be smaller than its maximum.")
+        return data_min, data_max
+
+    finite_values = np.asarray(values)[np.isfinite(values)]
+    if finite_values.size == 0:
+        raise ValueError("Cannot determine a color range without finite overlay values.")
+
+    data_min = float(np.min(finite_values))
+    data_max = float(np.max(finite_values))
+    if data_min == data_max:
+        half_width = max(abs(data_min), 1.0) * 1e-6
+        data_min -= half_width
+        data_max += half_width
+    return data_min, data_max
 
 
 def with_neutral_range(
@@ -97,8 +179,8 @@ def with_neutral_range(
         raise ValueError("A thresholded colormap requires at least two samples.")
 
     cmap = get_colormap(colormap) if isinstance(colormap, str) else colormap
-    positions = np.linspace(0.0, 1.0, samples)
-    data_values = data_min + positions * (data_max - data_min)
-    colors = cmap(positions)
-    colors[(data_values >= neutral_min) & (data_values <= neutral_max)] = to_rgba(neutral_color)
-    return ListedColormap(colors, name=f"{cmap.name}_thresholded")
+    if neutral_min == neutral_max:
+        return cmap
+    normalized_min = (neutral_min - data_min) / (data_max - data_min)
+    normalized_max = (neutral_max - data_min) / (data_max - data_min)
+    return NeutralRangeColormap(cmap, normalized_min, normalized_max, neutral_color, samples)

@@ -230,6 +230,16 @@ When running the main pipeline with ``--slice_selection all`` and ``--save_templ
         --save_template_dir $HOME/my_fastsurfer_analysis/subjectX/cc_template
 
 The template files can be used to visualize the corpus callosum in 3D with the :doc:`cc_visualization` script.
+FastSurfer also writes ``template_metadata.json`` to preserve anatomical slice indices and positions. If morphometry
+fails for any requested slice, the visualization script refuses to substitute another slice for a missing selected
+slice and will not generate a full-slab 3D surface from the incomplete template.
+Successful per-slice measurements are still written when possible. If the selected slice fails while an orig-space
+CC segmentation is requested, the CC command exits unsuccessfully after saving diagnostic partial outputs because it
+cannot create the FreeSurfer-compatible 251--255 subdivisions required by downstream CC painting.
+The all-slices JSON preserves requested slice positions as ``null`` entries and reports ``cc_volume: null`` whenever
+the requested slab is incomplete. Use a fresh template directory for each run; metadata validation rejects stale
+thickness files left by another run. Legacy templates without metadata remain readable, but their completeness and
+anatomical midslice cannot be verified.
 
 **Benefits:**
 - Enables volumetric thickness analysis

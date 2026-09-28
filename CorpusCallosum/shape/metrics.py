@@ -224,8 +224,6 @@ def calculate_cc_index(cc_contour: np.ndarray, plot: bool = False) -> float:
             plot_cc_index_calculation(
                 ax,
                 cc_contour,
-                anterior_idx,
-                posterior_idx,
                 ap_intersections,
                 middle_intersections,
                 midpoint,
@@ -239,8 +237,6 @@ def calculate_cc_index(cc_contour: np.ndarray, plot: bool = False) -> float:
 def plot_cc_index_calculation(
     ax,
     cc_contour: np.ndarray,
-    anterior_idx: int,
-    posterior_idx: int,
     ap_intersections: np.ndarray,
     middle_intersections: np.ndarray,
     midpoint: np.ndarray,
@@ -253,10 +249,6 @@ def plot_cc_index_calculation(
         The axes to plot on.
     cc_contour : np.ndarray
         Array of shape (2, N) containing contour points in ACPC space.
-    anterior_idx : int
-        Index of the anterior point on the contour.
-    posterior_idx : int
-        Index of the posterior point on the contour.
     ap_intersections : np.ndarray
         Array of shape (4, 2) containing the 4 intersection points of the AP line with the contour.
     middle_intersections : np.ndarray

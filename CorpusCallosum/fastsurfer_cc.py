@@ -41,6 +41,7 @@ from CorpusCallosum.localization import inference as localization_inference
 from CorpusCallosum.registration.midsagittal_plane_alignment import find_midplane_transform
 from CorpusCallosum.segmentation import inference as segmentation_inference
 from CorpusCallosum.segmentation import segmentation_postprocessing
+from CorpusCallosum.shape.contour import CCContour
 from CorpusCallosum.shape.contour import calculate_volume as calculate_cc_volume_contour
 from CorpusCallosum.shape.postprocessing import (
     check_area_changes,
@@ -56,7 +57,7 @@ from CorpusCallosum.utils.mapping_helpers import (
     map_hard_segmentation_to_orig,
     map_softlabels_to_orig,
 )
-from CorpusCallosum.utils.types import SliceSelection, SubdivisionMethod
+from CorpusCallosum.utils.types import CCMeasuresDict, SliceSelection, SubdivisionMethod
 from FastSurferCNN.data_loader.conform import conform, is_conform
 from FastSurferCNN.data_loader.data_utils import as_mgh_image
 from FastSurferCNN.host_info import log_torch_info
@@ -492,18 +493,73 @@ def localize_ac_pc(
 
     # get center of third ventricle from aseg and map to fsaverage space (voxel coordinates)
     third_ventricle_mask = np.asarray(aseg_nib.dataobj) == THIRD_VENTRICLE_LABEL
-    third_ventricle_center = np.argwhere(third_ventricle_mask).mean(axis=0)
-    third_ventricle_center_vox = apply_transform_to_pt(third_ventricle_center, orig2midslice_vox2vox, inv=False)
+    if np.any(third_ventricle_mask):
+        third_ventricle_center = np.argwhere(third_ventricle_mask).mean(axis=0)
+        third_ventricle_center_vox = apply_transform_to_pt(
+            third_ventricle_center, orig2midslice_vox2vox, inv=False,
+        )[1:]
+    else:
+        logger.warning(
+            f"Input segmentation does not contain third-ventricle label {THIRD_VENTRICLE_LABEL}; "
+            "using the center of the aligned localization field of view as the AC/PC crop anchor."
+        )
+        third_ventricle_center_vox = (np.asarray(resample_shape[1:], dtype=float) - 1) / 2
 
     # Get the analysis-width slab with 3 slices per inference
     # (cropping num_slices_to_analyze + 2 slices around the center).
     ac_coords, pc_coords = localization_inference.run_inference_on_slice(
         model_localization,
         _midslices_fut.result(),
-        third_ventricle_center_vox[1:],
+        third_ventricle_center_vox,
     )
 
     return ac_coords, pc_coords
+
+
+def select_requested_slice_results(
+    slice_results: list[CCMeasuresDict | None],
+    segmentation_depth: int,
+    slice_selection: SliceSelection,
+) -> tuple[list[CCMeasuresDict | None], CCMeasuresDict | None]:
+    """Align successful results to requested slices and select the target slice."""
+    results_by_slice = {result["slice_index"]: result for result in slice_results if result is not None}
+    if slice_selection == "all":
+        requested_slice_indices = list(range(segmentation_depth))
+        selected_slice_idx = segmentation_depth // 2
+    elif slice_selection == "middle":
+        selected_slice_idx = segmentation_depth // 2
+        requested_slice_indices = [selected_slice_idx]
+    else:
+        selected_slice_idx = int(slice_selection)
+        requested_slice_indices = [selected_slice_idx]
+
+    return (
+        [results_by_slice.get(idx) for idx in requested_slice_indices],
+        results_by_slice.get(selected_slice_idx),
+    )
+
+
+def calculate_complete_contour_volume(
+    contours: list[CCContour],
+    num_failed_slices: int,
+) -> float | None:
+    """Calculate contour volume only when the requested slab is complete."""
+    if num_failed_slices > 0 or len(contours) <= 1:
+        return None
+    return calculate_cc_volume_contour(contours, width=CC_ANALYSIS_WIDTH_MM)
+
+
+def selected_slice_output_error(
+    middle_slice_result: CCMeasuresDict | None,
+    orig_segmentation_requested: bool,
+) -> str | None:
+    """Return an error when subdivision-dependent output cannot be created."""
+    if orig_segmentation_requested and middle_slice_result is None:
+        return (
+            "The selected CC slice failed morphometry, so a FreeSurfer-compatible subdivided CC segmentation "
+            "could not be created. Partial per-slice results were saved where requested."
+        )
+    return None
 
 
 def segment_cc(
@@ -976,8 +1032,17 @@ def main(
         else:
             result_slice_indices = [int(slice_selection)]
 
-    # Filter out None results for further processing
-    valid_slice_results = [r for r in slice_results if r is not None]
+    requested_slice_results, middle_slice_result = select_requested_slice_results(
+        slice_results,
+        cc_fn_seg_labels.shape[0],
+        slice_selection,
+    )
+    selected_slice_position = len(requested_slice_results) // 2 if middle_slice_result is not None else None
+    selected_slice_idx = middle_slice_result["slice_index"] if middle_slice_result is not None else None
+
+    # Filter out failed results for aggregate processing while retaining the
+    # requested slice positions for JSON output and midslice selection.
+    valid_slice_results = [result for result in slice_results if result is not None]
     valid_cc_contours = [c for c in cc_contours if c is not None]
     outer_contours = []
     cc_volume_contour = None
@@ -998,31 +1063,6 @@ def main(
                 "Notable area differences were detected between consecutive CC slices. "
                 "Consider reviewing the segmentation."
             )
-
-    def _select_middle_valid_slice():
-        """Select the center slice result, or the nearest valid result."""
-        if not slice_results:
-            return None, None, None
-        target_idx = len(slice_results) // 2
-        if slice_results[target_idx] is not None:
-            return target_idx, result_slice_indices[target_idx], slice_results[target_idx]
-
-        valid_results = [
-            (abs(i - target_idx), i, result)
-            for i, result in enumerate(slice_results)
-            if result is not None
-        ]
-        if not valid_results:
-            return None, None, None
-
-        _, nearest_idx, nearest_result = min(valid_results)
-        logger.warning(
-            f"Middle slice morphometry failed; using nearest valid slice result at position {nearest_idx + 1} "
-            f"of {len(slice_results)}."
-        )
-        return nearest_idx, result_slice_indices[nearest_idx], nearest_result
-
-    selected_slice_position, selected_slice_idx, middle_slice_result = _select_middle_valid_slice()
 
     # Map automatic soft labels or the edited hard CC mask to original space.
     if sd.has_attribute("cc_orig_segfile"):
@@ -1093,7 +1133,7 @@ def main(
     per_slice_output_dict = {
         "slices": [
             convert_numpy_to_json_serializable({metric: result[metric] for metric in metrics}) if result else None
-            for result in slice_results
+            for result in requested_slice_results
         ],
     }
 
@@ -1109,15 +1149,15 @@ def main(
     voxel_volume = np.prod(vox_size)
     additional_metrics["voxel_volume"] = voxel_volume
 
-    if num_failed_slices == 0 and len(valid_cc_contours) > 1:
+    cc_volume_contour = calculate_complete_contour_volume(valid_cc_contours, num_failed_slices)
+    if cc_volume_contour is not None:
         logger.info(
             f"CC voxel count: {cc_num_voxel} at {voxel_volume:.2f} mm^3 voxel volume => "
             f"{cc_num_voxel * voxel_volume:.2f} mm^3"
         )
-        cc_volume_contour = calculate_cc_volume_contour(valid_cc_contours, width=CC_ANALYSIS_WIDTH_MM)
         logger.info(f"CC volume contour: {cc_volume_contour}")
-    else:
-        cc_volume_contour = None
+    elif num_failed_slices > 0:
+        logger.warning("Skipping contour-based CC volume because the requested slice set is incomplete.")
 
     # surface-based volume estimate (not PV-corrected); only valid if all slices processed successfully
     additional_metrics["cc_volume"] = cc_volume_contour
@@ -1147,11 +1187,7 @@ def main(
     additional_metrics["subdivision_ratios"] = subdivisions
     additional_metrics["selected_morphometry_slice"] = selected_slice_idx
     additional_metrics["selected_morphometry_slice_position"] = selected_slice_position
-    additional_metrics["selected_morphometry_slice_is_fallback"] = bool(
-        selected_slice_position is not None
-        and slice_results
-        and selected_slice_position != len(slice_results) // 2
-    )
+    additional_metrics["selected_morphometry_slice_is_fallback"] = False
     additional_metrics["contour_smoothing"] = contour_smoothing
     additional_metrics["slice_selection"] = slice_selection
     additional_metrics["midline_refine_shift_vox"] = float(midline_shift_vox)
@@ -1242,8 +1278,16 @@ def main(
         )
 
     # this waits for all io to finish
-    return_value: Literal[0] | str = 0
-    success_str = "completed successfully in"
+    selected_slice_error = selected_slice_output_error(
+        middle_slice_result,
+        sd.has_attribute("cc_orig_segfile"),
+    )
+    if selected_slice_error is not None:
+        return_value: Literal[0] | str = selected_slice_error
+        success_str = "failed after"
+    else:
+        return_value = 0
+        success_str = "completed successfully in"
     for fut in futures:
         e = fut.exception()
         if e and isinstance(e, Exception):

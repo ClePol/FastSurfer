@@ -15,7 +15,6 @@
 from FastSurferCNN.utils.parser_defaults import FASTSURFER_ROOT
 
 ### Constants
-WEIGHTS_PATH = FASTSURFER_ROOT / "checkpoints"
 FSAVERAGE_TARGET_PATH = FASTSURFER_ROOT / "CorpusCallosum" / "data" / "fsaverage_target.json"
 FSAVERAGE_CC_CONTOUR_PATH = FASTSURFER_ROOT / "CorpusCallosum" / "data" / "fsaverage_cc_contour.json"
 FSAVERAGE_REGISTRATION_LABELS = (
@@ -26,9 +25,10 @@ FSAVERAGE_REGISTRATION_LABELS = (
 FSAVERAGE_MIDDLE = 128  # Middle slice index in fsaverage space
 # Width of the corpus callosum slab used for segmentation, measures, and surfaces.
 CC_ANALYSIS_WIDTH_MM = 5.0
+CC_TEMPLATE_METADATA_FILENAME = "template_metadata.json"
 CC_LABEL = 192  # Label value for corpus callosum in segmentation
 FORNIX_LABEL = 250  # Label value for fornix in segmentation
-THIRD_VENTRICLE_LABEL = 4  # Label value for third ventricle in segmentation
+THIRD_VENTRICLE_LABEL = 14  # FreeSurfer label value for the third ventricle
 SUBSEGMENT_LABELS = [251, 252, 253, 254, 255]  # labels for subsegments in segmentation
 
 DEFAULT_INPUT_PATHS = {
