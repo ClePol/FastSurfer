@@ -997,7 +997,7 @@ def main(
             slice_io_futures,
             cc_contours,
             num_failed_slices,
-            result_slice_indices,
+            _result_slice_indices,
         ) = recon_cc_surf_measures_multi(
             segmentation=cc_fn_seg_labels,
             slice_selection=slice_selection,
@@ -1023,12 +1023,6 @@ def main(
         slice_io_futures = []
         cc_contours = []
         num_failed_slices = cc_fn_seg_labels.shape[0] if slice_selection == "all" else 1
-        if slice_selection == "middle":
-            result_slice_indices = [cc_fn_seg_labels.shape[0] // 2]
-        elif slice_selection == "all":
-            result_slice_indices = list(range(cc_fn_seg_labels.shape[0]))
-        else:
-            result_slice_indices = [int(slice_selection)]
 
     requested_slice_results, middle_slice_result = select_requested_slice_results(
         slice_results,

@@ -21,13 +21,12 @@ from monai import transforms
 from CorpusCallosum.data import constants
 from CorpusCallosum.transforms.segmentation import CropAroundACPC
 from FastSurferCNN.models.networks import FastSurferVINN
-from FastSurferCNN.utils import Image3d, Image4d, Shape2d, Shape3d, Shape4d, Vector2d, nibabelImage
+from FastSurferCNN.utils import Image3d, Image4d, Shape2d, Shape3d, Shape4d, Vector2d
 from FastSurferCNN.utils.checkpoint import (
     get_checkpoints,
     get_config_file,
     load_checkpoint_config_defaults,
 )
-from FastSurferCNN.utils.parallel import thread_executor
 
 
 def load_model(device: torch.device | None = None) -> FastSurferVINN:

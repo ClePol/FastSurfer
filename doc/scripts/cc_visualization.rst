@@ -47,6 +47,14 @@ For signed overlays, ``--threshold VALUE`` displays values with
 A threshold of zero disables the neutral interval consistently in the 2D and
 interactive 3D renderers.
 
+The neutral threshold also works with ``--values_file`` and with logarithmic
+normalization (only positive values are allowed for a log scale).
+It differs from ``--upper_threshold``, which marks values *above* the cutoff
+with ``--threshold_color`` and sets the top of the 2D color scale to that cutoff.
+``--color_range`` is supported in every 2D value mode; with ``--log_scale``,
+both limits must be positive. Log scaling and upper thresholds require
+``--values_file``; neutral thresholds support both input formats.
+
 The template's ``thickness_values_<slice>.txt`` is a per-contour-vertex file,
 not a one-value-per-level-path profile. Each thickness measurement occurs at
 both ends of its level path, so the non-empty measurements follow the contour
@@ -141,7 +149,7 @@ Outputs
     - ``cc_mesh_overlay.curv``: FreeSurfer overlay file with thickness values
     - ``cc_mesh.html``: Interactive 3D mesh visualization
     - ``cc_mesh_snap.png``: Snapshot image of the 3D mesh
-    - ``midslice_2d.png``: 2D visualization of the middle slice
+    - ``cc_thickness_2d.png``: 2D visualization of the middle slice
 
 2D Mode Outputs (when ``--twoD`` is specified):
     - ``cc_thickness_2d.png``: 2D contour visualization with thickness colormap

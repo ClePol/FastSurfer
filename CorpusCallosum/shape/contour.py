@@ -491,7 +491,7 @@ class CCContour:
         mode : {"p-value", "icc", "thickness"}, default="p-value"
             Mode of the plot.
         colormap : str, optional
-            Color progression from lower to higher values. If omitted, use the
+            Predefined or registered Matplotlib colormap. If omitted, use the
             mode-specific legacy colormap.
         log_scale : bool, default=False
             Use logarithmic color normalization. All finite plot values and the
@@ -503,9 +503,9 @@ class CCContour:
         colorbar_label : str, optional
             Override the mode-specific colorbar label.
         color_range : tuple of float, optional
-            Fixed minimum and maximum for the color scale in thickness mode.
+            Fixed minimum and maximum for the color scale in any mode.
         legend : str, optional
-            Colorbar label in thickness mode. Defaults to ``"Thickness (mm)"``.
+            Alternative colorbar label in thickness mode; colorbar_label takes precedence.
         threshold : float, optional
             Show values with an absolute magnitude below this value in neutral gray.
         
@@ -517,6 +517,10 @@ class CCContour:
         plot_values = np.asarray(plot_values, dtype=float)
         if plot_values.ndim != 1:
             raise ValueError(f"plot_values must be one-dimensional, found shape {plot_values.shape}")
+        if len(plot_values) < 2:
+            raise ValueError("plot_values must contain at least two values")
+        if np.isinf(plot_values).any():
+            raise ValueError("plot_values must not contain infinite values")
 
         if mode not in ("p-value", "icc", "thickness"):
             raise ValueError(f"Invalid mode '{mode}'")
@@ -532,7 +536,7 @@ class CCContour:
         # order, matching thickness_profile in the JSON output and --values_file.
         levelpaths, *_ = self.create_levelpaths(num_points=len(plot_values), inplace=False)
         if len(levelpaths) != len(plot_values):
-            raise RuntimeError(
+            raise ValueError(
                 f"Requested {len(plot_values)} level paths, but thickness estimation returned {len(levelpaths)}"
             )
 
@@ -637,23 +641,37 @@ class CCContour:
             # Create a new colormap
             cmap = matplotlib.colors.LinearSegmentedColormap.from_list("my_colormap", colors)
 
-        if upper_threshold is not None:
-            cmap = cmap.with_extremes(over=threshold_color)
-
-        default_vmin = 0 if mode != "thickness" else np.nanmin(plot_values)
-        default_vmax = 0.10 if mode == "p-value" else (1 if mode == "icc" else np.nanmax(plot_values))
-        if color_range is not None:
-            default_vmin, default_vmax = color_range
+        if mode == "thickness" or color_range is not None:
+            default_vmin, default_vmax = resolve_color_range(plot_values, color_range)
+        else:
+            default_vmin, default_vmax = 0.0, 0.10 if mode == "p-value" else 1.0
         plot_vmax = upper_threshold if upper_threshold is not None else default_vmax
+        if not np.isfinite(plot_vmax):
+            raise ValueError("The upper threshold must be finite")
         if log_scale:
-            plot_vmin = float(np.nanmin(finite_values))
+            plot_vmin = float(np.min(finite_values)) if color_range is None else default_vmin
+            if plot_vmin <= 0:
+                raise ValueError("A log color range must be positive")
             if plot_vmin >= plot_vmax:
                 raise ValueError(f"Log color range must increase, got {plot_vmin} to {plot_vmax}")
             norm = matplotlib.colors.LogNorm(vmin=plot_vmin, vmax=plot_vmax)
         else:
+            if default_vmin >= plot_vmax:
+                raise ValueError("The upper threshold must exceed the color range minimum")
             norm = matplotlib.colors.Normalize(vmin=default_vmin, vmax=plot_vmax)
-        if mode == "thickness" and threshold is not None:
-            cmap = with_neutral_range(cmap, (norm.vmin, norm.vmax), (-threshold, threshold))
+        if threshold is not None:
+            if not np.isfinite(threshold) or threshold < 0:
+                raise ValueError("Threshold must be a finite, non-negative value")
+            if log_scale:
+                if threshold > norm.vmin:
+                    # LogNorm cannot normalize zero or negative thresholds.
+                    # Its domain is positive, so only the upper boundary matters.
+                    cmap = with_neutral_range(cmap, (0.0, 1.0), (0.0, float(norm(threshold))))
+            else:
+                cmap = with_neutral_range(cmap, (norm.vmin, norm.vmax), (-threshold, threshold))
+        if upper_threshold is not None:
+            # Apply the over color to the underlying map, not the neutral interval.
+            cmap = cmap.with_extremes(over=threshold_color)
 
         # Plot CC contour with levelsets
         fig = plt.figure(figsize=(10, 3))
@@ -684,15 +702,15 @@ class CCContour:
                     cbar.set_ticks(pvalue_ticks)
                     cbar.set_ticklabels([f"{tick:g}" for tick in pvalue_ticks])
                     cbar.ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-                elif colormap is None:
+                elif colormap is None and color_range is None and upper_threshold is None:
                     cbar.ax.set_ylim(0.001, 0.054)
                     cbar.ax.set_yticks([0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
                 else:
                     cbar.ax.set_ylim(default_vmin, plot_vmax)
                 cbar.set_label(colorbar_label or ("p-value (log scale)" if log_scale else "p-value"))
             elif mode == "icc":
-                cbar.ax.set_ylim(0, 1)
-                cbar.ax.set_yticks([0, 0.25, 0.5, 0.75, 1])
+                if not log_scale and color_range is None and upper_threshold is None:
+                    cbar.ax.set_yticks([0, 0.25, 0.5, 0.75, 1])
                 cbar.set_label(colorbar_label or "Intraclass correlation coefficient")
             elif mode == "thickness":
                 cbar.ax.set_ylim(norm.vmin, norm.vmax)

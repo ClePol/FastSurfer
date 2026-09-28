@@ -105,3 +105,18 @@ def test_thresholded_constant_mesh_renders(monkeypatch: pytest.MonkeyPatch, tmp_
 
     trace = figures[0].data[0]
     assert trace.cmin < 0 < trace.cmax
+
+
+def test_neutral_range_preserves_masked_and_over_colors() -> None:
+    """Neutral bands cannot hide missing values or upstream's upper threshold."""
+    cmap = with_neutral_range("diverging", (0.0, 1.0), (-2.0, 2.0)).with_extremes(over="lime")
+    colors = cmap(np.ma.array([0.5, 0.5, 1.1], mask=[False, True, False]))
+    np.testing.assert_allclose(colors[0, :3], (150 / 255,) * 3)
+    assert colors[1, 3] == 0.0
+    np.testing.assert_allclose(colors[2, :3], (0.0, 1.0, 0.0))
+
+
+def test_neutral_range_applies_outside_fixed_limits_without_over_override() -> None:
+    """Fixed display limits cannot silently disable an absolute-value threshold."""
+    cmap = with_neutral_range("diverging", (-1., 1.), (-2., 2.))
+    np.testing.assert_allclose(cmap(1.1)[:3], (150 / 255,) * 3)
