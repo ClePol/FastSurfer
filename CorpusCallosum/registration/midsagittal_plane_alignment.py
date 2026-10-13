@@ -597,7 +597,8 @@ def register_centroids_to_fsavg(
         .astype(int)
         .tolist()
     )
-    fsavg_header["Pxyz_c"] += (aseg_zooms_ras - 1) / 2 @ fsavg_header["Mdc"]
+    # Pxyz_c must be consistent with fsavg_hires_vox2ras (center voxel is at dims / 2 in the MGH convention)
+    fsavg_header["Pxyz_c"] = (fsavg_hires_vox2ras @ np.append(np.asarray(fsavg_header["dims"]) / 2, [1]))[:3]
 
     aseg2fsavg_vox2vox: AffineMatrix4x4 = np.linalg.inv(fsavg_hires_vox2ras) @ aseg2fsaverage_ras2ras @ aseg_nib.affine
     logger.info(
