@@ -157,14 +157,11 @@ def find_cc_endpoints(
     if any(p2d.shape != (2,) for p2d in (ac_2d, pc_2d)):
         raise ValueError(f"ac_2d and pc_2d must have shape (2,), got {ac_2d.shape} and {pc_2d.shape}")
 
-    # Calculate angle between AC-PC line and horizontal using numpy
+    # Calculate the angle of the AC-PC line: theta rotates the posterior direction (-1, 0) of an AC-PC aligned
+    # frame onto the AC->PC direction, i.e. R(theta) @ (-1, 0) = (pc - ac) / |pc - ac|. Using arctan2 keeps the
+    # sign of the tilt (PC superior -> theta < 0, PC inferior -> theta > 0).
     ac_pc_vector = pc_2d - ac_2d
-    horizontal_vector = np.array([-20, 0])
-    # Calculate angle using dot product formula: cos(theta) = (a·b)/(|a||b|)
-    dot_product = np.dot(ac_pc_vector, horizontal_vector)
-    norms = np.linalg.norm(ac_pc_vector) * np.linalg.norm(horizontal_vector)
-    # The sign of theta is the inverse of ac_pc_vector [ X ]
-    theta = np.sign(ac_pc_vector[0]) * np.arccos(dot_product / norms)
+    theta = np.arctan2(-ac_pc_vector[1], -ac_pc_vector[0])
 
     rot_matrix_inv = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
     # move posterior commisure 5 mm posterior, 10 mm inferior

@@ -28,11 +28,21 @@ def _rotation_from_vectors(source: np.ndarray, target: np.ndarray) -> np.ndarray
     return np.eye(3, dtype=float) + np.sin(angle) * skew + (1 - np.cos(angle)) * (skew @ skew)
 
 
-def _affine_from_rotation_and_center(rotation: np.ndarray, center: np.ndarray) -> AffineMatrix4x4:
-    """Construct an affine applying a rotation about a voxel-space center."""
+def _affine_from_rotation_and_center(
+        rotation: np.ndarray,
+        center: np.ndarray,
+        vox_size: np.ndarray | None = None,
+) -> AffineMatrix4x4:
+    """Construct a voxel-space affine applying a rotation (defined in mm) about a voxel-space center.
+
+    For anisotropic voxels, the rotation is conjugated with the voxel scaling (``S^-1 R S``), so the resulting
+    vox2vox is rigid in world (mm) coordinates.
+    """
+    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
+    vox_rotation = (rotation * scale[np.newaxis, :]) / scale[:, np.newaxis]
     affine = np.eye(4, dtype=float)
-    affine[:3, :3] = rotation
-    affine[:3, 3] = center - rotation @ center
+    affine[:3, :3] = vox_rotation
+    affine[:3, 3] = center - vox_rotation @ center
     return affine
 
 
@@ -42,8 +52,13 @@ def adjust_midplane_to_landmarks(
         pc_coords_orig: np.ndarray,
         base_middle_vox: float,
         warning_tilt_deg: float = 15.0,
+        vox_size: np.ndarray | None = None,
 ) -> tuple[AffineMatrix4x4, dict[str, object]]:
-    """Minimally adjust a midsagittal transform to contain supplied AC/PC points."""
+    """Minimally adjust a midsagittal transform to contain supplied AC/PC points.
+
+    The plane rotation is computed and applied rigidly in mm, i.e. it respects the voxel size ``vox_size`` of the
+    target (fsaverage-aligned) grid (default: isotropic).
+    """
     ac_orig = np.asarray(ac_coords_orig, dtype=float)
     pc_orig = np.asarray(pc_coords_orig, dtype=float)
     if ac_orig.shape != (3,) or pc_orig.shape != (3,):
@@ -51,8 +66,10 @@ def adjust_midplane_to_landmarks(
     if not np.all(np.isfinite((ac_orig, pc_orig))):
         raise ValueError("AC and PC coordinates must be finite.")
 
+    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
     ac_fsavg, pc_fsavg = nib.affines.apply_affine(orig2fsavg_vox2vox, (ac_orig, pc_orig))
-    acpc_direction = pc_fsavg - ac_fsavg
+    # direction in mm (the LR axis / initial plane normal is the same in voxel and mm coordinates)
+    acpc_direction = (pc_fsavg - ac_fsavg) * scale
     acpc_length = float(np.linalg.norm(acpc_direction))
     if acpc_length < 1e-6:
         raise ValueError("AC and PC coordinates must be distinct.")
@@ -82,7 +99,7 @@ def adjust_midplane_to_landmarks(
 
     midpoint = (ac_fsavg + pc_fsavg) / 2.0
     rotation = _rotation_from_vectors(adjusted_normal, initial_normal)
-    rotate_affine = _affine_from_rotation_and_center(rotation, midpoint)
+    rotate_affine = _affine_from_rotation_and_center(rotation, midpoint, scale)
     rotated_midpoint = nib.affines.apply_affine(rotate_affine, midpoint)
     translate_affine = np.eye(4, dtype=float)
     translate_affine[0, 3] = base_middle_vox - rotated_midpoint[0]

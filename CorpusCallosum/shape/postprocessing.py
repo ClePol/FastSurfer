@@ -248,6 +248,8 @@ def recon_cc_surf_measures_multi(
                 qc_imgs = (qc_imgs if is_midslice else []) + [qc_slice_img]
 
             logger.info(f"Saving segmentation qc image to {', '.join(map(str, qc_imgs))}")
+            # midslices is centered on the same midplane as segmentation (but has more slices), slice_idx indexes
+            # segmentation (independent of slice_selection)
             current_slice_in_volume = midslices.shape[0] // 2 - segmentation.shape[0] // 2 + slice_idx
             # Create visualization for this slice
             io_futures.append(
@@ -307,11 +309,18 @@ def recon_cc_surf_measures_multi(
             )
             return slice_cc_measures, io_futures, cc_contours, num_failed_slices, slices_to_recon
 
-        _cc_contours = thread_executor().map(_resample_thickness, cc_contours)
-        # Surface vertices represent the continuous analysis slab. The
-        # discrete segmentation mask can be slightly wider/narrower depending on
-        # voxel size, so do not reuse slice-center spacing for mesh output.
-        cc_mesh = CCMesh.from_contours(contours_for_analysis_width(list(_cc_contours)), smooth=1)
+        try:
+            _cc_contours = thread_executor().map(_resample_thickness, cc_contours)
+            # Surface vertices represent the continuous analysis slab. The
+            # discrete segmentation mask can be slightly wider/narrower depending on
+            # voxel size, so do not reuse slice-center spacing for mesh output.
+            cc_mesh = CCMesh.from_contours(contours_for_analysis_width(list(_cc_contours)), smooth=1)
+        except Exception as e:
+            # A failed surface must not discard the per-slice morphometry.
+            logger.warning(f"QC flag: Generation of the CC surface mesh failed, skipping CC surface/mesh outputs: {e}")
+            logger.exception(e)
+            return slice_cc_measures, io_futures, cc_contours, num_failed_slices, slices_to_recon
+
         if wants_output("cc_html"):
             logger.info(f"Saving CC 3D visualization to {output_path('cc_html')}")
             io_futures.append(run(cc_mesh.plot_mesh, output_path=output_path("cc_html")))
@@ -360,8 +369,12 @@ def recon_cc_surf_measures_multi(
 
 
 def _resample_thickness(contour: CCContour) -> CCContour:
-    """Resamples the thickness values of contour."""
-    _c = copy(contour)
+    """Return a copy of contour with interpolated (filled) thickness values.
+
+    fill_thickness_values modifies the thickness values array in place, so the copy must not share arrays with
+    contour (contour is still used, e.g. by save_thickness_values in a background thread).
+    """
+    _c = contour.copy()
     _c.fill_thickness_values()
     return _c
 
@@ -537,7 +550,7 @@ def recon_cc_surf_measure(
 
     # Calculate curvature metrics
     curvature, curvature_body, curvature_subsegments = calculate_curvature_metrics(
-        midline_equi, split_points=split_points_midline
+        midline_equi, split_points=split_points_midline, subdivision_lines=subdivision_lines
     )
 
     measures: CCMeasuresDict = {

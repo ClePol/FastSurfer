@@ -43,7 +43,7 @@ class CCMeasuresDict(TypedDict):
     thickness : float
         Array of thickness measurements.
     curvature : float
-        Array of curvature measurements.
+        Mean absolute turning angle of the midline in degrees per midline sample step (depends on num_thickness_points).
     thickness_profile : np.ndarray of type float
         Thickness measurements along the contour.
     total_area : float

@@ -273,7 +273,7 @@ def cc_thickness(
     thickness : float
         Mean thickness across all level paths.
     curvature : float
-        Mean absolute curvature in degrees.
+        Mean absolute turning angle of the midline in degrees per midline sample step (depends on num_thickness_points).
     midline_equidistant : np.ndarray
         Equidistant points along the midline in same space as contour2d of shape (N, 2).
     levelpaths : list[np.ndarray]

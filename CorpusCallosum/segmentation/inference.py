@@ -28,6 +28,8 @@ from FastSurferCNN.utils.checkpoint import (
     load_checkpoint_config_defaults,
 )
 
+CropBox = tuple[tuple[int, int], tuple[int, int]]
+
 
 def load_model(device: torch.device | None = None) -> FastSurferVINN:
     """Load trained model from checkpoint.
@@ -87,7 +89,7 @@ def run_inference(
     pc_center: Vector2d,
     voxel_size: tuple[float, float],
     device: torch.device | None = None,
-) -> tuple[np.ndarray[Shape4d, np.dtype[np.int_]], Image4d, Image4d]:
+) -> tuple[np.ndarray[Shape4d, np.dtype[np.int_]], Image4d, Image4d, CropBox]:
     """Run inference on a single image slice.
 
     Parameters
@@ -113,6 +115,9 @@ def run_inference(
         The inputs to the model.
     soft_labels : np.ndarray of float
         The softlabel output.
+    crop_box : pair of pairs of ints
+        The region of the image that was passed to the model as ((start_I, stop_I), (start_A, stop_A)), outputs outside
+        of this crop box are zero-padded.
     """
     if device is None:
         device = next(model.parameters()).device
@@ -147,7 +152,13 @@ def run_inference(
         labels = np.pad(_labels.cpu().numpy(), pad_tuples, mode='constant', constant_values=0)
         softlabels = np.pad(softlabels, pad_tuples, mode='constant', constant_values=0)
 
-    return tuple(x.transpose(0, 2, 3, 1) for x in (labels, _inputs.cpu().numpy(), softlabels))
+    # the region of the image (in I and A) that was actually segmented, outside the outputs are padded with zeros
+    crop_box: CropBox = (
+        (int(to_pad[0]), int(image_slice.shape[1] - to_pad[1])),
+        (int(to_pad[2]), int(image_slice.shape[2] - to_pad[3])),
+    )
+    labels, _inputs, softlabels = (x.transpose(0, 2, 3, 1) for x in (labels, _inputs.cpu().numpy(), softlabels))
+    return labels, _inputs, softlabels, crop_box
 
 
 @overload
@@ -194,7 +205,7 @@ def run_inference_on_slice(
         ac_center: Vector2d,
         pc_center: Vector2d,
         voxel_size: tuple[float, float],
-) -> tuple[np.ndarray[Shape3d, np.dtype[np.int_]], Image4d, Image4d]:
+) -> tuple[np.ndarray[Shape3d, np.dtype[np.int_]], Image4d, Image4d, CropBox]:
     """Run inference on a single slice.
 
     Parameters
@@ -218,13 +229,15 @@ def run_inference_on_slice(
         Preprocessed input image.
     outputs_soft: np.ndarray of float
         Softlabel outputs (non-discrete).
-    
+    crop_box : pair of pairs of ints
+        The region of the image that was segmented as ((start_I, stop_I), (start_A, stop_A)), outputs outside of this
+        crop box are zero-padded (results are 0, softlabels all 0).
     """
     # add zero in front of AC_center and PC_center
     ac_center = np.concatenate([np.zeros(1), ac_center])
     pc_center = np.concatenate([np.zeros(1), pc_center])
 
-    _results, inputs, outputs_soft = run_inference(model, test_slab, ac_center, pc_center, voxel_size)
+    _results, inputs, outputs_soft, crop_box = run_inference(model, test_slab, ac_center, pc_center, voxel_size)
     results = one_hot_to_label(_results)
 
-    return results, inputs, outputs_soft
+    return results, inputs, outputs_soft, crop_box

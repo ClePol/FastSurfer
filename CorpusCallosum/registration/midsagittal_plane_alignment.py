@@ -202,13 +202,18 @@ def _make_fsavg_convex_hull_mask(brain_mask: np.ndarray) -> np.ndarray:
     return hull_mask
 
 
-def _clean_partitioned_hemi_masks(seg_fsavg: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _clean_partitioned_hemi_masks(
+        seg_fsavg: np.ndarray,
+        sampling: np.ndarray | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
     """Generate robust, hole-free left/right hemisphere masks.
 
     Parameters
     ----------
     seg_fsavg : np.ndarray
         Segmentation labels in fsaverage voxel space.
+    sampling : np.ndarray, optional
+        Relative voxel spacing per axis for the distance transforms (default: isotropic).
 
     Returns
     -------
@@ -221,8 +226,8 @@ def _clean_partitioned_hemi_masks(seg_fsavg: np.ndarray) -> tuple[np.ndarray, np
     right_core = np.logical_and(right_vote, brain_mask)
 
     undecided = np.logical_and(brain_mask, np.logical_not(np.logical_or(left_core, right_core)))
-    left_core_dt = distance_transform_edt(np.logical_not(left_core))
-    right_core_dt = distance_transform_edt(np.logical_not(right_core))
+    left_core_dt = distance_transform_edt(np.logical_not(left_core), sampling=sampling)
+    right_core_dt = distance_transform_edt(np.logical_not(right_core), sampling=sampling)
     left_mask = np.logical_or(left_core, np.logical_and(undecided, left_core_dt <= right_core_dt))
     right_mask = np.logical_and(brain_mask, np.logical_not(left_mask))
 
@@ -289,24 +294,33 @@ def _rotation_from_vectors(source: np.ndarray, target: np.ndarray) -> np.ndarray
     return np.eye(3, dtype=float) + np.sin(angle) * skew + (1 - np.cos(angle)) * (skew @ skew)
 
 
-def _affine_from_rotation_and_center(rotation: np.ndarray, center: np.ndarray) -> AffineMatrix4x4:
-    """Construct an affine applying a rotation about a voxel-space center.
+def _affine_from_rotation_and_center(
+        rotation: np.ndarray,
+        center: np.ndarray,
+        vox_size: np.ndarray | None = None,
+) -> AffineMatrix4x4:
+    """Construct a voxel-space affine applying a rotation (defined in mm) about a voxel-space center.
 
     Parameters
     ----------
     rotation : np.ndarray
-        3x3 rotation matrix.
+        3x3 rotation matrix (in mm / world-aligned coordinates).
     center : np.ndarray
         Rotation center in voxel coordinates.
+    vox_size : np.ndarray, optional
+        Voxel size per voxel axis. For anisotropic voxels, the rotation is conjugated with the voxel scaling
+        (``S^-1 R S``) so the vox2vox is rigid in mm. Default: isotropic.
 
     Returns
     -------
     AffineMatrix4x4
         Homogeneous 4x4 affine transform.
     """
+    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
+    vox_rotation = (rotation * scale[np.newaxis, :]) / scale[:, np.newaxis]
     affine = np.eye(4, dtype=float)
-    affine[:3, :3] = rotation
-    affine[:3, 3] = center - rotation @ center
+    affine[:3, :3] = vox_rotation
+    affine[:3, 3] = center - vox_rotation @ center
     return affine
 
 
@@ -584,16 +598,21 @@ def register_centroids_to_fsavg(
     # Downstream CC mapping expects FreeSurfer's MGH/tkregister affine convention.
     fsaverage_vox2ras = np.asarray(_mgh_header_from_dict(aseg_nib.header, fsavg_header).get_vox2ras(), dtype=np.float64)
 
-    aseg_zooms_ras = np.asarray(nib.as_closest_canonical(aseg_nib).header.get_zooms()[:3])
-    resolution_trans: AffineMatrix4x4 = np.diagflat(np.append(aseg_zooms_ras[[0, 2, 1]], [1])).astype(float)
+    # Resample the fsaverage grid to the subject resolution: the zooms of the subject image (in RAS order) are
+    # permuted into the voxel axis order of fsaverage (LIA), i.e. each fsaverage voxel axis gets the zoom of the RAS
+    # axis it points along.
+    aseg_zooms_ras = np.asarray(nib.as_closest_canonical(aseg_nib).header.get_zooms()[:3], dtype=np.float64)
+    fsavg_axis_to_ras = np.argmax(np.abs(fsaverage_vox2ras[:3, :3]), axis=0)
+    fsavg_delta = np.linalg.norm(fsaverage_vox2ras[:3, :3], axis=0)
+    hires_delta = aseg_zooms_ras[fsavg_axis_to_ras]
+    # The scaling must act on the voxel axes (columns of vox2ras), i.e. right-multiply; voxel 0 (the corner of the
+    # fsaverage volume) stays at the same RAS position.
+    resolution_trans: AffineMatrix4x4 = np.diagflat(np.append(hires_delta / fsavg_delta, [1])).astype(float)
+    fsavg_hires_vox2ras: AffineMatrix4x4 = fsaverage_vox2ras @ resolution_trans
 
-    fsavg_header["delta"] = aseg_zooms_ras[[0, 2, 1]]
-    fsavg_hires_vox2ras: AffineMatrix4x4 = np.concatenate(
-        [(resolution_trans @ fsaverage_vox2ras)[:, :3], fsaverage_vox2ras[:, 3:4]],
-        axis=1,
-    )
+    fsavg_header["delta"] = hires_delta
     fsavg_header["dims"] = (
-        np.ceil(np.asarray(fsavg_header["dims"], dtype=np.float64) @ np.linalg.inv(resolution_trans[:3, :3]))
+        np.ceil(np.asarray(fsavg_header["dims"], dtype=np.float64) / np.diag(resolution_trans)[:3])
         .astype(int)
         .tolist()
     )
@@ -619,6 +638,7 @@ def refine_midplane_with_distance_maps(
         fit_band_vox: float = 20.0,
         max_tilt_deg: float = 7.5,
         max_center_shift_vox: float = 8.0,
+        vox_size: np.ndarray | None = None,
 ) -> MidplaneRefinementResult:
     """Fit a midsagittal plane from LR distance-map symmetry in fsaverage space.
 
@@ -642,12 +662,18 @@ def refine_midplane_with_distance_maps(
         Maximum accepted angular tilt away from the LR axis.
     max_center_shift_vox : float, default=8.0
         Maximum accepted LR center shift from baseline.
+    vox_size : np.ndarray, optional
+        Voxel size of the fsaverage grid per voxel axis (default: isotropic). Distances are measured in units of the
+        LR voxel size, and the plane tilt and rotation are computed in mm, so the update is rigid in mm.
 
     Returns
     -------
     MidplaneRefinementResult
         Updated transform, applied center shift, diagnostics, and debug volumes.
     """
+    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
+    # distances in units of LR voxels (identical to plain voxel distances for isotropic grids)
+    edt_sampling = scale / scale[0]
     seg_data = aseg_data
     empty = np.zeros(fsavg_shape, dtype=np.float32)
     empty_debug = MidplaneDebugVolumes(
@@ -666,12 +692,12 @@ def refine_midplane_with_distance_maps(
         )
 
     seg_fsavg = resample_segmentation_to_fsavg(seg_data, orig2fsavg_vox2vox, fsavg_shape)
-    left_mask, right_mask = _clean_partitioned_hemi_masks(seg_fsavg)
+    left_mask, right_mask = _clean_partitioned_hemi_masks(seg_fsavg, sampling=edt_sampling)
     brain_mask = seg_fsavg > 0
     hull_mask = _make_fsavg_convex_hull_mask(brain_mask)
 
-    left_distance = distance_transform_edt(~left_mask)
-    right_distance = distance_transform_edt(~right_mask)
+    left_distance = distance_transform_edt(~left_mask, sampling=edt_sampling)
+    right_distance = distance_transform_edt(~right_mask, sampling=edt_sampling)
     distance_diff = left_distance - right_distance
     candidate_mask = (
             hull_mask
@@ -717,7 +743,8 @@ def refine_midplane_with_distance_maps(
     fitted_x = design @ coeffs
     rmse = float(np.sqrt(np.mean((fitted_x - x) ** 2)))
 
-    plane_normal = np.array([1.0, -a_coef, -b_coef], dtype=float)
+    # plane x = a*y + b*z + c (voxel coordinates) -> normal in mm: (1/sx, -a/sy, -b/sz)
+    plane_normal = np.array([1.0, -a_coef, -b_coef], dtype=float) / scale
     plane_normal = plane_normal / np.linalg.norm(plane_normal)
     x_axis = np.array([1.0, 0.0, 0.0], dtype=float)
     tilt_deg = float(np.degrees(np.arccos(np.clip(np.dot(plane_normal, x_axis), -1.0, 1.0))))
@@ -773,7 +800,7 @@ def refine_midplane_with_distance_maps(
         )
 
     rotation = _rotation_from_vectors(plane_normal, x_axis)
-    rotate_affine = _affine_from_rotation_and_center(rotation, plane_center)
+    rotate_affine = _affine_from_rotation_and_center(rotation, plane_center, scale)
     translate_affine = offset_affine([base_middle_vox - plane_center[0], 0, 0])
     update_affine = translate_affine @ rotate_affine
     diagnostics["update_affine"] = convert_numpy_to_json_serializable(update_affine)
@@ -821,6 +848,10 @@ def find_midplane_transform(
     vox_size = vox_size_ras[0], vox_size_ras[2], vox_size_ras[1]
     aseg_data = np.asarray(aseg_img.dataobj)
 
+    def _grid_zooms(vox2ras: AffineMatrix4x4) -> np.ndarray:
+        """Voxel size per voxel axis of the target (fsaverage-aligned) grid."""
+        return np.linalg.norm(np.asarray(vox2ras, dtype=float)[:3, :3], axis=0)
+
     if (ac_coords_orig is None) != (pc_coords_orig is None):
         raise ValueError("AC and PC coordinates must be supplied together.")
 
@@ -832,6 +863,7 @@ def find_midplane_transform(
             ac_coords_orig,
             pc_coords_orig,
             result.base_middle_vox,
+            vox_size=_grid_zooms(result.fsavg_vox2ras),
         )
         diagnostics = dict(result.midline_shift_diagnostics)
         diagnostics["landmark_adjustment"] = landmark_diagnostics
@@ -846,6 +878,14 @@ def find_midplane_transform(
         )
 
     if midplane_method == "center":
+        # the center method uses orig's voxel grid directly and assumes LIA orientation (axis 0 = LR, slab
+        # extracted along axis 0, axes 1/2 = IS/AP)
+        orig_axcodes = nib.aff2axcodes(orig.affine)
+        if tuple(orig_axcodes) != ("L", "I", "A"):
+            raise ValueError(
+                f"midplane_method 'center' requires an LIA-oriented (conformed) input image, but the image orientation "
+                f"is {''.join(orig_axcodes)}. Conform the image to LIA or use a fsaverage-based midplane method."
+            )
         return _adjust_with_landmarks(MidplaneTransformResult(
             orig2fsavg_vox2vox=np.eye(4),
             fsavg_vox2ras=orig.affine,
@@ -866,6 +906,7 @@ def find_midplane_transform(
             aseg_data=aseg_data,
             fsavg_shape=fsavg_shape,
             base_middle_vox=base_middle_vox,
+            vox_size=_grid_zooms(fsavg_vox2ras),
         )
         return _adjust_with_landmarks(MidplaneTransformResult(
             orig2fsavg_vox2vox=dm_result.updated_vox2vox,

@@ -301,15 +301,17 @@ def get_cc_num_voxel(
 ) -> float:
     """Calculate the voxel count of the corpus callosum.
 
-    This function calculates the voxel count of the corpus callosum (CC). If the CC width is larger than
-    desired_width_mm, voxels on the edges only contribute partially to the count to achieve the desired width.
+    This function calculates the voxel count of the corpus callosum (CC) inside the analysis slab given by `cc_mask`.
+    If the slab is wider than desired_width_mm, voxels in the outermost slices of the slab only contribute partially
+    to the count to achieve the desired width.
 
     Parameters
     ----------
     desired_width_mm : int
         Desired width of the CC in millimeters.
     cc_mask : np.ndarray
-        Binary mask of the corpus callosum in LIA orientation.
+        Binary mask of the corpus callosum in LIA orientation. The lateral extent of the array (not of the CC) defines
+        the analysis slab, i.e. the array should be the analysis slab centered on the midplane.
     voxel_size : triplet of floats
         LIA-oriented Voxel size in millimeters (x, y, z).
 
@@ -321,38 +323,26 @@ def get_cc_num_voxel(
     Raises
     ------
     ValueError
-        If CC width is smaller than desired width.
-    AssertionError
-        If CC mask doesn't have odd number of voxels in x dimension.
+        If the slab is narrower than the desired width or so wide, that more than the outermost slices would need to
+        be excluded.
 
     Notes
     -----
-    The function assumes LIA orientation
+    The function assumes LIA orientation. Since the extent of the slab is used (and not that of the CC), slices of the
+    slab without CC (e.g. after manual edits) do not cause an error, they just contribute no voxels.
     """
-    # Get the bounding box of the CC mask in x dimension
-    any_cc = np.any(cc_mask, axis=(1, 2))
-    if not np.any(any_cc):
-        return 0.0
-    
-    first_x = np.argmax(any_cc)
-    last_x = len(any_cc) - 1 - np.argmax(any_cc[::-1])
-    
-    # Crop mask to its extent in x
-    cropped_mask = cc_mask[first_x : last_x + 1]
-    width_vox = cropped_mask.shape[0]
-
-    assert width_vox % 2 == 1, f"CC mask must have odd number of voxels in x dimension, but has {width_vox}"
-
-    # Calculate voxel volume
-    lateral_voxel_size: float = voxel_size[0]
-
     # we are in LIA, so 0 is L/R resolution
+    lateral_voxel_size: float = voxel_size[0]
+    width_vox = cc_mask.shape[0]
     width_mm = width_vox * lateral_voxel_size
 
-    if width_mm == desired_width_mm:
-        return np.sum(cropped_mask)
+    # use the full extent of the analysis slab
+    cropped_mask = cc_mask
+
+    if np.isclose(width_mm, desired_width_mm):
+        return float(np.sum(cropped_mask))
     elif width_mm > desired_width_mm:
-        # remainder on the left/right side of the CC mask
+        # remainder on the left/right side of the slab
         desired_width_vox = desired_width_mm / lateral_voxel_size
         
         # The number of full voxels in the center is (width_vox - 2)
@@ -367,9 +357,10 @@ def get_cc_num_voxel(
         left_partial_count = np.sum(cropped_mask[0]) * fraction_of_voxel_at_edge
         right_partial_count = np.sum(cropped_mask[-1]) * fraction_of_voxel_at_edge
         center_count = np.sum(cropped_mask[1:-1])
-        return left_partial_count + right_partial_count + center_count
+        return float(left_partial_count + right_partial_count + center_count)
     else:
-        raise ValueError(f"Width of CC segmentation is smaller than desired width: {width_mm} < {desired_width_mm}")
+        raise ValueError(f"Width of the CC analysis slab is smaller than desired width: {width_mm} < "
+                         f"{desired_width_mm}")
 
 
 
@@ -413,18 +404,17 @@ def extract_largest_connected_component(
                      "using minimal connections")
     mask = connected_seg
     
-    # Get connected components from the processed mask
+    # Get connected components from the processed mask (label 0 is always the background)
     labels_cc = label(mask, connectivity=3, background=0)
-    
-    # Get component counts
-    bincount = np.bincount(labels_cc.flat)
-    
-    # Get background label (assumed to be the largest component)
-    background = np.argmax(bincount)
-    bincount[background] = -1
-    
-    # Get largest connected component
-    largest_cc = np.equal(labels_cc, np.argmax(bincount))
+
+    # Get component counts (excluding the background)
+    bincount = np.bincount(labels_cc.flat)[1:]
+    if len(bincount) == 0:
+        # empty input, there is no component
+        return np.zeros(labels_cc.shape, dtype=bool)
+
+    # Get largest connected component (+1 for the excluded background)
+    largest_cc = np.equal(labels_cc, np.argmax(bincount) + 1)
 
     return largest_cc
 
@@ -445,10 +435,14 @@ def clean_cc_segmentation(
     Returns
     -------
     clean_seg : np.NDArray[int]
-        Cleaned segmentation array with only the largest connected component of CC and fornix.
+        Cleaned segmentation array with only the largest connected component of CC (per slice, including the voxels
+        added to connect nearby components) and the fornix. Removed CC voxels are set to 0.
     mask : npt.NDArray[bool]
-        Binary mask of the largest connected component.
-    
+        Binary mask of the largest connected component, identical to `clean_seg == CC_LABEL`.
+
+    Notes
+    -----
+    Voxels added to connect nearby CC components are labeled as CC, even if they were labeled as fornix before.
     """
     from functools import partial
 
@@ -457,9 +451,10 @@ def clean_cc_segmentation(
     # Remove non-connected components from the CC alone, with minimal connections
     mask = np.equal(seg_arr, CC_LABEL)
     cc_seg = mask.astype(int) * CC_LABEL
-    cc_label_cleaned = np.concatenate([extract_largest(seg[None]) * CC_LABEL for seg in cc_seg], axis=0)
+    cc_mask_cleaned = np.concatenate([extract_largest(seg[None]) for seg in cc_seg], axis=0)
 
-    # Add fornix to the CC labels
-    clean_seg = np.where(mask, cc_label_cleaned, seg_arr)
+    # Keep the fornix, remove all CC fragments and add the largest CC component incl. the connecting voxels
+    clean_seg = np.where(mask, 0, seg_arr)
+    clean_seg[cc_mask_cleaned] = CC_LABEL
 
-    return clean_seg, np.greater(cc_label_cleaned, 0)
+    return clean_seg, cc_mask_cleaned
