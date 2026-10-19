@@ -14,7 +14,6 @@
 from typing import Literal, overload
 
 import numpy as np
-import scipy.interpolate
 from lapy import Solver, TriaMesh
 from lapy.diffgeo import compute_rotated_f
 from meshpy import triangle
@@ -94,6 +93,109 @@ def find_closest_edge(point, contour):
 
     # Return index of closest edge
     return np.argmin(distances)
+
+
+def interpolate_linear_on_mesh(
+        vertices: np.ndarray,
+        trias: np.ndarray,
+        vfunc: np.ndarray,
+        query_points: np.ndarray,
+) -> np.ndarray:
+    """Evaluate a piecewise linear vertex function at query points inside a 2D triangle mesh.
+
+    Parameters
+    ----------
+    vertices : np.ndarray
+        Array of shape (V, 2) containing mesh vertex coordinates.
+    trias : np.ndarray
+        Array of shape (T, 3) containing triangle vertex indices.
+    vfunc : np.ndarray
+        Array of shape (V,) containing the function values at the vertices.
+    query_points : np.ndarray
+        Array of shape (M, 2) containing the points to evaluate.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (M,) containing the interpolated function values.
+
+    Notes
+    -----
+    Unlike scipy.interpolate.griddata, this interpolates within the triangles of the given mesh, i.e. exactly
+    like the piecewise linear function that level paths are extracted from. Each query point is assigned to the
+    triangle with the largest minimal barycentric coordinate, so points marginally outside the mesh (numerical
+    noise) are assigned to the closest triangle.
+    """
+    a, b, c = (vertices[trias[:, i]] for i in range(3))  # T x 2 each
+    v0, v1 = b - a, c - a
+    det = v0[:, 0] * v1[:, 1] - v0[:, 1] * v1[:, 0]  # T
+    rel = query_points[:, None, :] - a[None]  # M x T x 2
+    bary1 = (rel[..., 0] * v1[:, 1] - rel[..., 1] * v1[:, 0]) / det
+    bary2 = (v0[:, 0] * rel[..., 1] - v0[:, 1] * rel[..., 0]) / det
+    bary = np.stack([1 - bary1 - bary2, bary1, bary2], axis=-1)  # M x T x 3
+    tria_idx = np.argmax(bary.min(axis=-1), axis=1)  # M
+    bary_of_tria = bary[np.arange(len(query_points)), tria_idx]  # M x 3
+    return np.sum(bary_of_tria * vfunc[trias[tria_idx]], axis=1)
+
+
+def _distance_to_polyline(point: np.ndarray, polyline: np.ndarray) -> float:
+    """Compute the minimal distance of a 2D point to an open polyline of shape (N, 2)."""
+    seg_start, seg_vec = polyline[:-1], np.diff(polyline, axis=0)
+    seg_len_sq = np.sum(seg_vec * seg_vec, axis=1)
+    t = np.zeros(len(seg_start))
+    valid = seg_len_sq > 1e-20
+    t[valid] = np.sum((point - seg_start[valid]) * seg_vec[valid], axis=1) / seg_len_sq[valid]
+    closest = seg_start + np.clip(t, 0, 1)[:, None] * seg_vec
+    return float(np.min(np.linalg.norm(point - closest, axis=1)))
+
+
+def find_levelpath_through_point(
+        tria: TriaMesh,
+        vfunc: np.ndarray,
+        level: float,
+        point: np.ndarray,
+) -> tuple[np.ndarray, float]:
+    """Extract the open level path of vfunc at level that passes through (or closest to) point.
+
+    Parameters
+    ----------
+    tria : TriaMesh
+        Triangle mesh (with z=0).
+    vfunc : np.ndarray
+        Function values at the mesh vertices.
+    level : float
+        Level of the level set.
+    point : np.ndarray
+        2D point that the level path should pass through, typically where the level was sampled.
+
+    Returns
+    -------
+    levelpath : np.ndarray
+        Array of shape (N, 3) containing the points of the level path.
+    length : float
+        Length of the level path.
+
+    Raises
+    ------
+    ValueError
+        If the level set has no open component.
+
+    Notes
+    -----
+    The level set may consist of multiple components, e.g. small additional arcs or loops where vfunc is not
+    perfectly monotonic along the boundary. Only open components (from boundary to boundary) are considered, and
+    the one closest to point is returned. If the level set is degenerate (e.g. runs along mesh edges), the level is
+    nudged slightly.
+    """
+    vrange = float(np.ptp(vfunc))
+    for nudge in (0., 1e-9, -1e-9):
+        curves = [c for c in tria.extract_level_paths(vfunc, level + nudge * vrange) if not c.closed]
+        if curves:
+            break
+    else:
+        raise ValueError(f"No open level path found at level {level}.")
+    curve = min(curves, key=lambda c: _distance_to_polyline(point, c.points[:, :2]))
+    return curve.points, curve.length()
 
 
 @overload
@@ -279,7 +381,8 @@ def cc_thickness(
     levelpaths : list[np.ndarray]
         Level paths for thickness measurement in same space as contour2d, each of shape (N, 2).
     contour_with_thickness : np.ndarray
-        Contour coordinates with thickness information in same space as contour2d of shape (N+2, 3).
+        Contour coordinates with thickness information in same space as contour2d of shape (N + 2 * L, 3), where L is
+        the number of level paths (the start and end points of each level path are inserted into the contour).
     endpoint_indices : pair of ints
         Pair of updated indices of anterior and posterior endpoint.
 
@@ -345,29 +448,30 @@ def cc_thickness(
 
         gf = compute_rotated_f(tria_asz, vfunc)
 
-        # interpolate midline to get levels to evaluate
-        level_of_rotated_laplace_contour_space = scipy.interpolate.griddata(
-            tria_asz.v[:, 0:2], gf, midline_equidistant_asz[:, 0:2], method="cubic",
+        # interpolate midline to get levels to evaluate; linear interpolation within the mesh triangles guarantees
+        # that the level set of (piecewise linear) gf passes through the respective midline point
+        level_of_rotated_laplace_contour_space = interpolate_linear_on_mesh(
+            tria_asz.v[:, 0:2], tria_asz.t, gf, midline_equidistant_contour_space,
         )
 
     # get levels to evaluate
     levelpaths_contour_space: list[Points2dType] = []
     levelpath_lengths = []
-    levelpath_tria_idx = []
 
     # now, on the rotated laplace function, sample equally spaced (on midline: level_of_rotated_laplace) levelpaths
     contour_thickness = np.full(contour_2d.shape[0], np.nan)
-    for current_level in level_of_rotated_laplace_contour_space[1:-1]:
+    for current_level, midline_point in zip(
+            level_of_rotated_laplace_contour_space[1:-1], midline_equidistant_contour_space[1:-1], strict=True,
+    ):
         # levelpath starts at index zero
         try:
-            levelpath_asz, lvlpath_length, tria_idx = tria_asz.level_path(gf, current_level, get_tria_idx=True)
-        except Exception as e:
+            levelpath_asz, lvlpath_length = find_levelpath_through_point(tria_asz, gf, current_level, midline_point)
+        except ValueError as e:
             logger.warning(f"Failed to compute level path at level {current_level}: {e}")
             continue
 
         levelpaths_contour_space.append(levelpath_asz[:, :2])
         levelpath_lengths.append(lvlpath_length)
-        levelpath_tria_idx.append(tria_idx)
 
         levelpath_start = levelpath_asz[0, :2]
         levelpath_end = levelpath_asz[-1, :2]
@@ -392,7 +496,7 @@ def cc_thickness(
 
     contour_2d_with_thickness = np.concatenate([contour_2d, contour_thickness[:, None]], axis=1)
 
-    # get curvature of path3d_resampled
+    # get curvature of the midline
     mean_curvature: float = compute_mean_curvature(midline_equidistant_contour_space)
     mean_thickness: float = np.mean(levelpath_lengths).item()
     endpoints: tuple[int, int] = (anterior_endpoint_idx, posterior_endpoint_idx)
