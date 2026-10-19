@@ -168,7 +168,6 @@ def create_connection_line(point1: Vector3d, point2: Vector3d) -> list[tuple[int
 def connect_nearby_components[ArrayType: np.ndarray](
         seg_arr: ArrayType,
         max_connection_distance: float = 3.0,
-        plot: bool = False,
     ) -> ArrayType:
     """Connect nearby disconnected components that should be connected.
 
@@ -181,8 +180,6 @@ def connect_nearby_components[ArrayType: np.ndarray](
         Input binary segmentation array.
     max_connection_distance : float, default=3.0
         Maximum distance to connect components.
-    plot : bool, default=False
-        Whether to plot the segmentation with connected components.
     
     Returns
     -------
@@ -265,32 +262,6 @@ def connect_nearby_components[ArrayType: np.ndarray](
     
     logger.info(f"Created {connections_made} minimal connections between components")
 
-
-    # Plot components for debugging
-    if plot:
-        import matplotlib.pyplot as plt
-
-        from FastSurferCNN.utils.plotting import backend
-
-        with backend("qtagg"):
-            n_components = len(component_sizes)
-            fig, axes = plt.subplots(1, n_components + 1, figsize=(5*(n_components + 1), 5))
-            if n_components == 1:
-                axes = [axes]
-            # Plot each component in a different color
-            for i, (comp_id, comp_size) in enumerate(component_sizes):
-                component_mask = labels_cc == comp_id
-                axes[i].imshow(component_mask[component_mask.shape[0]//2], cmap='gray')
-                axes[i].set_title(f'Component {comp_id}\nSize: {comp_size}')
-                axes[i].axis('off')
-
-            # Plot the connected segmentation
-            axes[-1].imshow(connected_seg[connected_seg.shape[0]//2], cmap='gray')
-            axes[-1].set_title('Connected Segmentation')
-            axes[-1].axis('off')
-            plt.tight_layout()
-            plt.show()
-
     return connected_seg
 
 
@@ -337,10 +308,8 @@ def get_cc_num_voxel(
     width_mm = width_vox * lateral_voxel_size
 
     # use the full extent of the analysis slab
-    cropped_mask = cc_mask
-
     if np.isclose(width_mm, desired_width_mm):
-        return float(np.sum(cropped_mask))
+        return float(np.sum(cc_mask))
     elif width_mm > desired_width_mm:
         # remainder on the left/right side of the slab
         desired_width_vox = desired_width_mm / lateral_voxel_size
@@ -354,9 +323,9 @@ def get_cc_num_voxel(
                              f"desired_width_vox: {desired_width_vox}, width_vox: {width_vox}, "
                              f"desired_width_mm: {desired_width_mm}, voxel size (lateral): {lateral_voxel_size} mm")
 
-        left_partial_count = np.sum(cropped_mask[0]) * fraction_of_voxel_at_edge
-        right_partial_count = np.sum(cropped_mask[-1]) * fraction_of_voxel_at_edge
-        center_count = np.sum(cropped_mask[1:-1])
+        left_partial_count = np.sum(cc_mask[0]) * fraction_of_voxel_at_edge
+        right_partial_count = np.sum(cc_mask[-1]) * fraction_of_voxel_at_edge
+        center_count = np.sum(cc_mask[1:-1])
         return float(left_partial_count + right_partial_count + center_count)
     else:
         raise ValueError(f"Width of the CC analysis slab is smaller than desired width: {width_mm} < "

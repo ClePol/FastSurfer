@@ -19,7 +19,6 @@ from lapy.diffgeo import compute_rotated_f
 from meshpy import triangle
 
 import FastSurferCNN.utils.logging as logging
-from CorpusCallosum.shape.curvature import compute_mean_curvature
 from CorpusCallosum.utils.types import ContourThickness, Points2dType
 from FastSurferCNN.utils.common import suppress_stdout
 
@@ -357,7 +356,7 @@ def cc_thickness(
     contour_2d: Points2dType,
     endpoint_idx: tuple[int, int],
     n_points: int = 100,
-) -> tuple[float, float, float, Points2dType , list[Points2dType], ContourThickness, tuple[int, int]]:
+) -> tuple[float, float, Points2dType , list[Points2dType], ContourThickness, tuple[int, int]]:
     """Calculate corpus callosum thickness using Laplace equation.
 
     Parameters
@@ -375,8 +374,6 @@ def cc_thickness(
         Total length of the midline.
     thickness : float
         Mean thickness across all level paths.
-    curvature : float
-        Mean absolute turning angle of the midline in degrees per midline sample step (depends on num_thickness_points).
     midline_equidistant : np.ndarray
         Equidistant points along the midline in same space as contour2d of shape (N, 2).
     levelpaths : list[np.ndarray]
@@ -497,15 +494,12 @@ def cc_thickness(
 
     contour_2d_with_thickness = np.concatenate([contour_2d, contour_thickness[:, None]], axis=1)
 
-    # get curvature of the midline
-    mean_curvature: float = compute_mean_curvature(midline_equidistant_contour_space)
     mean_thickness: float = np.mean(levelpath_lengths).item()
     endpoints: tuple[int, int] = (anterior_endpoint_idx, posterior_endpoint_idx)
 
     return (
         midline_length,
         mean_thickness,
-        mean_curvature,
         midline_equidistant_contour_space,
         levelpaths_contour_space,
         contour_2d_with_thickness,

@@ -34,7 +34,6 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
-from scipy.ndimage import gaussian_filter1d
 
 import FastSurferCNN.utils.logging as logging
 from CorpusCallosum.data.constants import CC_ANALYSIS_WIDTH_MM
@@ -185,7 +184,7 @@ class CCContour:
             self,
             num_points: int,
             inplace: bool = False
-    ) -> tuple[list[np.ndarray], float, float, np.ndarray, np.ndarray, tuple[int, int], float]:
+    ) -> tuple[list[np.ndarray], float, float, np.ndarray, np.ndarray, tuple[int, int]]:
         """Calculate thickness and level paths for the CC contour using Laplace equation.
 
         Parameters
@@ -209,16 +208,13 @@ class CCContour:
             Contour points with thickness information, shape (N, 3).
         endpoint_idxs : tuple[int, int]
             Indices of the anterior and posterior endpoints on the updated contour.
-        curvature : float
-            Mean absolute turning angle of the midline in degrees per midline sample step
-            (depends on num_thickness_points).
         """
 
          # FIXME: cache all these values in CCContour, and invalidate the cache, when either points or endpoint_idxs get
          #        changed; alternatively, make points and endpoint_idxs read_only (by creating getter-only properties)
          #        and have all functions that change points or endpoints return a new CCContour object instead.
 
-        midline_len, thickness, curvature, midline_equi, levelpaths, contour_with_thickness, endpoint_idxs = \
+        midline_len, thickness, midline_equi, levelpaths, contour_with_thickness, endpoint_idxs = \
             cc_thickness(
                 self.points,
                 self.endpoint_idxs,
@@ -231,44 +227,8 @@ class CCContour:
             self.original_thickness_vertices = np.where(~np.isnan(self.thickness_values))[0]
             self.endpoint_idxs = endpoint_idxs
 
-        return levelpaths, thickness, midline_len, midline_equi, contour_with_thickness, endpoint_idxs, curvature
+        return levelpaths, thickness, midline_len, midline_equi, contour_with_thickness, endpoint_idxs
     
-    def set_thickness_values(self, thickness_values: np.ndarray, use_measurement_points: bool = False) -> None:
-        """Set the thickness values for the contour.
-        This is useful to update the thickness values for specific plots.
-        
-        Parameters
-        ----------
-        thickness_values : np.ndarray
-            Array of thickness values for the contour.
-        use_measurement_points : bool, default=False
-            Whether to use the measurement points to set the thickness values.
-        """
-        if use_measurement_points:
-            if self.original_thickness_vertices is None:
-                if len(thickness_values) != len(self.points):
-                    raise ValueError(
-                        f"Thickness values not initialized and number of points in the contour {len(self.points)} does "
-                        f"not match number of thickness values {len(thickness_values)}.",
-                    )
-                self.original_thickness_vertices = np.where(~np.isnan(thickness_values))[0]
-                self.thickness_values = thickness_values
-            elif len(thickness_values) == len(self.original_thickness_vertices):
-                self.thickness_values = np.full(len(self.points), np.nan)
-                self.thickness_values[self.original_thickness_vertices] = thickness_values
-            else:
-                raise ValueError(
-                    "Number of thickness values does not match number of measurement points "
-                    f"{len(self.original_thickness_vertices)}.",
-                )
-        else:
-            if len(thickness_values) != len(self.points):
-                raise ValueError(
-                    f"The number of thickness values does not match number of points in the contour "
-                    f"{len(self.points)}.",
-                )
-            self.thickness_values = thickness_values
-
     def get_thickness_profile(self) -> np.ndarray:
         """Return one thickness value per level path, ordered anterior to posterior.
 
@@ -376,72 +336,6 @@ class CCContour:
             thickness[j] = np.sum(weights * thickness[closest_indices])
 
         self.thickness_values = thickness
-
-    def smooth_thickness_values(self, iterations: int = 1) -> None:
-        """Smooth the thickness values using a Gaussian filter.
-
-        Parameters
-        ----------
-        iterations : int, optional
-            Number of smoothing iterations, by default 1.
-
-        Notes
-        -----
-        Applies Gaussian smoothing with sigma=5 to thickness values
-        along the contour.
-        """
-        if self.thickness_values is not None:
-            # Handle NaN values by interpolating if necessary or just smoothing the non-NaN parts
-            # Here we assume they might have been filled already by fill_thickness_values
-            for _ in range(iterations):
-                self.thickness_values = gaussian_filter1d(self.thickness_values, sigma=5, mode="wrap")
-    
-    def plot_contour(self, output_path: str | None = None) -> None:
-        """Plot a single contour with thickness values.
-
-        Parameters
-        ----------
-        output_path : str
-            Path where to save the plot.
-
-        Notes
-        -----
-        Creates a 2D visualization with:
-        - Points colored by thickness values.
-        - Gray points for missing thickness values.
-        - Connected contour line.
-        - Grid, labels, and legend.
-        """
-        if output_path is not None:
-            self.__make_parent_folder(output_path)
-
-        plt.figure(figsize=(10, 10))
-
-        # Plot points with colors based on thickness
-        gray_points = np.isnan(self.thickness_values)
-        if np.any(gray_points):
-            plt.scatter(self.points[gray_points, 0], self.points[gray_points, 1], color="gray", s=1)
-
-        if not np.all(gray_points):
-            not_gray = np.logical_not(gray_points)
-            # Map thickness to color from red to yellow
-            norm_thickness = self.thickness_values[not_gray] / np.nanmax(self.thickness_values[not_gray])
-            color_values = plt.cm.YlOrRd(norm_thickness)
-            plt.scatter(self.points[not_gray, 0], self.points[not_gray, 1], c=color_values, s=1)
-
-        # Connect points with lines
-        plt.plot(self.points[:, 0], self.points[:, 1], "-", color="black", alpha=0.3, label="Contour")
-        plt.axis("equal")
-        plt.xlabel("X")
-        plt.ylabel("Y")
-        plt.title("CC contour")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        if output_path is not None:
-            plt.savefig(output_path, dpi=300)
-        else:
-            plt.show()
 
     def plot_contour_colorfill(
         self,

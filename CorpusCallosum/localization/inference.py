@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pathlib import Path
 from typing import Literal, cast
 
 import numpy as np
@@ -68,13 +67,10 @@ def load_model(device: torch.device) -> DenseNet:
     get_checkpoints(checkpoint_path, urls=urls)
 
     # Load state dict
-    if isinstance(checkpoint_path, str) or isinstance(checkpoint_path, Path):
-        state_dict = torch.load(checkpoint_path, map_location=device, weights_only=True)
-        if isinstance(state_dict, dict) and 'model_state_dict' in state_dict:
-            state_dict = state_dict['model_state_dict']
-    else:
-        state_dict = checkpoint_path
-        
+    state_dict = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    if isinstance(state_dict, dict) and 'model_state_dict' in state_dict:
+        state_dict = state_dict['model_state_dict']
+
     model.load_state_dict(state_dict)
     model = model.to(device)
     model.eval()
@@ -143,7 +139,7 @@ def predict(
         patch_center: np.ndarray,
         device: torch.device | None = None,
         transform: transforms.Transform | None = None
-    ) -> tuple[Points2dType, Points2dType, tuple[int, int]]:
+    ) -> tuple[Points2dType, Points2dType]:
     """
     Run inference on an image volume
     
@@ -166,8 +162,6 @@ def predict(
         Predicted PC coordinates.
     ac_coord : np.ndarray
         Predicted AC coordinates.
-    crop_offsets : pair of ints
-        Crop offsets along the inferior/superior (I) and anterior/posterior (A) axes.
     """
     if device is None:
         device = next(model.parameters()).device
@@ -194,8 +188,7 @@ def predict(
     t_crops = [(crop_start_i + crop_start_a) * 2]
     outs: np.ndarray[tuple[int, Literal[4]], np.dtype[np.float64]]
     outs = outputs.cpu().numpy() + np.asarray(t_crops, dtype=float)
-    crop_offsets: tuple[int, int] = (crop_start_i[0], crop_start_a[0])
-    return outs[:, :2], outs[:, 2:], crop_offsets
+    return outs[:, :2], outs[:, 2:]
 
 
 def run_inference_on_slice(
@@ -203,7 +196,6 @@ def run_inference_on_slice(
         image_slab: Image3d,
         center_pt: Vector2d,
         num_iterations: int = 2,
-        debug_output: str | None = None,
 ) -> tuple[Vector2d, Vector2d]:
     """Run inference on a single slice to detect AC and PC points.
 
@@ -217,8 +209,6 @@ def run_inference_on_slice(
         Initial center point estimate for cropping.
     num_iterations : int, default=2
         Number of refinement iterations to run.
-    debug_output : str, optional
-        Path to save debug visualization.
 
     Returns
     -------
@@ -232,26 +222,12 @@ def run_inference_on_slice(
         raise ValueError("localization inference with less than 1 iteration is invalid!")
 
     pc_coords, ac_coords = center_pt[None], center_pt[None]
-    crop_start_i, crop_start_a = 0, 0
     # Run inference
     for _ in range(num_iterations):
-        pc_coords, ac_coords, (crop_start_i, crop_start_a) = predict(model, image_slab, center_pt)
+        pc_coords, ac_coords = predict(model, image_slab, center_pt)
         center_pt = np.mean(np.stack([ac_coords, pc_coords], axis=0), axis=(0, 1))
     # average ac and pc coords across sagittal slices
     _pc_coords = np.mean(pc_coords, axis=0)
     _ac_coords = np.mean(ac_coords, axis=0)
-
-    if debug_output is not None:
-        import matplotlib.pyplot as plt
-        from matplotlib.patches import Rectangle
-        fig, ax = plt.subplots(1, 1, figsize=(10, 8))
-        ax.imshow(image_slab[image_slab.shape[0] // 2, :, :], cmap='gray')
-        # Plot points on all views
-        ax.scatter(pc_coords[:, 1], pc_coords[:, 0], c='r', marker='x', label='PC')
-        ax.scatter(ac_coords[:, 1], ac_coords[:, 0], c='b', marker='x', label='AC')
-        # make a box where the crop is
-        ax.add_patch(Rectangle((crop_start_a, crop_start_i), 64, 64, fill=False, color='r', linewidth=2))
-        plt.savefig(debug_output, bbox_inches='tight')
-        plt.close()
 
     return _ac_coords, _pc_coords

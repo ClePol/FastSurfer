@@ -15,7 +15,6 @@
 from collections.abc import Callable
 from typing import Literal
 
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
 
@@ -125,9 +124,6 @@ def subsegment_midline_orthogonal(
         midline: Points2dType,
         area_weights: np.ndarray[tuple[int], np.dtype[np.float64]],
         contour: Polygon2dType,
-        plot: bool = True,
-        ax=None,
-        extremes=None,
 ) -> tuple[np.ndarray[tuple[int], np.dtype[ScalarType]], ContourList, np.ndarray, list[Points2dType]]:
     """Subsegment contour orthogonally to the midline based on area weights.
 
@@ -139,12 +135,6 @@ def subsegment_midline_orthogonal(
         Array of weights for area-based subdivision.
     contour : array of floats
         Array of shape (2, M) containing contour points in as space.
-    plot : bool, optional
-        Whether to plot the results, by default True.
-    ax : matplotlib.axes.Axes, optional
-        Axes for plotting, by default None.
-    extremes : tuple, optional
-        Tuple of extreme points, by default None.
 
     Returns
     -------
@@ -251,111 +241,13 @@ def subsegment_midline_orthogonal(
         else:
             raise ValueError("No intersections found in subdivision, is the contour valid?")
 
-        # plot contour to first index, then split point, then contour to second index
-
-        # import matplotlib.pyplot as plt
-        # plt.close()
-        # fig, ax = plt.subplots(1,1)
-        # ax.plot(contour[:, :first_index][0], contour[:, :first_index][1], '-', linewidth=2, color='grey',
-        # label='Contour to first index')
-        # ax.plot(first_intersection[0], first_intersection[1], 'o', markersize=8, color='red',
-        # label='First intersection')
-        # ax.plot(second_intersection[0], second_intersection[1], 'o', markersize=8, color='red',
-        # label='Second intersection')
-        # ax.plot(contour[:, second_index + 1:][0], contour[:, second_index + 1:][1], '-', linewidth=2, color='red',
-        # label='Contour to second index')
-        # ax.legend()
-        # ax.set_title('Split Contours')
-        # ax.set_aspect('equal')
-        # ax.axis('off')
-        # plt.show()
-
-    if plot:
-        extremes = [midline[0], midline[-1]]
-
-        import matplotlib.pyplot as plt
-
-        if ax is None:
-            SHOW = True
-            fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-            ax.axis("equal")
-        else:
-            SHOW = False
-        # pretty plot with areas filled in the polygon and overall area annotated
-        colors = plt.cm.Spectral(np.linspace(0.2, 0.8, len(split_contours)))
-        for color, split_contour in zip(colors, split_contours, strict=True):
-            ax.fill(split_contour[0], split_contour[1], alpha=0.5, color=color)
-            # ax.text(np.mean(split_contour[0]), np.mean(split_contour[1]), f'{area_out[i]:.2f}', 
-            # olor='black', fontsize=12)
-        # plot contour
-        ax.plot(contour[0], contour[1], "-", linewidth=2, color="grey")
-        # put text between split points
-        # add endpoints to split_points
-        split_points = split_points.tolist()
-        split_points.insert(0, extremes[0])
-        split_points.append(extremes[1])
-        # ax.scatter(np.array(split_points)[:,0], np.array(split_points)[:,1], color='black', s=20)
-        ax.plot(midline[:, 0], midline[:, 1], "k--", linewidth=2)
-
-        # plot edge orthogonal to each split point
-        for i in range(0, len(edge_ortho_vectors)):
-            pt = split_points[i + 1]
-            length = 0.4
-            ax.plot(
-                [pt[0] - edge_ortho_vectors[i][0] * length, pt[0] + edge_ortho_vectors[i][0] * length],
-                [pt[1] - edge_ortho_vectors[i][1] * length, pt[1] + edge_ortho_vectors[i][1] * length],
-                "k-",
-                linewidth=2,
-            )
-
-        # convert area_weights into fraction of total line length
-        # e.g. area_weights=[1/6, 1/2, 2/3, 3/4] to ['1/6', '2/3', ...]
-        # cumulative difference
-        area_weights_diff = [area_weights[0]]
-        for i in range(1, len(area_weights)):
-            area_weights_diff.append(area_weights[i] - area_weights[i - 1])
-        area_weights_diff.append(1 - area_weights[-1])
-
-        for i in range(len(split_points) - 1):
-            # get_index of split_points[i] in midline
-            sp1_midline_idx = np.argmin(np.linalg.norm(midline - split_points[i], axis=1))
-            sp2_midline_idx = np.argmin(np.linalg.norm(midline - split_points[i + 1], axis=1))
-
-            # get midpoint on midline
-            midpoint_idx = (sp1_midline_idx + sp2_midline_idx) // 2
-            midpoint = midline[midpoint_idx]
-
-            # get vector perpendicular to line between split points
-            vector = np.array(split_points[i + 1]) - np.array(split_points[i])
-            vector = vector / np.linalg.norm(vector)
-            vector = np.array([-vector[1], vector[0]])
-
-            midpoint = midpoint - vector * 3
-            # ax.text(midpoint[0]-5, midpoint[1]-5, f'{area_out[i]:.2f}', color='black', fontsize=12)
-            # ax.text(midpoint[0], midpoint[1], f'{area_weights_txt[i]}', color='black', fontsize=12,
-            # horizontalalignment='center', verticalalignment='center')
-
-        # start point & end point
-        ax.plot(extremes[0][0], extremes[0][1], marker="o", markersize=8, color="black")
-        ax.plot(extremes[1][0], extremes[1][1], marker="o", markersize=8, color="black")
-
-        # plot contour point 0
-        # ax.scatter(contour[0,0], contour[1,0], color='red', s=120)
-        ax.set_title("Split Contours")
-
-        if SHOW:
-            ax.axis("off")
-            ax.invert_xaxis()
-            ax.axis("equal")
-            plt.show()
-
     # add original contour to split_contours to be the union of all subsegments
     split_contours.append(contour)
 
     return calc_subsegment_areas(split_contours), split_contours, split_points, subdivision_lines
 
 
-def subdivide_contour_hampel(contour: Polygon2dType, num_rays: int, plot: bool = False, ax=None) \
+def subdivide_contour_hampel(contour: Polygon2dType, num_rays: int) \
         -> tuple[np.ndarray[tuple[int], np.dtype[np.float64]], ContourList, list[Vector2d], list[Points2dType]]:
     """Subdivide contour based on area weights using equally spaced rays.
 
@@ -365,10 +257,6 @@ def subdivide_contour_hampel(contour: Polygon2dType, num_rays: int, plot: bool =
         Array of shape (2, N) containing contour points.
     num_rays : int
         Number of rays to use for subdivision.
-    plot : bool, optional
-        Whether to plot the results, by default False.
-    ax : matplotlib.axes.Axes, optional
-        Axes for plotting, by default None.
 
     Returns
     -------
@@ -499,40 +387,6 @@ def subdivide_contour_hampel(contour: Polygon2dType, num_rays: int, plot: bool =
 
     split_contours = [contour] + split_contours
 
-    # Plotting logic
-    if plot:
-        import matplotlib.pyplot as plt
-
-        if ax is None:
-            fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-            ax.axis("equal")
-            SHOW = True
-        else:
-            SHOW = False
-        min_bounding_rectangle_plot = np.vstack((min_bounding_rectangle, min_bounding_rectangle[0]))
-        # ax.plot(contour[0], contour[1], 'b-', label='Original Contour')
-        ax.plot(min_bounding_rectangle_plot[:, 0], min_bounding_rectangle_plot[:, 1], "k--")
-        ax.plot(midpoint_lower_edge[0], midpoint_lower_edge[1], "ko", markersize=8)
-        for ray_vector in ray_vectors.T:
-            ray_length = 15
-            ray_vector *= -ray_length
-            ax.plot(
-                [midpoint_lower_edge[0], midpoint_lower_edge[0] + ray_vector[0]],
-                [midpoint_lower_edge[1], midpoint_lower_edge[1] + ray_vector[1]],
-                "k--",
-            )
-        # pretty plot with areas files in the polygon and overall area annotated
-        colors = plt.cm.Spectral(np.linspace(0.2, 0.8, len(split_contours)))
-        for color, split_contour in zip(colors, split_contours, strict=True):
-            ax.fill(split_contour[0], split_contour[1], alpha=0.5, color=color)
-        ax.plot(contour[0], contour[1], "-", linewidth=2, color="grey")
-
-        ax.set_title("Split Contours")
-        ax.axis("off")
-        if SHOW:
-            ax.axis("equal")
-            plt.show()
-
     # order all anterior to posterior
     split_contours = split_contours[::-1]
     subdivision_lines = subdivision_lines[::-1]
@@ -544,9 +398,6 @@ def subdivide_contour_hampel(contour: Polygon2dType, num_rays: int, plot: bool =
 def subdivide_contour_vertical(
     contour: Polygon2dType,
     area_weights: list[float],
-    plot: bool = False,
-    ax: plt.Axes | None = None,
-    plot_transform: Callable | None = None,
     oriented: bool = False,
     hline_anchor: np.ndarray | None = None
 ) -> tuple[np.ndarray[tuple[int], np.dtype[np.float64]], ContourList, list[Vector2d], list[Points2dType]]:
@@ -562,12 +413,6 @@ def subdivide_contour_vertical(
         Array of shape (2, N) containing contour points.
     area_weights : list[float]
         List of weights for area-based subdivision.
-    plot : bool, optional
-        Whether to plot the results, by default False.
-    ax : matplotlib.axes.Axes, optional
-        Axes for plotting, by default None.
-    plot_transform : callable, optional
-        Function to transform points before plotting, by default None.
     oriented : bool, optional
         If True, use fixed horizontal reference line, by default False.
     hline_anchor : np.ndarray, optional
@@ -720,117 +565,6 @@ def subdivide_contour_vertical(
             split_contours.append(anterior_to_cutoff)
         else:
             raise ValueError("No intersections found in subdivision, is the contour valid?")
-
-    if plot:
-        # make vline at every split point
-        split_points_vlines_start = (np.array(baseline_points) - perp_vector * 1).T
-        split_points_vlines_end = (np.array(baseline_points) + perp_vector * 1).T
-
-        if oriented:
-            # make another vline at start point and end point, this time not 
-            # perpendicular to line but perpendicular to x-axis
-            start_point_vline = np.array([start_point, np.array([start_point[0], start_point[1] + 8])])
-            end_point_vline = np.array([end_point, np.array([end_point[0], end_point[1] + 8])])
-        else:
-            start_point_vline = np.array([start_point, start_point - perp_vector * 8])
-            end_point_vline = np.array([end_point, end_point - perp_vector * 8])
-
-        if plot_transform is not None:
-            split_contours = [plot_transform(split_contour) for split_contour in split_contours]
-            contour = plot_transform(contour)
-            extremes = [plot_transform(extreme[:, None]) for extreme in extremes]
-            baseline_points = [plot_transform(bp[:, None]) for bp in baseline_points]
-            split_points_vlines_start = plot_transform(split_points_vlines_start)
-            split_points_vlines_end = plot_transform(split_points_vlines_end)
-            start_point_vline = plot_transform(start_point_vline.T).T
-            end_point_vline = plot_transform(end_point_vline.T).T
-
-        import matplotlib.pyplot as plt
-
-        if ax is None:
-            SHOW = True
-            fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-            ax.axis("equal")
-        else:
-            SHOW = False
-        # pretty plot with areas filled in the polygon and overall area annotated
-        colors = plt.cm.Spectral(np.linspace(0.2, 0.8, len(split_contours)))
-        for color, split_contour in zip(colors, split_contours, strict=True):
-            ax.fill(split_contour[0], split_contour[1], alpha=0.5, color=color)
-            # ax.text(np.mean(split_contour[0]), np.mean(split_contour[1]), 
-            # f'{area_out[i]:.2f}', color='black', fontsize=12)
-        # plot contour
-        ax.plot(contour[0], contour[1], "-", linewidth=2, color="grey")
-        # dashed line between start point & end point
-        ax.plot(
-            np.vstack((extremes[0][0], extremes[1][0])),
-            np.vstack((extremes[0][1], extremes[1][1])),
-            "--",
-            linewidth=2,
-            color="grey",
-        )
-        # markers at every split point
-        for i in range(split_points_vlines_start.shape[1]):
-            ax.plot(
-                np.vstack((split_points_vlines_start[:, i][0], split_points_vlines_end[:, i][0])),
-                np.vstack((split_points_vlines_start[:, i][1], split_points_vlines_end[:, i][1])),
-                "k-",
-                linewidth=2,
-            )
-
-        ax.plot(start_point_vline[:, 0], start_point_vline[:, 1], "--", linewidth=2, color="grey")
-        ax.plot(end_point_vline[:, 0], end_point_vline[:, 1], "--", linewidth=2, color="grey")
-        # put text between split points
-        # add endpoints to split_points
-        baseline_points.insert(0, extremes[0])
-        baseline_points.append(extremes[1])
-        # convert area_weights into fraction of total line length
-        # e.g. area_weights=[1/6, 1/2, 2/3, 3/4] to ['1/6', '2/3', ...]
-        # cumulative difference
-        area_weights_diff = []
-        area_weights_diff.append(area_weights[0])
-        for i in range(1, len(area_weights)):
-            area_weights_diff.append(area_weights[i] - area_weights[i - 1])
-        area_weights_diff.append(1 - area_weights[-1])
-
-        # area_weights_txt = area_weights_txt / area_weights_txt[-1]
-        from fractions import Fraction
-
-        area_weights_txt = [
-            Fraction(area_weights_diff[i]).limit_denominator(1000) for i in range(len(area_weights_diff))
-        ]
-
-        for i in range(len(baseline_points) - 1):
-            midpoint = np.mean([baseline_points[i], baseline_points[i + 1]], axis=0)
-            # ax.text(midpoint[0]-5, midpoint[1]-5, f'{area_out[i]:.2f}', color='black', fontsize=12)
-            ax.text(
-                midpoint[0],
-                midpoint[1] - 5,
-                f"{area_weights_txt[i]}",
-                color="black",
-                fontsize=11,
-                horizontalalignment="center",
-            )
-
-        # start point & end point
-        ax.plot(extremes[0][0], extremes[0][1], marker="o", markersize=8, color="black")
-        ax.plot(extremes[1][0], extremes[1][1], marker="o", markersize=8, color="black")
-
-        # plot contour 0 point
-        # ax.scatter(contour[0,0], contour[1,0], color='red', s=100)
-
-        ax.set_title("Split Contours")
-        # ax.set_xlabel('X')
-        # ax.set_ylabel('Y')
-
-        # axis off
-        ax.axis("off")
-        if SHOW:
-            ax.axis("equal")
-            plt.show()
-
-
-
 
     # add original contour as the final element (Full CC)
     split_contours.append(contour)

@@ -23,7 +23,7 @@ from pathlib import Path
 import numpy as np
 from scipy import ndimage
 
-from CorpusCallosum.data.constants import FORNIX_LABEL, SUBSEGMENT_LABELS
+from CorpusCallosum.data.constants import SUBSEGMENT_LABELS
 from FastSurferCNN.data_loader.conform import Reorientation, is_conform
 from FastSurferCNN.data_loader.data_utils import as_mgh_image, load_image
 from FastSurferCNN.reduce_to_aseg import reduce_to_aseg_and_save
@@ -57,9 +57,6 @@ def argument_parse():
     parser = make_parser()
 
     args = parser.parse_args()
-
-    if args.input_cc is None or args.input_pred is None or args.output is None:
-        sys.exit("ERROR: Please specify input and output segmentations")
 
     return args
 
@@ -481,7 +478,6 @@ if __name__ == "__main__":
 
     # Count initial labels before any modifications
     initial_cc = np.sum(mask_in_array(pred_data, SUBSEGMENT_LABELS))
-    initial_fornix = np.sum(pred_data == FORNIX_LABEL)
     initial_wm = np.sum((pred_data == 2) | (pred_data == 41))
     initial_ventricles = np.sum((pred_data == 4) | (pred_data == 43))
 
@@ -513,7 +509,6 @@ if __name__ == "__main__":
 
     # Count final labels
     final_cc = np.sum(mask_in_array(pred_with_cc_filled, SUBSEGMENT_LABELS))
-    final_fornix = np.sum(pred_with_cc_filled == FORNIX_LABEL)
     final_wm = np.sum((pred_with_cc_filled == 2) | (pred_with_cc_filled == 41))
     final_ventricles = np.sum((pred_with_cc_filled == 4) | (pred_with_cc_filled == 43))
 
