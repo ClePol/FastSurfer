@@ -132,7 +132,7 @@ def find_cc_endpoints(
         pc_2d: Vector2d,
         plot: bool = False,
 ):
-    """Extracts the contour of the CC, rotates to AC-PC alignment, and determines closest points of CC to AC and PC.
+    """Determine the anterior and posterior endpoints of the CC contour from anchors relative to AC and PC.
 
     Parameters
     ----------

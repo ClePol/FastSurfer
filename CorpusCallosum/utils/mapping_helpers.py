@@ -106,7 +106,7 @@ def calc_mapping_to_standard_space(
     target_shape: Shape3d,
     ac_coords_3d: Vector3d,
     pc_coords_3d: Vector3d,
-    orig_fsaverage_vox2vox: AffineMatrix4x4,
+    orig2fsavg_vox2vox: AffineMatrix4x4,
     vox_size: Vector3d | None = None,
 ) -> tuple[AffineMatrix4x4, Vector3d, Vector3d, Vector3d, Vector3d]:
     """Get transformations to map image to standard space.
@@ -119,7 +119,7 @@ def calc_mapping_to_standard_space(
         AC coordinates in 3D space.
     pc_coords_3d : np.ndarray
         PC coordinates in 3D space.
-    orig_fsaverage_vox2vox : AffineMatrix4x4
+    orig2fsavg_vox2vox : AffineMatrix4x4
         Transformation matrix from original to fsaverage space.
     vox_size : Vector3d, optional
         Voxel size of the fsaverage-aligned (and standardized) grid in voxel axis order (LIA), used to make the nodding
@@ -159,7 +159,7 @@ def calc_mapping_to_standard_space(
     ac_to_center_translation: AffineMatrix4x4 = np.eye(4, dtype=float)
     ac_to_center_translation[:3, 3] = image_center - ac_coords_after_nodding
 
-    # correct nodding
+    # move AC to the image center
     ac_coords_standardized: Vector3d = apply_transform_to_pt(
         ac_coords_after_nodding, ac_to_center_translation, inv=False,
     )
@@ -168,7 +168,7 @@ def calc_mapping_to_standard_space(
     )
 
     standardized_to_orig_vox2vox: AffineMatrix4x4 = (
-        np.linalg.inv(orig_fsaverage_vox2vox)
+        np.linalg.inv(orig2fsavg_vox2vox)
         @ np.linalg.inv(nod_correct_3d)
         @ np.linalg.inv(ac_to_center_translation)
     )

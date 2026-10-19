@@ -40,12 +40,12 @@ def plot_contours(
         Intensities of the current slice, midslice or midslab (will plot middle slice).
     split_contours : list[np.ndarray], optional
         List of contour arrays for each subdivision (ignore contours on None) in upright AS coordinates each with shape
-        (N, 2).
+        (2, N).
     midline_equidistant : np.ndarray, optional
-        Midline points at equidistant spacing (ignore midline on None) in upright AS coordinates with shape (2, N).
+        Midline points at equidistant spacing (ignore midline on None) in upright AS coordinates with shape (N, 2).
     levelpaths : list[np.ndarray], optional
         List of level paths for visualization (ignore level paths on None) in upright AS coordinates each with shape
-        (2, N).
+        (N, 2).
     output_path : str or Path or list of Paths, optional
         Path to save the plot (show and do not save on None).
     ac_coords_vox : np.ndarray, optional
@@ -68,15 +68,15 @@ def plot_contours(
 
     from FastSurferCNN.utils.plotting import backend
 
-    if vox2ras is None and None in (split_contours, midline_equidistant, levelpaths):
-        raise ValueError("vox_size must be provided if split_contours, midline_equidistant, or levelpaths are given.")
+    if vox2ras is None and any(x is not None for x in (split_contours, midline_equidistant, levelpaths)):
+        raise ValueError("vox2ras must be provided if split_contours, midline_equidistant, or levelpaths are given.")
     
     _backend_context = nullcontext if output_path is None else partial(backend, 'agg')  # Use non-GUI backend
 
-    # convert vox_size from LIA to AS
+    # mapping from AS coordinates to the (I, A) voxel coordinates of the slice
     ras2vox = partial(apply_affine, np.linalg.inv(vox2ras)[1:, 1:])
 
-    # scale contour data by vox_size to convert from AS to AS-aligned voxel space
+    # convert contour data from AS coordinates to slice voxel coordinates
     _split_contours = [] if split_contours is None else [ras2vox(sp.T).T for sp in split_contours]
     _midline_equi = np.zeros((0, 2)) if midline_equidistant is None else ras2vox(midline_equidistant)
     _levelpaths = [] if levelpaths is None else [ras2vox(lp) for lp in levelpaths]

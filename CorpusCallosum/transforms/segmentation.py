@@ -80,16 +80,17 @@ class CropAroundACPC(RandomizableTransform, MapTransform):
 
         ac_pc = np.stack([ac_center, pc_center], axis=0)
 
-        ac_pc_bottomleft = np.min(ac_pc, axis=0).astype(int)
-        ac_pc_topright = np.max(ac_pc, axis=0).astype(int)
+        ac_pc_min = np.min(ac_pc, axis=0).astype(int)
+        ac_pc_max = np.max(ac_pc, axis=0).astype(int)
 
         voxel_padding: np.ndarray[tuple[Literal[2]], np.dtype[np.int_]] = np.round(
             self.padding_mm / d["res"]).astype(int)
 
-        crop_left = ac_pc_bottomleft[1] - int(voxel_padding[0] * 1.5) + random_translate[0]
-        crop_right = ac_pc_topright[1] + voxel_padding[0] // 2 + random_translate[0]
-        crop_top = ac_pc_bottomleft[2] - voxel_padding[1] + random_translate[1]
-        crop_bottom = ac_pc_topright[2] + voxel_padding[1] + random_translate[1]
+        # crop range along the inferior/superior (i) and anterior/posterior (a) axes of the LIA image
+        crop_start_i = ac_pc_min[1] - int(voxel_padding[0] * 1.5) + random_translate[0]
+        crop_stop_i = ac_pc_max[1] + voxel_padding[0] // 2 + random_translate[0]
+        crop_start_a = ac_pc_min[2] - voxel_padding[1] + random_translate[1]
+        crop_stop_a = ac_pc_max[2] + voxel_padding[1] + random_translate[1]
 
         keys_to_process = [key for key in self.keys if key in d.keys()]
 
@@ -101,9 +102,10 @@ class CropAroundACPC(RandomizableTransform, MapTransform):
             return d
 
         first_key = keys_to_process[0]
-        d["to_pad"] = crop_left, d[first_key].shape[2] - crop_right, crop_top, d[first_key].shape[3] - crop_bottom
+        shape_i, shape_a = d[first_key].shape[2:4]
+        d["to_pad"] = crop_start_i, shape_i - crop_stop_i, crop_start_a, shape_a - crop_stop_a
 
         for key in keys_to_process:
-            d[key] = d[key][:, :, crop_left:crop_right, crop_top:crop_bottom]
+            d[key] = d[key][:, :, crop_start_i:crop_stop_i, crop_start_a:crop_stop_a]
 
         return d

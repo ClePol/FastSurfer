@@ -681,19 +681,19 @@ class CCMesh(lapy.TriaMesh):
 
         Notes
         -----
-        Each contour's z_position determines its left-right coordinate. The mesh
+        Each contour's lr_position determines its left-right coordinate. The mesh
         connects consecutive contours, leaves both slab ends open, and optionally
         smooths the surface while preserving those coordinates.
         """
         # Check that all contours have distinct slice positions.
-        z_coordinates = np.array([contour.z_position for contour in contours])
-        same_z_position = np.isclose(z_coordinates[:, None], z_coordinates[None, :])
+        lr_coordinates = np.array([contour.lr_position for contour in contours])
+        same_lr_position = np.isclose(lr_coordinates[:, None], lr_coordinates[None, :])
         # filter for diagonal and duplicates
-        unique_same_z_position = np.logical_and(same_z_position, np.tri(z_coordinates.shape[0], k=-1, dtype=bool).T)
-        if np.any(unique_same_z_position):
+        unique_same_lr_position = np.logical_and(same_lr_position, np.tri(lr_coordinates.shape[0], k=-1, dtype=bool).T)
+        if np.any(unique_same_lr_position):
             raise ValueError(
-                f"All contours must have different z_positions, but {np.array(np.where(unique_same_z_position)).T} "
-                f"have similar z_positions."
+                f"All contours must have different lr_positions, but {np.array(np.where(unique_same_lr_position)).T} "
+                f"have similar lr_positions."
             )
 
         # vertices list with z-coordinates and collect thickness values
@@ -710,12 +710,12 @@ class CCMesh(lapy.TriaMesh):
             points, values = contour.points, contour.thickness_values
             if len(points) != num_points:
                 logger.warning(
-                    f"Contour at z={contour.z_position:.2f} has {len(points)} instead of {num_points} points "
+                    f"Contour at lr={contour.lr_position:.2f} has {len(points)} instead of {num_points} points "
                     f"(missing level paths?), inserting points for meshing."
                 )
                 points, values = _upsample_contour(points, values, num_points)
 
-            vertices.append(np.hstack([np.full((len(points), 1), contour.z_position), points]))
+            vertices.append(np.hstack([np.full((len(points), 1), contour.lr_position), points]))
             if values is not None:
                 vertex_values_list.append(values)
 
@@ -730,7 +730,7 @@ class CCMesh(lapy.TriaMesh):
 
         if len(contours) > 1:
             # Orient faces such that normals point outward. The winding produced by make_triangles_between_contours
-            # depends on the contour direction (cw/ccw) and on the order of the z_positions, so close the tube with
+            # depends on the contour direction (cw/ccw) and on the order of the lr_positions, so close the tube with
             # temporary caps and flip all faces, if the signed volume is negative.
             _vertices, _faces = np.vstack(vertices), np.vstack(faces)
             caps = [

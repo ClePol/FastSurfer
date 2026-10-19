@@ -386,8 +386,7 @@ def extract_largest_connected_component(
     -----
     The function first attempts to connect nearby disconnected components
     that should be connected, then finds the largest connected component.
-    It uses minimal connections between close components before falling
-    back to dilation if no connections are made.
+    Components are connected with minimal bridges between close components (up to max_connection_distance).
     """
     # First attempt: try to connect nearby components with minimal connections
     connected_seg = connect_nearby_components(seg_arr, max_connection_distance)

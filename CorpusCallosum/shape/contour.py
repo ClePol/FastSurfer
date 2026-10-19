@@ -15,7 +15,7 @@
 """
 This module provides the ``CCContour`` class for reading, writing, and
 manipulating 2D corpus callosum contours together with per-vertex thickness
-values. Typical template outputs (from ``fastsurfer_cc.py --save_template``)
+values. Typical template outputs (from ``fastsurfer_cc.py --save_template_dir``)
 emit one set per slice:
 
 - ``contour_<idx>.txt``: CSV with header ``New contour, anterior_endpoint_idx=<a>, posterior_endpoint_idx=<p>`` followed
@@ -80,7 +80,11 @@ class CCContour:
     thickness_values : np.ndarray
         Array of shape (N,) for thickness measurements for each contour point.
     endpoint_idxs : tuple[int, int]
-        Tuple containing start and end indices for the contour.
+        Tuple containing the indices of the anterior and posterior endpoints in the contour.
+    lr_position : float
+        The left-right position of the contour's slice relative to the midslice in mm.
+    original_thickness_vertices : np.ndarray
+        Indices of the contour points that carry measured (not interpolated) thickness values.
 
     Examples
     --------
@@ -88,7 +92,7 @@ class CCContour:
     >>>
     >>> contour = CCContour(contour_points, thickness_values,
     >>>                     endpoint_idxs=(anterior_idx, posterior_idx),
-    >>>                     z_position=0.0)
+    >>>                     lr_position=0.0)
     >>> contour.fill_thickness_values()   # interpolate missing values
     >>> contour.smooth_contour(window_size=5)
     >>> contour.save_contour("contour_0.txt")
@@ -100,7 +104,7 @@ class CCContour:
         points: Points2dType,
         thickness_values: np.ndarray[tuple[int], np.dtype[np.float64]] | None,
         endpoint_idxs: tuple[int, int] | None = None,
-        z_position: float = 0.0
+        lr_position: float = 0.0
     ):
         """Initialize a CCContour object.
 
@@ -112,8 +116,8 @@ class CCContour:
             Array of thickness measurements for each contour point.
         endpoint_idxs : tuple[int, int], optional
             Tuple containing start and end indices for the contour.
-        z_position : float, default=0.0
-            The distance of the slice from midslice.
+        lr_position : float, default=0.0
+            The left-right position of the contour's slice relative to the midslice in mm.
         """
         self.points = points
         if self.points.ndim != 2 or self.points.shape[1] != 2:
@@ -129,7 +133,7 @@ class CCContour:
             self.original_thickness_vertices = np.where(~np.isnan(thickness_values))[0]
         else:
             self.original_thickness_vertices = None
-        self.z_position = z_position
+        self.lr_position = lr_position
 
         if endpoint_idxs is None:
             self.endpoint_idxs = (0, len(points) // 2)
@@ -165,7 +169,7 @@ class CCContour:
 
         Notes
         -----
-        Uses smooth_contour from cc_endpoint_heuristic module.
+        Uses smooth_contour from the endpoint_heuristic module.
         """
         self.points = np.array(smooth_contour(*self.points.T, window_size=window_size)).T
 
@@ -176,7 +180,7 @@ class CCContour:
             self.points.copy(),
             self.thickness_values.copy() if self.thickness_values is not None else None,
             self.endpoint_idxs,
-            self.z_position
+            self.lr_position
         )
     
     def get_contour_edge_lengths(self) -> np.ndarray:
@@ -779,7 +783,7 @@ class CCContour:
             cls: type[Self],
             input_path: str | Path,
             thickness_values_path: str | Path,
-            z_position: float = 0.0,
+            lr_position: float = 0.0,
     ) -> Self:
         """Load contour from a CSV file.
 
@@ -789,7 +793,7 @@ class CCContour:
             Path to the CSV file containing the contours.
         thickness_values_path : str, Path
             Path to the CSV file containing the thickness_values.
-        z_position : float, default=0.0
+        lr_position : float, default=0.0
             The distance to the midslice (in fsaverage space).
 
         Raises
@@ -830,7 +834,7 @@ class CCContour:
             thickness_values = cls._load_thickness_values(contour, None, thickness_values_path)
         else:
             thickness_values = None
-        return CCContour(contour, thickness_values, endpoint_idxs, z_position=z_position)
+        return CCContour(contour, thickness_values, endpoint_idxs, lr_position=lr_position)
 
     def save_thickness_values(self, output_path: Path | str) -> None:
         """Save thickness values to a CSV file.
@@ -941,7 +945,7 @@ class CCContour:
         slice_vox2ras : AffineMatrix4x4
             Transformation matrix from slice-voxel space to RAS-coordinates.
         contour_smoothing : int, default=5
-            Window size for contour smoothing.
+            Number of Laplace smoothing iterations of the contour polygon (lapy Polygon.smooth_laplace).
 
         Returns
         -------
@@ -968,7 +972,7 @@ class CCContour:
         ac_ras, pc_ras = apply_affine(slice_vox2ras, ac_pc_3d)
         endpoint_idx = find_cc_endpoints(contour_ras[:, 1:].T, ac_ras[1:], pc_ras[1:])
 
-        return cls(contour_ras[:, 1:], None, endpoint_idx, z_position=slice_vox2ras[0, 3])
+        return cls(contour_ras[:, 1:], None, endpoint_idx, lr_position=slice_vox2ras[0, 3])
 
 
 def calculate_volume(contours: list[CCContour], width: float = CC_ANALYSIS_WIDTH_MM) -> float:
@@ -977,10 +981,12 @@ def calculate_volume(contours: list[CCContour], width: float = CC_ANALYSIS_WIDTH
     This method calculates the volume of a slab of the CC centered on the midplane.
     It multiplies the area of each cross-sectional slice by the width it
     represents within the slab. It assumes equally spaced contours centered
-    around the midplane (z=0).
+    around the midplane (lr_position=0).
 
     Parameters
     ----------
+    contours : list[CCContour]
+        Contours of equally spaced slices, ordered by their left-right position (lr_position).
     width : float, default=CC_ANALYSIS_WIDTH_MM
         The width of the slab centered on the midplane to calculate the volume for (in mm).
 
@@ -992,11 +998,11 @@ def calculate_volume(contours: list[CCContour], width: float = CC_ANALYSIS_WIDTH
     if len(contours) < 2:
         return 0.0
 
-    # Group vertices by their LR coordinate (column 0 as created by from_contours)
-    z_coords = [contour.z_position for contour in contours]
+    # left-right positions of the contours (in mm relative to the midplane)
+    lr_coords = [contour.lr_position for contour in contours]
     areas = [contour.area for contour in contours]
 
-    contour_widths = np.diff(z_coords)
+    contour_widths = np.diff(lr_coords)
 
     # check that all widths are the same
     if not np.allclose(contour_widths, contour_widths[0]):
@@ -1004,19 +1010,19 @@ def calculate_volume(contours: list[CCContour], width: float = CC_ANALYSIS_WIDTH
 
     contour_width_mm = abs(contour_widths[0])
 
-    # Define the slab boundaries centered on the midplane (z=0)
-    z_min, z_max = -width / 2.0, width / 2.0
+    # Define the slab boundaries centered on the midplane (LR=0)
+    lr_min, lr_max = -width / 2.0, width / 2.0
 
     volume = 0.0
-    for i, z in enumerate(z_coords):
+    for i, lr_coord in enumerate(lr_coords):
         # Each contour represents a slab of contour_width_mm
-        # centered at its z position.
-        start = z - contour_width_mm / 2.0
-        end = z + contour_width_mm / 2.0
+        # centered at its LR position.
+        start = lr_coord - contour_width_mm / 2.0
+        end = lr_coord + contour_width_mm / 2.0
 
-        # Intersection of [start, end] and [z_min, z_max]
-        effective_start = max(start, z_min)
-        effective_end = min(end, z_max)
+        # Intersection of [start, end] and [lr_min, lr_max]
+        effective_start = max(start, lr_min)
+        effective_end = min(end, lr_max)
 
         effective_width = max(0.0, effective_end - effective_start)
         volume += areas[i] * effective_width
@@ -1048,14 +1054,14 @@ def contours_for_analysis_width(contours: list[CCContour]) -> list[CCContour]:
 
     surface_contours = [contour.copy() for contour in contours]
     if len(surface_contours) == 1:
-        surface_contours[0].z_position = 0.0
+        surface_contours[0].lr_position = 0.0
         return surface_contours
 
     half_width = CC_ANALYSIS_WIDTH_MM / 2.0
-    for contour, z_position in zip(
+    for contour, lr_position in zip(
         surface_contours,
         np.linspace(half_width, -half_width, len(surface_contours)),
         strict=True,
     ):
-        contour.z_position = float(z_position)
+        contour.lr_position = float(lr_position)
     return surface_contours

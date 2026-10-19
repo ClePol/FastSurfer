@@ -19,7 +19,8 @@ import FastSurferCNN.utils.logging as logging
 logger = logging.get_logger(__name__)
 
 
-# TODO: we could make this more robust by standardizing orientation with AC/PC and smoothing the contour
+# TODO: we could make this more robust by smoothing the contour (the contour is already rotated into the ACPC frame,
+#  which is aligned to the anterior and posterior CC endpoints, by the caller)
 
 def _line_segment_intersection(
     line_point: np.ndarray,

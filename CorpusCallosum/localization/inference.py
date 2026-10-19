@@ -108,7 +108,7 @@ def preprocess_volume(
     Parameters
     ----------
     image_volume : np.ndarray
-        Input image volume of shape (W, W, D) in RAS.
+        Input image slab in LIA orientation of shape (L, I, A).
     center_pt : np.ndarray
         Center point coordinates for cropping on the slice with shape (3,).
     transform : transforms.Transform or None, optional
@@ -162,12 +162,12 @@ def predict(
 
     Returns
     -------
-    pc_ccord : np.ndarray
+    pc_coord : np.ndarray
         Predicted PC coordinates.
     ac_coord : np.ndarray
         Predicted AC coordinates.
     crop_offsets : pair of ints
-        Crop offsets (left, top).
+        Crop offsets along the inferior/superior (I) and anterior/posterior (A) axes.
     """
     if device is None:
         device = next(model.parameters()).device
@@ -188,11 +188,13 @@ def predict(
     with torch.no_grad():
         outputs = model(inputs) * torch.as_tensor([PATCH_SIZE + PATCH_SIZE], device=device)
 
-    crop_left, crop_top = cast(tuple[int, int], t_dict["crop_left"]), cast(tuple[int, int], t_dict["crop_top"])
-    t_crops = [(crop_left + crop_top) * 2]
+    # "crop_left"/"crop_top" are the crop offsets along the inferior/superior (i) and anterior/posterior (a) axes
+    crop_start_i = cast(tuple[int, int], t_dict["crop_left"])
+    crop_start_a = cast(tuple[int, int], t_dict["crop_top"])
+    t_crops = [(crop_start_i + crop_start_a) * 2]
     outs: np.ndarray[tuple[int, Literal[4]], np.dtype[np.float64]]
     outs = outputs.cpu().numpy() + np.asarray(t_crops, dtype=float)
-    crop_offsets: tuple[int, int] = (crop_left[0], crop_top[0])
+    crop_offsets: tuple[int, int] = (crop_start_i[0], crop_start_a[0])
     return outs[:, :2], outs[:, 2:], crop_offsets
 
 
@@ -210,7 +212,7 @@ def run_inference_on_slice(
     model : torch.nn.Module
         Trained model for AC-PC detection.
     image_slab : np.ndarray
-        3D image mid-slices to run inference on in RAS.
+        3D image mid-slices to run inference on in LIA orientation of shape (L, I, A).
     center_pt : np.ndarray
         Initial center point estimate for cropping.
     num_iterations : int, default=2
@@ -221,19 +223,19 @@ def run_inference_on_slice(
     Returns
     -------
     ac_coords : np.ndarray
-        Detected AC voxel coordinates with shape (2,) containing its [y,x] positions.
+        Detected AC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     pc_coords : np.ndarray
-        Detected PC voxel coordinates with shape (2,) containing its [y,x] positions.
+        Detected PC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     """
 
     if num_iterations < 1:
         raise ValueError("localization inference with less than 1 iteration is invalid!")
 
     pc_coords, ac_coords = center_pt[None], center_pt[None]
-    crop_left, crop_top = 0, 0
+    crop_start_i, crop_start_a = 0, 0
     # Run inference
     for _ in range(num_iterations):
-        pc_coords, ac_coords, (crop_left, crop_top) = predict(model, image_slab, center_pt)
+        pc_coords, ac_coords, (crop_start_i, crop_start_a) = predict(model, image_slab, center_pt)
         center_pt = np.mean(np.stack([ac_coords, pc_coords], axis=0), axis=(0, 1))
     # average ac and pc coords across sagittal slices
     _pc_coords = np.mean(pc_coords, axis=0)
@@ -248,7 +250,7 @@ def run_inference_on_slice(
         ax.scatter(pc_coords[:, 1], pc_coords[:, 0], c='r', marker='x', label='PC')
         ax.scatter(ac_coords[:, 1], ac_coords[:, 0], c='b', marker='x', label='AC')
         # make a box where the crop is
-        ax.add_patch(Rectangle((crop_top, crop_left), 64, 64, fill=False, color='r', linewidth=2))
+        ax.add_patch(Rectangle((crop_start_a, crop_start_i), 64, 64, fill=False, color='r', linewidth=2))
         plt.savefig(debug_output, bbox_inches='tight')
         plt.close()
 

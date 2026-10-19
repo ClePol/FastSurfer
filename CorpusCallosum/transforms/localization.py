@@ -30,7 +30,7 @@ class CropAroundACPCFixedSize(RandomizableTransform, MapTransform):
     keys : list[str]
         Keys of the data dictionary to apply the transform to.
     fixed_size : tuple[int, int]
-        Fixed size of the crop window (width, height).
+        Fixed size of the crop window along the (I, A) axes.
     allow_missing_keys : bool, optional
         Whether to allow missing keys in the data dictionary, by default False.
     random_translate : int, default=0
@@ -79,10 +79,11 @@ class CropAroundACPCFixedSize(RandomizableTransform, MapTransform):
         dict
             Transformed data dictionary with cropped images and updated coordinates.
             Also includes crop boundary information:
-            - crop_left : list[int]
-            - crop_right : list[int]
-            - crop_top : list[int]
-            - crop_bottom : list[int]
+            - crop_left : list[int] (crop start along the inferior/superior axis, i.e. image axis 2)
+            - crop_right : list[int] (crop stop along the inferior/superior axis)
+            - crop_top : list[int] (crop start along the anterior/posterior axis, i.e. image axis 3)
+            - crop_bottom : list[int] (crop stop along the anterior/posterior axis)
+            The key names are kept for compatibility, they do not refer to left/right or top/bottom anatomically.
 
         Raises
         ------
@@ -105,7 +106,7 @@ class CropAroundACPCFixedSize(RandomizableTransform, MapTransform):
         # calculate center point between AC and PC
         center_point = ((d['AC_center'] + d['PC_center']) / 2).astype(int)
 
-        # Calculate voxel padding based on mm padding
+        # half of the crop window on each side of the center point
         voxel_padding = np.asarray(self.fixed_size) // 2
 
         existing_keys = set(self.keys) & set(d.keys())

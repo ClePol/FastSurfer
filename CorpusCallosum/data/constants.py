@@ -22,7 +22,9 @@ FSAVERAGE_REGISTRATION_LABELS = (
     41, 42, 43, 44, 46, 47, 49, 50, 51, 52, 53, 54, 58, 60, 62, 63, 77, 85,
     251, 252, 253, 254, 255,
 )
-FSAVERAGE_MIDDLE = 128  # Middle slice index in fsaverage space
+# LR position of the fsaverage midplane relative to voxel 0, in mm (slice index 128 of the 1 mm fsaverage grid, the
+# index on grids resampled to other resolutions is FSAVERAGE_MIDPLANE_MM / voxel size)
+FSAVERAGE_MIDPLANE_MM = 128.0
 # Width of the corpus callosum slab used for segmentation, measures, and surfaces.
 CC_ANALYSIS_WIDTH_MM = 5.0
 CC_TEMPLATE_METADATA_FILENAME = "template_metadata.json"
