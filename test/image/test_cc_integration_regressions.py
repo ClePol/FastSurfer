@@ -156,7 +156,7 @@ def test_template_files_are_sorted_by_numeric_suffix(monkeypatch: pytest.MonkeyP
     class FakeContour:
         def __init__(self):
             self.loaded_index = None
-            self.z_position = 0.0
+            self.lr_position = 0.0
 
         def create_levelpaths(self, **_kwargs):
             return None
@@ -180,7 +180,7 @@ def test_template_files_are_sorted_by_numeric_suffix(monkeypatch: pytest.MonkeyP
     contours = load_contours_from_template_dir(tmp_path, resolution=1.0, smoothing_window=0)
 
     assert [contour.loaded_index for contour in contours] == list(range(11))
-    assert contours[5].z_position == 0
+    assert contours[5].lr_position == 0
 
 
 def test_incomplete_template_does_not_substitute_midslice(tmp_path: Path) -> None:
@@ -252,9 +252,51 @@ def test_missing_third_ventricle_uses_aligned_center(monkeypatch: pytest.MonkeyP
     cc_pipeline.localize_ac_pc(
         orig_data=np.zeros((3, 3, 3)),
         aseg_nib=aseg,
-        orig2midslice_vox2vox=np.eye(4),
+        orig2midslab_vox2vox=np.eye(4),
         model_localization=object(),
         resample_shape=(5, 9, 11),
     )
 
     np.testing.assert_array_equal(captured_centers[0], [4.0, 5.0])
+
+
+def test_template_metadata_keeps_physical_positions_after_partial_failure(monkeypatch, tmp_path):
+    """Exported indices and LR positions survive a missing middle slice."""
+    class TemplateSubjectDirectory(NoOutputSubjectDirectory):
+        @staticmethod
+        def has_attribute(attribute):
+            return attribute == "save_template_dir"
+
+        @staticmethod
+        def filename_by_attribute(_attribute):
+            return tmp_path
+
+    class SavedContour:
+        def __init__(self, position):
+            self.lr_position = position
+
+        @staticmethod
+        def save_contour(path):
+            path.write_text("contour\n")
+
+        @staticmethod
+        def save_thickness_values(path):
+            path.write_text("thickness\n1\n")
+
+    def worker(_segmentation, slice_idx, affine, **_kwargs):
+        if slice_idx == 2:
+            raise RuntimeError("synthetic middle-slice failure")
+        return {"slice_index": slice_idx}, SavedContour(float(affine[0, 3]))
+
+    _, futures, _, failed, _ = _run_multi_slice_reconstruction(monkeypatch, worker, TemplateSubjectDirectory())
+    for future in futures:
+        future.result()
+    metadata = json.loads((tmp_path / "template_metadata.json").read_text())
+    assert failed == 1
+    assert metadata["requested_slice_indices"] == [0, 1, 2, 3, 4]
+    assert metadata["successful_slice_indices"] == [0, 1, 3, 4]
+    assert metadata["selected_slice_index"] == 2
+    assert metadata["slice_positions_mm"] == {"0": -2., "1": -1., "3": 1., "4": 2.}
+    assert not (tmp_path / "contour_2.txt").exists()
+    with pytest.raises(ValueError, match="selected anatomical slice 2 is missing"):
+        cc_visualization._template_midslice_position(tmp_path, two_d=True)

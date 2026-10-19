@@ -215,4 +215,3 @@ def calculate_cc_index(cc_contour: np.ndarray) -> float:
     cc_index = (anterior_thickness + posterior_thickness + middle_thickness) / ap_distance
 
     return cc_index
-

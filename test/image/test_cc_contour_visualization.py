@@ -60,7 +60,7 @@ def test_colorfill_uses_one_levelpath_per_value(monkeypatch: pytest.MonkeyPatch)
         def create_levelpaths(num_points: int, inplace: bool):
             requested_counts.append(num_points)
             paths = [np.array([[0.5 * idx, 0.5]]) for idx in range(num_points)]
-            return paths, None, None, None, None, None, None
+            return paths, None, None, None, None, None
 
     def fake_interpolate(_x, _y, values, x_grid, _y_grid):
         interpolated_values.extend(values)
@@ -138,7 +138,9 @@ def test_signed_values_keep_anatomical_ends(smoothing: int, tmp_path) -> None:
     contour = load_fsaverage_cc_template()
     contour.create_levelpaths(num_points=12, inplace=True)
     profile = np.linspace(1.0, -1.0, 12)
-    contour.set_thickness_values(np.concatenate((profile, profile[::-1])), use_measurement_points=True)
+    values_path = tmp_path / "signed.csv"
+    np.savetxt(values_path, np.concatenate((profile, profile[::-1])), header="thickness", comments="")
+    contour.load_thickness_values(values_path)
     if smoothing:
         contour.smooth_contour(window_size=smoothing)
     contour.fill_thickness_values()

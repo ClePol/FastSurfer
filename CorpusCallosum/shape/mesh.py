@@ -677,13 +677,14 @@ class CCMesh(lapy.TriaMesh):
         Raises
         ------
         ValueError
-            If contours have duplicate slice positions or different numbers of points.
+            If contours have duplicate slice positions.
 
         Notes
         -----
         Each contour's lr_position determines its left-right coordinate. The mesh
         connects consecutive contours, leaves both slab ends open, and optionally
-        smooths the surface while preserving those coordinates.
+        smooths the surface while preserving those coordinates. Contours with fewer
+        points are upsampled to the largest contour before triangulation.
         """
         # Check that all contours have distinct slice positions.
         lr_coordinates = np.array([contour.lr_position for contour in contours])

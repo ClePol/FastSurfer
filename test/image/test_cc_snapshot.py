@@ -198,7 +198,7 @@ def test_visualization_main_forwards_snapshot_options(monkeypatch, tmp_path) -> 
         write_fssurf=lambda *_args, **_kwargs: None, write_morph_data=lambda *_args: None,
         snap_cc_picture=lambda *args, **kwargs: snapshot_calls.append((args, kwargs)),
     )
-    monkeypatch.setattr(visualization, "load_contours_from_template_dir", lambda *_args, **_kwargs: [contour])
+    monkeypatch.setattr(visualization, "load_contours_from_template_dir", lambda *_args, **_kwargs: [contour, contour])
     monkeypatch.setattr(visualization, "_template_midslice_position", lambda *_args: 0)
     monkeypatch.setattr(visualization, "contours_for_analysis_width", lambda contours: contours)
     monkeypatch.setattr(visualization.CCMesh, "from_contours", lambda *_args, **_kwargs: mesh)

@@ -13,7 +13,6 @@
 # limitations under the License.
 import concurrent.futures
 import json
-from copy import copy
 from functools import partial
 from pathlib import Path
 from typing import get_args
@@ -462,7 +461,7 @@ def recon_cc_surf_measure(
     slice_idx : int
         Index of the slice to process.
     slice_vox2ras : AffineMatrix4x4
-        vox2ras of the slice (LIA voxels to midplane-centered upright RAS).
+        Transformation of slice voxels (LIA) to midplane-centered upright RAS.
     ac_coords_vox : np.ndarray
         AC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     pc_coords_vox : np.ndarray

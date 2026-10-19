@@ -23,7 +23,7 @@ point the script to the exported template directory:
         --output_dir $HOME/my_fastsurfer_analysis/subjectX/cc_visualization
 
 Native 3D Snapshot Color Controls
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ``cc_mesh_snap.png`` output uses WhipperSnapPy's native heat palette.
 ``--colormap diverging`` selects the matching palette in PNG and Plotly HTML;
