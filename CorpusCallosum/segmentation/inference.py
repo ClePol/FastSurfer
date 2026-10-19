@@ -89,7 +89,7 @@ def run_inference(
     pc_center: Vector2d,
     voxel_size: tuple[float, float],
     device: torch.device | None = None,
-) -> tuple[np.ndarray[Shape4d, np.dtype[np.int_]], Image4d, Image4d, CropBox]:
+) -> tuple[np.ndarray[Shape4d, np.dtype[np.int_]], Image4d, CropBox]:
     """Run inference on a single image slice.
 
     Parameters
@@ -111,8 +111,6 @@ def run_inference(
     -------
     seg_labels : np.ndarray of int
         The segmentation result.
-    inputs : np.ndarray of float
-        The inputs to the model.
     soft_labels : np.ndarray of float
         The softlabel output.
     crop_box : pair of pairs of ints
@@ -126,7 +124,7 @@ def run_inference(
     to_discrete = transforms.AsDiscrete(argmax=True, to_onehot=3)
 
     # Preprocess slice
-    _inputs = torch.from_numpy(image_slice[:,None]) #,:256,:256]) # artifact from training script
+    _inputs = torch.from_numpy(image_slice[:,None])
     sample = {'image': _inputs, 'AC_center': ac_center, 'PC_center': pc_center, 'res': np.asarray(voxel_size)}
     sample_cropped = crop_around_acpc(sample)
     _inputs, to_pad = sample_cropped['image'], sample_cropped['to_pad']
@@ -161,8 +159,8 @@ def run_inference(
         (int(to_pad[0]), int(image_slice.shape[1] - to_pad[1])),
         (int(to_pad[2]), int(image_slice.shape[2] - to_pad[3])),
     )
-    labels, _inputs, softlabels = (x.transpose(0, 2, 3, 1) for x in (labels, _inputs.cpu().numpy(), softlabels))
-    return labels, _inputs, softlabels, crop_box
+    labels, softlabels = (x.transpose(0, 2, 3, 1) for x in (labels, softlabels))
+    return labels, softlabels, crop_box
 
 
 @overload
@@ -209,7 +207,7 @@ def run_inference_on_slice(
         ac_center: Vector2d,
         pc_center: Vector2d,
         voxel_size: tuple[float, float],
-) -> tuple[np.ndarray[Shape3d, np.dtype[np.int_]], Image4d, Image4d, CropBox]:
+) -> tuple[np.ndarray[Shape3d, np.dtype[np.int_]], Image4d, CropBox]:
     """Run inference on a single slice.
 
     Parameters
@@ -229,8 +227,6 @@ def run_inference_on_slice(
     -------
     results: np.ndarray
         Label map after one-hot conversion.
-    inputs: np.ndarray
-        Preprocessed input image.
     outputs_soft: np.ndarray of float
         Softlabel outputs (non-discrete).
     crop_box : pair of pairs of ints
@@ -241,7 +237,7 @@ def run_inference_on_slice(
     ac_center = np.concatenate([np.zeros(1), ac_center])
     pc_center = np.concatenate([np.zeros(1), pc_center])
 
-    _results, inputs, outputs_soft, crop_box = run_inference(model, test_slab, ac_center, pc_center, voxel_size)
+    _results, outputs_soft, crop_box = run_inference(model, test_slab, ac_center, pc_center, voxel_size)
     results = one_hot_to_label(_results)
 
-    return results, inputs, outputs_soft, crop_box
+    return results, outputs_soft, crop_box

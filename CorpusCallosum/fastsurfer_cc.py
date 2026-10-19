@@ -379,16 +379,14 @@ def options_parse() -> argparse.Namespace:
             parser.error("When using --sd, you must also provide --sid.")
     elif hasattr(args, "sid") and args.sid:
         # If sid is provided without sd, that's an error
-        if not sd_value:
-            parser.error("When using --sid, you must also provide --sd.")
+        parser.error("When using --sid, you must also provide --sd.")
     elif hasattr(args, "conf_name") and args.conf_name:
         # Using file approach - make sure aseg_name was also provided
         if not (hasattr(args, "aseg_name") and args.aseg_name):
             parser.error("When using --conf_name, you must also provide --aseg_name.")
     elif hasattr(args, "aseg_name") and args.aseg_name:
         # If aseg_name is provided without conf_name, that's an error
-        if not (hasattr(args, "conf_name") and args.conf_name):
-            parser.error("When using --aseg_name, you must also provide --conf_name.")
+        parser.error("When using --aseg_name, you must also provide --conf_name.")
     else:
         parser.error("You must specify either --sd and --sid OR both --conf_name and --aseg_name.")
 
@@ -598,7 +596,7 @@ def segment_cc(
         Soft label probabilities in upright space and LIA-orientation of shape (L, I, A, C=3), channels are
         background, CC, and fornix.
     """
-    pre_clean_segmentation, inputs, cc_softlabels, crop_box = segmentation_inference.run_inference_on_slice(
+    pre_clean_segmentation, cc_softlabels, crop_box = segmentation_inference.run_inference_on_slice(
         model_segmentation,
         midslices,
         ac_center=ac_coords,

@@ -54,12 +54,6 @@ from FastSurferCNN.utils.parallel import process_executor, thread_executor
 
 logger = logging.get_logger(__name__)
 
-# assert LIA orientation
-LIA_ORIENTATION = np.zeros((3,3))
-LIA_ORIENTATION[0,0] = -1
-LIA_ORIENTATION[1,2] = 1
-LIA_ORIENTATION[2,1] = -1
-
 
 def offset_affine(offset: npt.ArrayLike) -> AffineMatrix4x4:
     """Generate an affine transformation matrix that only constitutes an offset (vector).
@@ -190,9 +184,7 @@ def recon_cc_surf_measures_multi(
         slices_to_recon = [segmentation.shape[0] // 2]
     elif slice_selection == "all":
         num_slices = segmentation.shape[0]
-        start_slice = 0
-        end_slice = segmentation.shape[0]
-        slices_to_recon = list(range(start_slice, end_slice))
+        slices_to_recon = list(range(segmentation.shape[0]))
     else:  # specific slice number
         num_slices = 1
         slices_to_recon = [int(slice_selection)]
@@ -372,10 +364,6 @@ def recon_cc_surf_measures_multi(
                     )
                     logger.exception(e)
 
-        if not slice_cc_measures:
-            logger.error("Error: No valid slices were found for postprocessing")
-            raise ValueError("No valid slices were found for postprocessing")
-
     return slice_cc_measures, io_futures, cc_contours, num_failed_slices, slices_to_recon
 
 
@@ -420,11 +408,11 @@ def subdivide_contour(
     if subdivision_method == "shape":
         _subdivisions = np.asarray(subdivisions)
         areas, split_contours, split_points, subdivision_lines = subsegment_midline_orthogonal(
-            midline_equi, _subdivisions, contour_in_acpc_space, plot=False
+            midline_equi, _subdivisions, contour_in_acpc_space
         )
     elif subdivision_method == "vertical":
         areas, split_contours, split_points, subdivision_lines = subdivide_contour_vertical(
-            contour_in_acpc_space, subdivisions, plot=False
+            contour_in_acpc_space, subdivisions
         )
     elif subdivision_method == "angular":
         if not np.allclose(np.diff(subdivisions), np.diff(subdivisions)[0]):
@@ -433,7 +421,7 @@ def subdivide_contour(
                 f"but got: {subdivisions}. No measures are computed.",
             )
         areas, split_contours, split_points, subdivision_lines = subdivide_contour_hampel(
-            contour_in_acpc_space, num_rays=len(subdivisions), plot=False
+            contour_in_acpc_space, num_rays=len(subdivisions)
         )
     elif subdivision_method == "eigenvector":
         pt0, pt1 = get_primary_eigenvector(contour_in_acpc_space)
@@ -522,7 +510,7 @@ def recon_cc_surf_measure(
         slice_vox2ras=slice_vox2ras, contour_smoothing=contour_smoothing,
     )
 
-    levelpaths, thickness, midline_len, midline_equi, _, endpoint_idxs, _ = \
+    levelpaths, thickness, midline_len, midline_equi, _, endpoint_idxs = \
         _contour.create_levelpaths(num_thickness_points, inplace=True)
 
     contour_as = _contour.points.T
@@ -641,7 +629,6 @@ def make_subdivision_mask(
     slice_shape: Shape2d,
     subdivision_lines: list[Points2dType],
     vox2ras: AffineMatrix4x4,
-    plot: bool = False,
 ) -> np.ndarray[Shape2d, np.dtype[np.int_]]:
     """Create a mask for subdividing the corpus callosum based on split contours.
 
@@ -653,8 +640,6 @@ def make_subdivision_mask(
         List of pairs of points defining the subdivision lines.
     vox2ras : AffineMatrix4x4
         The vox2ras transformation matrix for the requested shape.
-    plot : bool, default=False
-        Whether to plot the subdivision mask.
 
     Returns
     -------
@@ -702,21 +687,6 @@ def make_subdivision_mask(
         
         # All points posterior to this line belong to the next segment or beyond.
         subdivision_mask[points_posterior_of_line] = label
-        
-        if plot: # interactive debug plot
-            import matplotlib.pyplot as plt
-
-            from FastSurferCNN.utils.plotting import backend
-            with backend("qtagg"):
-                plt.figure(figsize=(10, 8))
-                plkwargs = {f"v{op}": getattr(np, op)(cc_labels_anterior_to_posterior) for op in ("min", "max")}
-                plt.imshow(subdivision_mask, cmap='tab10', **plkwargs)
-                plt.colorbar(label='Subdivision')
-                plt.title('CC Subdivision Mask')
-                plt.xlabel('X')
-                plt.ylabel('Y')
-                plt.tight_layout()
-                plt.show()
     return subdivision_mask
 
 

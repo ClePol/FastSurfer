@@ -142,7 +142,7 @@ def get_intersections(
     return points
 
 
-def calculate_cc_index(cc_contour: np.ndarray, plot: bool = False) -> float:
+def calculate_cc_index(cc_contour: np.ndarray) -> float:
     """Calculate the dimensionless corpus callosum index (CCI).
 
     The AP line intersects the contour 4 times. The measurements are:
@@ -157,8 +157,6 @@ def calculate_cc_index(cc_contour: np.ndarray, plot: bool = False) -> float:
     ----------
     cc_contour : np.ndarray
         Array of shape (2, N) containing contour points in ACPC space.
-    plot : bool, optional
-        Whether to generate a debug plot. Default is False.
 
     Returns
     -------
@@ -216,111 +214,5 @@ def calculate_cc_index(cc_contour: np.ndarray, plot: bool = False) -> float:
     # Calculate CC index
     cc_index = (anterior_thickness + posterior_thickness + middle_thickness) / ap_distance
 
-    if plot:
-        import matplotlib.pyplot as plt
-
-        from FastSurferCNN.utils.plotting import backend
-        with backend("qtagg"):
-            fig, ax = plt.subplots(figsize=(8, 6))
-            plot_cc_index_calculation(
-                ax,
-                cc_contour,
-                ap_intersections,
-                middle_intersections,
-                midpoint,
-            )
-            ax.legend()
-            plt.show()
-
     return cc_index
 
-
-def plot_cc_index_calculation(
-    ax,
-    cc_contour: np.ndarray,
-    ap_intersections: np.ndarray,
-    middle_intersections: np.ndarray,
-    midpoint: np.ndarray,
-) -> None:
-    """Plot the CC index measurements.
-
-    Parameters
-    ----------
-    ax : matplotlib.axes.Axes
-        The axes to plot on.
-    cc_contour : np.ndarray
-        Array of shape (2, N) containing contour points in ACPC space.
-    ap_intersections : np.ndarray
-        Array of shape (4, 2) containing the 4 intersection points of the AP line with the contour.
-    middle_intersections : np.ndarray
-        Array of shape (2, 2) containing middle perpendicular intersection points.
-    midpoint : np.ndarray
-        Array of shape (2,) containing the midpoint of the AP line.
-    """
-    from matplotlib.patches import PathPatch
-    from matplotlib.path import Path
-
-    # Plot the CC contour (closed)
-    ax.plot(cc_contour[0], cc_contour[1], "k-", linewidth=1)
-    ax.plot(
-        [cc_contour[0, -1], cc_contour[0, 0]],
-        [cc_contour[1, -1], cc_contour[1, 0]],
-        "k-",
-        linewidth=1,
-    )
-
-    # Plot AP line through all 4 intersection points
-    ax.plot(
-        [ap_intersections[0, 0], ap_intersections[3, 0]],
-        [ap_intersections[0, 1], ap_intersections[3, 1]],
-        "r--",
-        linewidth=1,
-        label="AP line",
-    )
-
-    # Mark all 4 intersection points
-    for i, pt in enumerate(ap_intersections):
-        ax.scatter([pt[0]], [pt[1]], s=40, zorder=5)
-        ax.annotate(f"{i+1}", (pt[0], pt[1]), textcoords="offset points", 
-                    xytext=(5, 5), fontsize=10)
-
-    # Plot anterior thickness (points 1-2)
-    ax.plot(
-        [ap_intersections[0, 0], ap_intersections[1, 0]],
-        [ap_intersections[0, 1], ap_intersections[1, 1]],
-        "b-",
-        linewidth=3,
-        label="Anterior thickness (1-2)",
-    )
-
-    # Plot posterior thickness (points 3-4)
-    ax.plot(
-        [ap_intersections[2, 0], ap_intersections[3, 0]],
-        [ap_intersections[2, 1], ap_intersections[3, 1]],
-        "c-",
-        linewidth=3,
-        label="Posterior thickness (3-4)",
-    )
-
-    # Plot middle thickness measurement (perpendicular)
-    ax.plot(
-        [middle_intersections[0, 0], middle_intersections[-1, 0]],
-        [middle_intersections[0, 1], middle_intersections[-1, 1]],
-        "g-",
-        linewidth=3,
-        label="Middle thickness",
-    )
-
-    # Mark midpoint
-    ax.scatter([midpoint[0]], [midpoint[1]], color="red", s=50, zorder=5, 
-               marker="x", label="Midpoint")
-
-    ax.set_aspect("equal")
-
-    # Fill the contour with gray
-    contour_path = Path(cc_contour.T)
-    patch = PathPatch(contour_path, facecolor="gray", alpha=0.2, edgecolor=None)
-    ax.add_patch(patch)
-
-    ax.invert_xaxis()
-    ax.axis("off")

@@ -40,28 +40,6 @@ _ASEG_LR_PAIRS: tuple[tuple[int, int], ...] = (
 
 
 @dataclass(frozen=True)
-class MidplaneDebugVolumes:
-    """Debug volumes produced by distance-map midplane refinement.
-
-    Attributes
-    ----------
-    distance_diff : np.ndarray
-        Voxel-wise difference ``d_left - d_right`` in fsaverage space.
-    candidate_mask : np.ndarray
-        Boolean mask selecting voxels used for plane fitting.
-    left_mask : np.ndarray
-        Partitioned binary left-hemisphere mask in fsaverage space.
-    right_mask : np.ndarray
-        Partitioned binary right-hemisphere mask in fsaverage space.
-    """
-
-    distance_diff: np.ndarray
-    candidate_mask: np.ndarray
-    left_mask: np.ndarray
-    right_mask: np.ndarray
-
-
-@dataclass(frozen=True)
 class MidplaneRefinementResult:
     """Container for distance-map refinement outputs.
 
@@ -73,14 +51,11 @@ class MidplaneRefinementResult:
         Estimated LR center shift in fsaverage voxels.
     diagnostics : dict[str, object]
         JSON-serializable diagnostics and rejection reasons.
-    debug_volumes : MidplaneDebugVolumes
-        Optional intermediate volumes for quality control and debugging.
     """
 
     updated_vox2vox: AffineMatrix4x4
     center_shift_vox: float
     diagnostics: dict[str, object]
-    debug_volumes: MidplaneDebugVolumes
 
 
 @dataclass(frozen=True)
@@ -400,13 +375,12 @@ def refine_midline_lr_shift(
     if max_shift_vox < 0 or step_vox <= 0:
         return orig2fsavg_vox2vox, 0, float("inf"), {}
 
-    seg_data = aseg_data
-    left_ids, right_ids = _prepare_lr_pair_labels(seg_data)
+    left_ids, right_ids = _prepare_lr_pair_labels(aseg_data)
     if left_ids.size == 0:
         logger.warning("Midline refinement skipped: no left/right label pairs found.")
         return orig2fsavg_vox2vox, 0, float("inf"), {}
 
-    seg_fsavg = resample_segmentation_to_fsavg(seg_data, orig2fsavg_vox2vox, fsavg_shape)
+    seg_fsavg = resample_segmentation_to_fsavg(aseg_data, orig2fsavg_vox2vox, fsavg_shape)
 
     candidate_scores: list[dict[str, int | float | None]] = []
     zero_shift_score = float("inf")
@@ -617,7 +591,7 @@ def refine_midplane_with_distance_maps(
     Returns
     -------
     MidplaneRefinementResult
-        Updated transform, applied center shift, diagnostics, and debug volumes.
+        Updated transform, applied center shift, and diagnostics.
     """
     scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
     # distances in units of LR voxels (identical to plain voxel distances for isotropic grids)
@@ -625,24 +599,15 @@ def refine_midplane_with_distance_maps(
     support_distance_vox = float(support_distance_mm / scale[0])
     fit_band_vox = float(fit_band_mm / scale[0])
     max_center_shift_vox = float(max_center_shift_mm / scale[0])
-    seg_data = aseg_data
-    empty = np.zeros(fsavg_shape, dtype=np.float32)
-    empty_debug = MidplaneDebugVolumes(
-        distance_diff=empty,
-        candidate_mask=empty.astype(bool),
-        left_mask=empty.astype(bool),
-        right_mask=empty.astype(bool),
-    )
-    if not np.any(seg_data > 0):
+    if not np.any(aseg_data > 0):
         logger.warning("Distance-map midplane refinement skipped: segmentation is empty.")
         return MidplaneRefinementResult(
             updated_vox2vox=orig2fsavg_vox2vox,
             center_shift_vox=0.0,
             diagnostics={},
-            debug_volumes=empty_debug,
         )
 
-    seg_fsavg = resample_segmentation_to_fsavg(seg_data, orig2fsavg_vox2vox, fsavg_shape)
+    seg_fsavg = resample_segmentation_to_fsavg(aseg_data, orig2fsavg_vox2vox, fsavg_shape)
     left_mask, right_mask = _clean_partitioned_hemi_masks(seg_fsavg, sampling=edt_sampling)
     brain_mask = seg_fsavg > 0
     hull_mask = _make_fsavg_convex_hull_mask(brain_mask)
@@ -655,12 +620,6 @@ def refine_midplane_with_distance_maps(
             & (np.abs(distance_diff) <= zero_band_vox)
             & (np.minimum(left_distance, right_distance) <= support_distance_vox)
             & (np.abs(np.arange(fsavg_shape[0])[:, np.newaxis, np.newaxis] - base_middle_vox) <= fit_band_vox)
-    )
-    debug_volumes = MidplaneDebugVolumes(
-        distance_diff=distance_diff.astype(np.float32),
-        candidate_mask=candidate_mask,
-        left_mask=left_mask,
-        right_mask=right_mask,
     )
     candidate_coords = np.argwhere(candidate_mask)
     diagnostics: dict[str, object] = {
@@ -684,7 +643,6 @@ def refine_midplane_with_distance_maps(
             updated_vox2vox=orig2fsavg_vox2vox,
             center_shift_vox=0.0,
             diagnostics=diagnostics,
-            debug_volumes=debug_volumes,
         )
 
     x = candidate_coords[:, 0].astype(float)
@@ -737,7 +695,6 @@ def refine_midplane_with_distance_maps(
             updated_vox2vox=orig2fsavg_vox2vox,
             center_shift_vox=0.0,
             diagnostics=diagnostics,
-            debug_volumes=debug_volumes,
         )
     if tilt_deg > max_tilt_deg:
         logger.info(
@@ -750,7 +707,6 @@ def refine_midplane_with_distance_maps(
             updated_vox2vox=orig2fsavg_vox2vox,
             center_shift_vox=0.0,
             diagnostics=diagnostics,
-            debug_volumes=debug_volumes,
         )
 
     rotation = _rotation_from_vectors(plane_normal, x_axis)
@@ -770,7 +726,6 @@ def refine_midplane_with_distance_maps(
         updated_vox2vox=update_affine @ orig2fsavg_vox2vox,
         center_shift_vox=center_shift_vox,
         diagnostics=diagnostics,
-        debug_volumes=debug_volumes,
     )
 
 
