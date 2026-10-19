@@ -186,7 +186,13 @@ def make_parser() -> argparse.ArgumentParser:
     def _slice_selection(a: str) -> SliceSelection:
         if (b := a.lower()) in ("middle", "all"):
             return b
-        return int(a)
+        try:
+            slice_idx = int(a)
+        except ValueError as e:
+            raise argparse.ArgumentTypeError(f"must be 'middle', 'all' or a slice index, but got '{a}'") from e
+        if slice_idx < 0:
+            raise argparse.ArgumentTypeError(f"slice index must not be negative, but got {slice_idx}")
+        return slice_idx
 
     parser.add_argument(
         "--slice_selection",
@@ -485,10 +491,12 @@ def localize_ac_pc(
         orig_data,
         np.linalg.inv(orig2midslab_vox2vox),  # inverse is required for affine_transform
         output_shape=resample_shape,
-        order=2,  # unclear, why this is not order=3
+        order=2,  # quadratic spline interpolation
         mode="constant",
         cval=0,
-        prefilter=True,  # unclear, why we are using a smoothing filter here
+        # interpolating spline (passes through the voxel values, no smoothing), may overshoot at sharp edges, the
+        # output keeps the input dtype, so for integer images (e.g. uint8), overshoots are clipped to the dtype range
+        prefilter=True,
     )
 
     # get center of third ventricle from aseg and map to fsaverage space (voxel coordinates)
@@ -854,6 +862,13 @@ def main(
     # slices_to_analyze must be odd
     if slices_to_analyze % 2 == 0:
         slices_to_analyze += 1
+    if slice_selection not in ("middle", "all") and not 0 <= int(slice_selection) < slices_to_analyze:
+        error_message = (
+            f"The slice index {slice_selection} passed as slice_selection is out of range, it must be in "
+            f"[0, {slices_to_analyze - 1}] for {slices_to_analyze} slices at {vox_size[0]:.3f} mm resolution."
+        )
+        logger.error(error_message)
+        return error_message
 
     logger.info(
         f"Segmenting {slices_to_analyze} slices ({CC_ANALYSIS_WIDTH_MM:g} mm width at "
@@ -943,10 +958,12 @@ def main(
             _orig2midslab_vox2vox(additional_context=num_context)
         ),  # inverse is required for affine_transform
         output_shape=target_shape,
-        order=2,  # @ClePol unclear, why this is not order=3
+        order=2,  # quadratic spline interpolation
         mode="constant",
         cval=0,
-        prefilter=True,  # unclear, why we are using a smoothing filter here
+        # interpolating spline (passes through the voxel values, no smoothing), may overshoot at sharp edges, the
+        # output keeps the input dtype, so for integer images (e.g. uint8), overshoots are clipped to the dtype range
+        prefilter=True,
     )
     cc_fn_softlabels: Image4d | None
     manual_has_fornix = False

@@ -34,22 +34,25 @@ def convert_numpy_to_json_serializable(obj: object) -> object:
 
     Parameters
     ----------
-    obj : dict, list, array, number, serializable
+    obj : dict, list, tuple, array, number, serializable
         Object to convert to JSON serializable type.
 
     Returns
     -------
     object
-        JSON serializable version of the input object.
+        JSON serializable version of the input object. Non-finite floats (NaN, inf) are converted to None (null in
+        JSON), because NaN and Infinity are not valid JSON.
     """
     if isinstance(obj, dict):
         return {k: convert_numpy_to_json_serializable(v) for k, v in obj.items()}
-    if isinstance(obj, list):
+    if isinstance(obj, (list, tuple)):
         return [convert_numpy_to_json_serializable(item) for item in obj]
     if isinstance(obj, np.ndarray):
-        return obj.tolist()
+        return convert_numpy_to_json_serializable(obj.tolist())
     if isinstance(obj, (np.integer, np.floating, np.bool_)):
-        return obj.item()
+        obj = obj.item()
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
     return obj
 
 
