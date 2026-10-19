@@ -117,7 +117,7 @@ def run_inference(
         The softlabel output.
     crop_box : pair of pairs of ints
         The region of the image that was passed to the model as ((start_I, stop_I), (start_A, stop_A)), outputs outside
-        of this crop box are zero-padded.
+        of this crop box are padded as background (one-hot/probability of 1 for the background channel 0).
     """
     if device is None:
         device = next(model.parameters()).device
@@ -151,8 +151,12 @@ def run_inference(
         pad_tuples = ((0, 0),) * 2 + (to_pad[:2], to_pad[2:])
         labels = np.pad(_labels.cpu().numpy(), pad_tuples, mode='constant', constant_values=0)
         softlabels = np.pad(softlabels, pad_tuples, mode='constant', constant_values=0)
+        # outside the crop box, voxels are background with certainty, i.e. probability 1 for channel 0 (background)
+        outside_crop_box = np.pad(np.zeros(_softlabels.shape[2:], dtype=bool), pad_tuples[2:], constant_values=True)
+        labels[:, 0, outside_crop_box] = 1
+        softlabels[:, 0, outside_crop_box] = 1.
 
-    # the region of the image (in I and A) that was actually segmented, outside the outputs are padded with zeros
+    # the region of the image (in I and A) that was actually segmented, outside the outputs are padded as background
     crop_box: CropBox = (
         (int(to_pad[0]), int(image_slice.shape[1] - to_pad[1])),
         (int(to_pad[2]), int(image_slice.shape[2] - to_pad[3])),
@@ -195,7 +199,7 @@ def one_hot_to_label(
         from CorpusCallosum.data.constants import CC_LABEL, FORNIX_LABEL
         label_ids = [0, CC_LABEL, FORNIX_LABEL]
 
-    label = np.argmax(one_hot, axis=3)
+    label = np.argmax(one_hot, axis=-1)
     return np.asarray(label_ids)[label]
 
 
@@ -217,7 +221,7 @@ def run_inference_on_slice(
     ac_center : np.ndarray of float
         Anterior commissure coordinates (Inferior and Anterior values).
     pc_center : np.ndarray of float
-        Posterior commissure coordinates (Inferior and Posterior values).
+        Posterior commissure coordinates (Inferior and Anterior values).
     voxel_size : a pair of floats
         Voxel sizes in superior/inferior and anterior/posterior direction in mm.
 
@@ -231,7 +235,7 @@ def run_inference_on_slice(
         Softlabel outputs (non-discrete).
     crop_box : pair of pairs of ints
         The region of the image that was segmented as ((start_I, stop_I), (start_A, stop_A)), outputs outside of this
-        crop box are zero-padded (results are 0, softlabels all 0).
+        crop box are padded as background (results are 0, softlabels are 1 for background and 0 otherwise).
     """
     # add zero in front of AC_center and PC_center
     ac_center = np.concatenate([np.zeros(1), ac_center])
