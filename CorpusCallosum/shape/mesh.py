@@ -124,7 +124,7 @@ def _create_cap(
     # Convert to numpy arrays
     level_vertices = np.vstack(level_vertices)
     # Add z-coordinate (column 0) to make vertices 3D
-    level_vertices = np.hstack([np.full((len(level_vertices), 1), contour.z_position), level_vertices])
+    level_vertices = np.hstack([np.full((len(level_vertices), 1), contour.lr_position), level_vertices])
     level_faces = np.vstack(level_faces)
     level_colors = np.concatenate(level_colors)
 
@@ -770,26 +770,26 @@ class CCMesh(lapy.TriaMesh):
         -----
         The function:
         1. Filters out None contours.
-        2. Calculates z-coordinates for each slice.
+        2. Uses the left-right positions (lr_position) of the contours as the first coordinate.
         3. Creates triangles between adjacent contours.
         4. Optionally:
         - Creates caps at both ends.
         - Applies smoothing.
         - Colors caps based on thickness values.
         """
-        # Check that all contours have the same resolution
-        z_coordinates = np.array([contour.z_position for contour in contours])
-        same_z_position = np.isclose(z_coordinates[:, None], z_coordinates[None, :])
+        # Check that all contours have distinct left-right positions
+        lr_coordinates = np.array([contour.lr_position for contour in contours])
+        same_lr_position = np.isclose(lr_coordinates[:, None], lr_coordinates[None, :])
         # filter for diagonal and duplicates
-        unique_same_z_position = np.logical_and(same_z_position, np.tri(z_coordinates.shape[0], k=-1, dtype=bool).T)
-        if np.any(unique_same_z_position):
+        unique_same_lr_position = np.logical_and(same_lr_position, np.tri(lr_coordinates.shape[0], k=-1, dtype=bool).T)
+        if np.any(unique_same_lr_position):
             raise ValueError(
-                f"All contours must have different z_positions, but {np.array(np.where(unique_same_z_position)).T} "
-                f"have similar z_positions."
+                f"All contours must have different lr_positions, but {np.array(np.where(unique_same_lr_position)).T} "
+                f"have similar lr_positions."
             )
 
         # Calculate z coordinates for each slice
-        # z_coordinates = (np.arange(len(contours)) - len(contours) // 2) * contours[0].resolution + lr_center
+        # lr_coordinates = (np.arange(len(contours)) - len(contours) // 2) * contours[0].resolution + lr_center
 
         # vertices list with z-coordinates and collect thickness values
         vertices = []
@@ -806,13 +806,13 @@ class CCMesh(lapy.TriaMesh):
             points, values = contour.points, contour.thickness_values
             if len(points) != num_points:
                 logger.warning(
-                    f"Contour at z={contour.z_position:.2f} has {len(points)} instead of {num_points} points "
+                    f"Contour at lr={contour.lr_position:.2f} has {len(points)} instead of {num_points} points "
                     f"(missing level paths?), inserting points for meshing."
                 )
                 points, values = _upsample_contour(points, values, num_points)
 
             vertex_start_indices.append(current_index)
-            vertices.append(np.hstack([np.full((len(points), 1), contour.z_position), points]))
+            vertices.append(np.hstack([np.full((len(points), 1), contour.lr_position), points]))
             if values is not None:
                 vertex_values_list.append(values)
 
@@ -827,7 +827,7 @@ class CCMesh(lapy.TriaMesh):
 
         if len(contours) > 1:
             # Orient faces such that normals point outward. The winding produced by make_triangles_between_contours
-            # depends on the contour direction (cw/ccw) and on the order of the z_positions, so close the tube with
+            # depends on the contour direction (cw/ccw) and on the order of the lr_positions, so close the tube with
             # temporary caps and flip all faces, if the signed volume is negative.
             _vertices, _faces = np.vstack(vertices), np.vstack(faces)
             caps = [
@@ -857,11 +857,11 @@ class CCMesh(lapy.TriaMesh):
             # Close the mesh by creating caps on both ends
             # Left cap (first slice)
             left_side_points, left_side_trias = make_mesh_from_contour(vertices[0][..., 1:])
-            left_side_points = np.hstack([np.full((len(left_side_points), 1), z_coordinates[0]), left_side_points])
+            left_side_points = np.hstack([np.full((len(left_side_points), 1), lr_coordinates[0]), left_side_points])
 
             # Right cap (last slice)
             right_side_points, right_side_trias = make_mesh_from_contour(vertices[-1][..., 1:])
-            right_side_points = np.hstack([np.full((len(right_side_points), 1), z_coordinates[-1]), right_side_points])
+            right_side_points = np.hstack([np.full((len(right_side_points), 1), lr_coordinates[-1]), right_side_points])
 
             # color_sides is a legacy visualization option to allow caps to have thickness colors
             color_sides = True

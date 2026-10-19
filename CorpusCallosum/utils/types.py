@@ -41,11 +41,11 @@ class CCMeasuresDict(TypedDict):
     midline_length : float
         Length along the midline.
     thickness : float
-        Array of thickness measurements.
+        Mean thickness across all level paths.
     curvature : float
         Mean absolute turning angle of the midline in degrees per midline sample step (depends on num_thickness_points).
     thickness_profile : np.ndarray of type float
-        Thickness measurements along the contour.
+        Thickness measurements (level path lengths) from anterior to posterior along the midline.
     total_area : float
         Total area of the CC.
     total_perimeter : float
@@ -54,8 +54,14 @@ class CCMeasuresDict(TypedDict):
         Subdivided contour segments in AS-slice coordinates.
     midline_equidistant : np.ndarray
         Equidistant points along midline in AS-slice coordinates.
+    curvature_subsegments : np.ndarray
+        Curvature (same unit as curvature) of the midline within each subsegment.
+    curvature_body : float
+        Curvature (same unit as curvature) of the midline within the body of the CC.
     levelpaths : list of np.ndarray
         Paths for thickness measurements in AS-slice coordinates.
+    subdivision_lines : list of np.ndarray
+        Lines dividing the subsegments in AS-slice coordinates, each given by its two endpoints on the contour.
     slice_index : int
         Index of the processed slice.
     """

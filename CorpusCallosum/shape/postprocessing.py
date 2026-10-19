@@ -70,7 +70,7 @@ def offset_affine(offset: npt.ArrayLike) -> AffineMatrix4x4:
     Raises
     ------
     TypeError
-        If offset is not a
+        If offset does not convert to an array of shape (3,).
     """
     _offset = np.asarray(offset)
     if not isinstance(_offset, np.ndarray) or _offset.shape != (3,):
@@ -123,9 +123,9 @@ def recon_cc_surf_measures_multi(
     midslices : np.ndarray
         Array of mid-sagittal slices.
     ac_coords_vox : np.ndarray
-        AC voxel coordinates with shape (2,) containing its [y,x] positions.
+        AC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     pc_coords_vox : np.ndarray
-        PC voxel coordinates with shape (2,) containing its [y,x] positions.
+        PC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     num_thickness_points : int
         Number of points for thickness estimation.
     subdivisions : list[float]
@@ -133,7 +133,7 @@ def recon_cc_surf_measures_multi(
     subdivision_method : {SubdivisionMethod}
         Method for contour subdivision.
     contour_smoothing : int
-        Gaussian sigma for contour smoothing.
+        Number of Laplace smoothing iterations of the contour polygon (lapy Polygon.smooth_laplace).
     subject_dir : SubjectDirectory
         The SubjectDirectory object managing file names in the subject directory.
 
@@ -186,11 +186,21 @@ def recon_cc_surf_measures_multi(
         slices_to_recon = [int(slice_selection)]
 
     def _gen_slice2slab_vox2vox(_slice_idx: int) -> AffineMatrix4x4:
-        # The slice_idx offset must be negative, because we are going from left to right.
+        # slice _slice_idx of the slab is offset by _slice_idx voxels along the slab axis (LIA: increasing to the left)
         return offset_affine([_slice_idx, 0, 0])
 
     fsavg_midslab_vox2ras = fsavg_vox2ras @ np.linalg.inv(fsavg2midslab_vox2vox)
-    per_slice_vox2ras = fsavg_midslab_vox2ras @ np.stack(list(map(_gen_slice2slab_vox2vox, slices_to_recon)), axis=0)
+    # Contours and meshes are computed in midplane-centered RAS (R=0 on the midplane), because volume and mesh
+    # computations center the analysis slab on R=0. For fsaverage-based midplanes, the midplane is already at R=0
+    # (up to float noise), but e.g. for the "center" method, it is at the R coordinate of the image center. Measure the
+    # midplane R at the AC-PC midpoint (the slab is not necessarily aligned with the R axis for the "center" method).
+    midplane_vox = np.array([segmentation.shape[0] // 2, *np.mean([ac_coords_vox, pc_coords_vox], axis=0), 1.])
+    midplane_r = float((fsavg_midslab_vox2ras @ midplane_vox)[0])
+    fsavg2midplane_centered_ras2ras = offset_affine([-midplane_r, 0, 0])
+    midplane_centered_midslab_vox2ras = fsavg2midplane_centered_ras2ras @ fsavg_midslab_vox2ras
+    per_slice_vox2ras = midplane_centered_midslab_vox2ras @ np.stack(
+        list(map(_gen_slice2slab_vox2vox, slices_to_recon)), axis=0,
+    )
 
     slice_cc_measures = [None] * num_slices
     cc_contours_by_slice: list[CCContour | None] = [None] * num_slices
@@ -264,11 +274,12 @@ def recon_cc_surf_measures_multi(
         template_dir.mkdir(parents=True, exist_ok=True)
         logger.info("Saving template files (contours.txt, thickness_values.txt, "
                     f"thickness_measurement_points.txt) to {template_dir}")
-        for j, contour in enumerate(cc_contours_by_slice):
+        # name the files by the slice index in the slab (not the position in the list of processed slices)
+        for slice_idx, contour in zip(slices_to_recon, cc_contours_by_slice, strict=True):
             if contour is None:
                 continue
-            io_futures.append(run(contour.save_contour, template_dir / f"contour_{j}.txt"))
-            io_futures.append(run(contour.save_thickness_values, template_dir / f"thickness_values_{j}.txt"))
+            io_futures.append(run(contour.save_contour, template_dir / f"contour_{slice_idx}.txt"))
+            io_futures.append(run(contour.save_thickness_values, template_dir / f"thickness_values_{slice_idx}.txt"))
 
     num_failed_slices = slice_cc_measures.count(None)
 
@@ -309,14 +320,15 @@ def recon_cc_surf_measures_multi(
             io_futures.append(run(cc_mesh.write_morph_data, overlay_file_path))
 
         if any(wants_output(f"cc_{n}") for n in ("thickness_image", "surf")):
-            # The mesh is generated in upright/fsaverage RAS coordinates.
+            # The mesh is generated in midplane-centered upright/fsaverage RAS coordinates.
             # Convert it to orig voxel coordinates, then pass orig_header to
             # write_fssurf/snap_cc_picture. Lapy interprets vertices as voxel
             # coordinates when an image/header is supplied and converts them to
             # FreeSurfer tkRAS while stamping the surface with that header's
             # volume_info. Using an upright-volume header here makes Freeview
             # place the surface relative to that volume instead of orig.mgz.
-            cc_mesh_orig = cc_mesh.to_vox_coordinates(mesh_ras2vox=np.linalg.inv(fsavg_vox2ras @ orig2fsavg_vox2vox))
+            mesh_ras2orig_vox = np.linalg.inv(fsavg2midplane_centered_ras2ras @ fsavg_vox2ras @ orig2fsavg_vox2vox)
+            cc_mesh_orig = cc_mesh.to_vox_coordinates(mesh_ras2vox=mesh_ras2orig_vox)
             if wants_output("cc_surf"):
                 surf_file_path = output_path("cc_surf")
                 logger.info(f"Saving surf file to {surf_file_path}")
@@ -355,7 +367,7 @@ def _resample_thickness(contour: CCContour) -> CCContour:
 def subdivide_contour(
     midline_equi: Points2dType,
     subdivisions: list[float],
-    ac_pt_acpc: Vector2d,
+    anterior_endpoint_acpc: Vector2d,
     contour_in_acpc_space: Points2dType,
     subdivision_method: SubdivisionMethod,
 ) -> tuple[list[float], ContourList, np.ndarray, list[Points2dType]]:
@@ -367,8 +379,8 @@ def subdivide_contour(
         The midline equidistant points in ACPC space.
     subdivisions : list[float]
         The subdivisions.
-    ac_pt_acpc : Vector2d
-        The AC point in ACPC space (needed for eigenvector subdivision).
+    anterior_endpoint_acpc : Vector2d
+        The anterior CC endpoint in ACPC space (origin, needed for eigenvector subdivision).
     contour_in_acpc_space : Points2dType
         The contour in ACPC space.
     subdivision_method : SubdivisionMethod
@@ -377,15 +389,15 @@ def subdivide_contour(
     Returns
     -------
     tuple[list[float], ContourList, np.ndarray, list[Points2dType]]
-        The areas, split contours, split points midline, and subdivision lines.
+        The areas, split contours, split points, and subdivision lines.
     """
     if subdivision_method == "shape":
         _subdivisions = np.asarray(subdivisions)
-        areas, split_contours, split_points_midline, subdivision_lines = subsegment_midline_orthogonal(
+        areas, split_contours, split_points, subdivision_lines = subsegment_midline_orthogonal(
             midline_equi, _subdivisions, contour_in_acpc_space, plot=False
         )
     elif subdivision_method == "vertical":
-        areas, split_contours, split_points_midline, subdivision_lines = subdivide_contour_vertical(
+        areas, split_contours, split_points, subdivision_lines = subdivide_contour_vertical(
             contour_in_acpc_space, subdivisions, plot=False
         )
     elif subdivision_method == "angular":
@@ -394,32 +406,32 @@ def subdivide_contour(
                 f"Angular subdivision method (Hampel) only supports equidistant subdivision, "
                 f"but got: {subdivisions}. No measures are computed.",
             )
-        areas, split_contours, split_points_midline, subdivision_lines = subdivide_contour_hampel(
+        areas, split_contours, split_points, subdivision_lines = subdivide_contour_hampel(
             contour_in_acpc_space, num_rays=len(subdivisions), plot=False
         )
     elif subdivision_method == "eigenvector":
         pt0, pt1 = get_primary_eigenvector(contour_in_acpc_space)
         contour_eigen, _, _, rotate_back_eigen = transform_to_acpc_standard(contour_in_acpc_space, pt0, pt1)
-        ac_pt_eigen, _, _, _ = transform_to_acpc_standard(ac_pt_acpc[:, None], pt0, pt1)
-        ac_pt_eigen = ac_pt_eigen[:, 0]
-        areas, split_contours, split_points_midline, subdivision_lines = subdivide_contour_vertical(
-            contour_eigen, subdivisions, oriented=True, hline_anchor=ac_pt_eigen
+        anterior_endpoint_eigen, _, _, _ = transform_to_acpc_standard(anterior_endpoint_acpc[:, None], pt0, pt1)
+        anterior_endpoint_eigen = anterior_endpoint_eigen[:, 0]
+        areas, split_contours, split_points, subdivision_lines = subdivide_contour_vertical(
+            contour_eigen, subdivisions, oriented=True, hline_anchor=anterior_endpoint_eigen
         )
         
         # Transform from the outputs back to the input space
         split_contours = [rotate_back_eigen(split_contour) for split_contour in split_contours]
         subdivision_lines = [rotate_back_eigen(line.T).T for line in subdivision_lines]
-        split_points_midline = rotate_back_eigen(np.asarray(split_points_midline).T).T
+        split_points = rotate_back_eigen(np.asarray(split_points).T).T
     else:
         raise ValueError(f"Invalid subdivision method {subdivision_method}")
 
-    return areas, split_contours, split_points_midline, subdivision_lines
+    return areas, split_contours, split_points, subdivision_lines
 
 
 def recon_cc_surf_measure(
     segmentation: np.ndarray[Shape3d, np.dtype[np.int_]],
     slice_idx: int,
-    slice_lia_vox2midslice_ras: AffineMatrix4x4,
+    slice_vox2ras: AffineMatrix4x4,
     ac_coords_vox: Vector2d,
     pc_coords_vox: Vector2d,
     num_thickness_points: int,
@@ -435,12 +447,12 @@ def recon_cc_surf_measure(
         3D segmentation array.
     slice_idx : int
         Index of the slice to process.
-    slice_lia_vox2midslice_ras : AffineMatrix4x4
-        4x4 affine transformation matrix.
+    slice_vox2ras : AffineMatrix4x4
+        vox2ras of the slice (LIA voxels to midplane-centered upright RAS).
     ac_coords_vox : np.ndarray
-        AC voxel coordinates with shape (2,) containing its [y,x] positions.
+        AC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     pc_coords_vox : np.ndarray
-        PC voxel coordinates with shape (2,) containing its [y,x] positions.
+        PC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     num_thickness_points : int
         Number of points for thickness estimation.
     subdivisions : list[float]
@@ -448,7 +460,7 @@ def recon_cc_surf_measure(
     subdivision_method : SubdivisionMethod
         Method for contour subdivision ('shape', 'vertical', 'angular', or 'eigenvector').
     contour_smoothing : int
-        Gaussian sigma for contour smoothing.
+        Number of Laplace smoothing iterations of the contour polygon (lapy Polygon.smooth_laplace).
 
     Returns
     -------
@@ -477,11 +489,11 @@ def recon_cc_surf_measure(
     # clean up cc mask
     cc_mask = connect_diagonally_connected_components(cc_mask_slice)
     # create a CCContour from the cc_mask and transform to RAS coordinates
-    # - R coordinate is stored in _contour.z_position
+    # - R coordinate is stored in _contour.lr_position
     # - AS coordinates are stored in _contour.points
     _contour = CCContour.from_mask_and_acpc(
         cc_mask, ac_coords_vox, pc_coords_vox,
-        slice_vox2ras=slice_lia_vox2midslice_ras, contour_smoothing=contour_smoothing,
+        slice_vox2ras=slice_vox2ras, contour_smoothing=contour_smoothing,
     )
 
     levelpaths, thickness, midline_len, midline_equi, contour_with_thickness, endpoint_idxs, curvature = \
@@ -492,26 +504,26 @@ def recon_cc_surf_measure(
     # to compute length of paths: diff between consecutive points (N-1, 2) => norm (N-1,) => sum (1,)
     thickness_profile = np.stack([np.sum(np.linalg.norm(np.diff(x[:, :2], axis=0), axis=1)) for x in levelpaths])
 
-    acpc_contour_coords_as = contour_as[:, list(endpoint_idxs)].T
-    contour_in_acpc_space, ac_pt_acpc, pc_pt_acpc, rotate_back_acpc = transform_to_acpc_standard(
+    cc_endpoints_as = contour_as[:, list(endpoint_idxs)].T
+    contour_in_acpc_space, anterior_endpoint_acpc, _, rotate_back_acpc = transform_to_acpc_standard(
         contour_as,
-        *acpc_contour_coords_as,
+        *cc_endpoints_as,
     )
     cc_index = calculate_cc_index(contour_in_acpc_space)
 
     # Apply different subdivision methods based on user choice
     split_contours: ContourList
     subdivision_lines: list[Points2dType]
-    split_points_midline: np.ndarray | None = None
+    split_points: np.ndarray | None = None
 
     # Transform midline to ACPC space for subdivision
     midline_acpc, _, _, _ = transform_to_acpc_standard(
         midline_equi.T,
-        *acpc_contour_coords_as,
+        *cc_endpoints_as,
     )
 
-    areas, split_contours, split_points_midline, subdivision_lines = subdivide_contour(
-        midline_acpc.T, subdivisions, ac_pt_acpc, contour_in_acpc_space, subdivision_method
+    areas, split_contours, split_points, subdivision_lines = subdivide_contour(
+        midline_acpc.T, subdivisions, anterior_endpoint_acpc, contour_in_acpc_space, subdivision_method
     )
 
     total_area = _contour.area
@@ -521,11 +533,11 @@ def recon_cc_surf_measure(
     # Transform split contours back to original space (from ACPC to RAS)
     split_contours = [rotate_back_acpc(split_contour) for split_contour in split_contours]
     subdivision_lines = [rotate_back_acpc(line.T).T for line in subdivision_lines]
-    split_points_midline = rotate_back_acpc(np.asarray(split_points_midline).T).T
+    split_points = rotate_back_acpc(np.asarray(split_points).T).T
 
     # Calculate curvature metrics
     curvature, curvature_body, curvature_subsegments = calculate_curvature_metrics(
-        midline_equi, split_points=split_points_midline, subdivision_lines=subdivision_lines
+        midline_equi, split_points=split_points, subdivision_lines=subdivision_lines
     )
 
     measures: CCMeasuresDict = {
@@ -624,7 +636,7 @@ def make_subdivision_mask(
     -------
     np.ndarray
         A mask of shape slice_shape where each pixel is labeled with a value
-        from SUBSEGEMNT_LABELS indicating which subdivision segment it belongs to.
+        from SUBSEGMENT_LABELS indicating which subdivision segment it belongs to.
 
     Notes
     -----
@@ -632,7 +644,7 @@ def make_subdivision_mask(
     1. Creates coordinate grids for all points in the slice.
     2. Initializes mask with first segment label.
     3. For each subdivision line:
-    - Tests which points lie to the right of the line.
+    - Tests which points lie posterior to the line.
     - Updates labels for those points.
     """
     from nibabel.affines import apply_affine

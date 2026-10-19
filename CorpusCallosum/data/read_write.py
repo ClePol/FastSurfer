@@ -15,8 +15,9 @@
 from typing import TypedDict
 
 import numpy as np
+from nibabel.freesurfer.mghformat import MGHHeader
 
-from FastSurferCNN.utils import AffineMatrix3x3, Vector3d
+from FastSurferCNN.utils import AffineMatrix3x3, Vector3d, nibabelHeader
 
 
 class MGHHeaderDict(TypedDict):
@@ -47,6 +48,31 @@ def convert_numpy_to_json_serializable(obj: object) -> object:
         return [convert_numpy_to_json_serializable(item) for item in obj]
     if isinstance(obj, np.ndarray):
         return obj.tolist()
-    if isinstance(obj, (np.integer, np.floating)):
+    if isinstance(obj, (np.integer, np.floating, np.bool_)):
         return obj.item()
     return obj
+
+
+def init_mgh_header(header: nibabelHeader, header_dict: MGHHeaderDict) -> MGHHeader:
+    """
+    Generates a MGHHeader object from a header and a header dictionary.
+
+    Parameters
+    ----------
+    header : nibabelHeader
+        The header object used to initialize the generated header.
+    header_dict : MGHHeaderDict
+        A dictionary of values to overwrite in the generated header.
+
+    Returns
+    -------
+    MGHHeader
+        The header updated with values in header_dict.
+    """
+    new_header: MGHHeader = MGHHeader.from_header(header)
+    if "dims" in header_dict:
+        new_header["dims"] = np.append(header_dict["dims"], [1])
+    for key in ("delta", "Pxyz_c", "Mdc"):
+        if key in header_dict:
+            new_header[key] = header_dict[key]
+    return new_header

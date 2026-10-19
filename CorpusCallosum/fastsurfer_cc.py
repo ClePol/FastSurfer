@@ -36,7 +36,7 @@ from CorpusCallosum.data.constants import (
     FORNIX_LABEL,
     THIRD_VENTRICLE_LABEL,
 )
-from CorpusCallosum.data.read_write import MGHHeaderDict, convert_numpy_to_json_serializable
+from CorpusCallosum.data.read_write import convert_numpy_to_json_serializable, init_mgh_header
 from CorpusCallosum.localization import inference as localization_inference
 from CorpusCallosum.registration.midsagittal_plane_alignment import find_midplane_transform
 from CorpusCallosum.segmentation import inference as segmentation_inference
@@ -69,7 +69,6 @@ from FastSurferCNN.utils import (
     Shape3d,
     Vector2d,
     logging,
-    nibabelHeader,
     nibabelImage,
 )
 from FastSurferCNN.utils.arg_types import path_or_none
@@ -179,8 +178,8 @@ def make_parser() -> argparse.ArgumentParser:
         "--contour_smoothing",
         type=int,
         default=5,
-        help="Gaussian sigma for smoothing during contour detection. Higher values mean a smoother CC outline, at the "
-             "cost of precision.",
+        help="Number of Laplace smoothing iterations for the CC contour. Higher values mean a smoother CC outline, at "
+             "the cost of precision.",
     )
 
     def _slice_selection(a: str) -> SliceSelection:
@@ -416,8 +415,10 @@ def options_parse() -> argparse.Namespace:
             "segmentation_in_orig",
             "cc_measures",
             "upright_lta",
+            "upright_volume",
             "orient_volume_lta",
             "cc_surf",
+            "cc_surf_vtk",
             "softlabels_cc",
             "softlabels_fn",
             "softlabels_background",
@@ -448,7 +449,7 @@ def options_parse() -> argparse.Namespace:
 def localize_ac_pc(
         orig_data: Image3d,
         aseg_nib: nibabelImage,
-        orig2midslice_vox2vox: AffineMatrix4x4,
+        orig2midslab_vox2vox: AffineMatrix4x4,
         model_localization: DenseNet,
         resample_shape: Shape3d,
 ) -> tuple[Vector2d, Vector2d]:
@@ -463,26 +464,27 @@ def localize_ac_pc(
         Array of intensity data.
     aseg_nib : nibabelImage
         Subject's segmentation image in native subject space.
-    orig2midslice_vox2vox : np.ndarray
-        Transformation matrix from subject/native space to fsaverage space (in lia).
+    orig2midslab_vox2vox : np.ndarray
+        Transformation matrix from subject/native voxels to the voxels of the midslab (the upright fsaverage-aligned
+        slab around the midplane including one additional context slice on each side, LIA).
     model_localization : DenseNet
         Trained model for AC-PC detection.
     resample_shape : 3-tuple of ints
-        Number of slices to process.
+        Shape of the analysis slab (number of slices, I, A); two context slices are added for the localization.
 
     Returns
     -------
     ac_coords : np.ndarray
-        AC voxel coordinates with shape (2,) containing its [y,x] positions.
+        AC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     pc_coords : np.ndarray
-        PC voxel coordinates with shape (2,) containing its [y,x] positions.
+        PC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     """
     num_slices_to_analyze = resample_shape[0]
     resample_shape = (num_slices_to_analyze + 2,) + resample_shape[1:]  # 2 for context slices
     _midslices_fut = thread_executor().submit(
         affine_transform,
         orig_data,
-        np.linalg.inv(orig2midslice_vox2vox),  # inverse is required for affine_transform
+        np.linalg.inv(orig2midslab_vox2vox),  # inverse is required for affine_transform
         output_shape=resample_shape,
         order=2,  # unclear, why this is not order=3
         mode="constant",
@@ -493,7 +495,7 @@ def localize_ac_pc(
     # get center of third ventricle from aseg and map to fsaverage space (voxel coordinates)
     third_ventricle_mask = np.asarray(aseg_nib.dataobj) == THIRD_VENTRICLE_LABEL
     third_ventricle_center = np.argwhere(third_ventricle_mask).mean(axis=0)
-    third_ventricle_center_vox = apply_transform_to_pt(third_ventricle_center, orig2midslice_vox2vox, inv=False)
+    third_ventricle_center_vox = apply_transform_to_pt(third_ventricle_center, orig2midslab_vox2vox, inv=False)
 
     # Get the analysis-width slab with 3 slices per inference
     # (cropping num_slices_to_analyze + 2 slices around the center).
@@ -516,27 +518,29 @@ def segment_cc(
     """Segment the corpus callosum using a trained model.
 
     Performs corpus callosum segmentation on mid-sagittal slices using a trained model, with AC-PC points as anatomical
-    references. Includes post-processing to clean the cc_seg_labels.
+    references. Includes post-processing to clean the segmentation.
 
     Parameters
     ----------
     midslices : np.ndarray
         Array of mid-sagittal slices in upright space and LIA-orientation.
     ac_coords : np.ndarray
-        AC voxel coordinates with shape (2,) containing its [y,x] positions.
+        AC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     pc_coords : np.ndarray
-        PC voxel coordinates with shape (2,) containing its [y,x] positions.
+        PC voxel coordinates with shape (2,) containing its [I, A] (LIA axes 1 and 2) positions.
     aseg_nib : nibabelImage
-        Subject's cc_seg_labels image.
+        Subject's segmentation image (used for the voxel size).
     model_segmentation : torch.nn.Module
-        Trained model for CC cc_seg_labels.
+        Trained model for CC segmentation.
 
     Returns
     -------
     cc_seg_labels : np.ndarray
-        Binary cc_seg_labels of the corpus callosum in upright space and LIA-orientation.
+        Label map of the corpus callosum (CC_LABEL) and fornix (FORNIX_LABEL), 0 elsewhere, in upright space and
+        LIA-orientation.
     cc_softlabels : np.ndarray
-        Soft cc_seg_labels probabilities of shape in upright space and LIA-orientation (H, W, D, C=3).
+        Soft label probabilities in upright space and LIA-orientation of shape (L, I, A, C=3), channels are
+        background, CC, and fornix.
     """
     pre_clean_segmentation, inputs, cc_softlabels, crop_box = segmentation_inference.run_inference_on_slice(
         model_segmentation,
@@ -549,7 +553,7 @@ def segment_cc(
     cc_seg_labels, cc_volume_mask = segmentation_postprocessing.clean_cc_segmentation(pre_clean_segmentation)
 
     # print a warning if the cc_volume_mask touches the edge of the region segmented by the model (the crop box around
-    # AC and PC, outside the segmentation is zero-padded), the crop box may also coincide with the image edge
+    # AC and PC, outside the segmentation is padded as background), the crop box may also coincide with the image edge
     truncated_sides = []
     # LIA: the index increases towards inferior (axis 1) and anterior (axis 2)
     for axis, sides, (start, stop) in zip((1, 2), (("superior", "inferior"), ("posterior", "anterior")), crop_box,
@@ -626,7 +630,7 @@ def main(
     subdivision_method : any of "shape", "vertical", "angular", "eigenvector", default="shape"
         Method for contour subdivision.
     contour_smoothing : int, default=5
-        Gaussian sigma for smoothing during contour detection.
+        Number of Laplace smoothing iterations of the contour polygon (lapy Polygon.smooth_laplace).
     save_template_dir : str or Path, optional
         Directory path where to save contours.txt and thickness_values.txt files. These files can be used to visualize
         the CC shape and volume in 3D. Files are only saved, if a valid directory path is passed.
@@ -683,13 +687,13 @@ def main(
 
     Notes
     -----
-    The function saves multiple outputs to specified paths or default locations in output_dir:
-    - cc_markers.json: Contains detected landmarks and measurements.
-    - midplane_slices.mgz: Extracted midplane slices.
-    - upright_volume.mgz: Volume aligned to standard orientation.
-    - segmentation.mgz: Corpus callosum segmentation.
-    - cc_postproc_results.json: Enhanced postprocessing results.
-    - Various visualization plots and transformation matrices.
+    The function saves outputs to the specified paths (see DEFAULT_OUTPUT_PATHS in CorpusCallosum.data.constants for
+    the defaults relative to the subject directory), e.g.:
+    - stats/callosum.CC.midslice.json and stats/callosum.CC.all_slices.json: landmarks and measurements.
+    - mri/callosum.CC.upright.mgz and mri/callosum.CC.orig.mgz: CC segmentation in upright and original space.
+    - mri/transforms/cc_up.lta and mri/transforms/orient_volume.lta: transforms to upright and standardized space.
+    - surf/callosum.surf and surf/callosum.thickness.w: CC surface and thickness overlay.
+    - QC images and visualizations.
 
     The pipeline consists of the following steps:
     1. Initializes environment and loads models.
@@ -779,6 +783,10 @@ def main(
             logger.error(error_message)
             return error_message
 
+    # MGH header of orig, e.g. for LTA geometries and surfaces; converting a NIfTI header directly
+    # (MGHHeader.from_header) does not carry over dimensions, voxel sizes and orientation
+    orig_header: MGHHeader = orig.header if isinstance(orig.header, MGHHeader) else nib.MGHImage.from_image(orig).header
+
     try:
         ac_coords_orig, pc_coords_orig = validate_landmarks_in_image(ac_coords, pc_coords, orig.shape)
     except ValueError as e:
@@ -819,13 +827,12 @@ def main(
         return str(e)
     orig2fsavg_vox2vox = midplane.orig2fsavg_vox2vox
     fsavg_vox2ras = midplane.fsavg_vox2ras
-    _fsavg_header_dict = midplane.fsavg_header_dict
-    _fsavg_shape = midplane.fsavg_shape
-    _base_middle_vox = midplane.base_middle_vox
+    fsavg_header_dict = midplane.fsavg_header_dict
+    base_middle_vox = midplane.base_middle_vox
     midline_shift_vox = midplane.midline_shift_vox
     midline_shift_diagnostics = midplane.midline_shift_diagnostics
     orig2fsavg_ras2ras = fsavg_vox2ras @ orig2fsavg_vox2vox @ np.linalg.inv(orig.affine)
-    fsavg_header = init_mgh_header(orig.header, _fsavg_header_dict)
+    fsavg_header = init_mgh_header(orig_header, fsavg_header_dict)
 
     # start saving upright volume, this is the image in fsaverage space but not yet oriented via AC-PC
     if sd.has_attribute("upright_volume"):
@@ -842,7 +849,7 @@ def main(
         )
 
     # calculate affine for segmentation volume
-    fsavg2midslice_vox2vox: AffineMatrix4x4 = offset_affine([-_base_middle_vox, 0, 0])
+    fsavg2midslice_vox2vox: AffineMatrix4x4 = offset_affine([-base_middle_vox, 0, 0])
     orig2midslice_vox2vox = fsavg2midslice_vox2vox @ orig2fsavg_vox2vox
 
     # calculate vox2vox for input resampling volumes
@@ -929,7 +936,7 @@ def main(
                         as_mgh_image(
                             cc_fn_softlabels[..., i],
                             fsaverage_midslab_vox2ras,
-                            orig.header,
+                            orig_header,
                             dtype=np.float32,
                         ),
                         sd.filename_by_attribute(f"cc_softlabels_{attr}"),
@@ -943,7 +950,7 @@ def main(
             futures.append(
                 thread_executor().submit(
                     nib.save,
-                    as_mgh_image(cc_fn_seg_labels, fsaverage_midslab_vox2ras, orig.header),
+                    as_mgh_image(cc_fn_seg_labels, fsaverage_midslab_vox2ras, orig_header),
                     _cc_seg_path,
                 )
             )
@@ -959,7 +966,7 @@ def main(
         ) = recon_cc_surf_measures_multi(
             segmentation=cc_fn_seg_labels,
             slice_selection=slice_selection,
-            orig_header=orig.header,
+            orig_header=orig_header,
             fsavg2midslab_vox2vox=fsavg2midslab_vox2vox,
             fsavg_vox2ras=fsavg_vox2ras,
             orig2fsavg_vox2vox=orig2fsavg_vox2vox,
@@ -1252,16 +1259,16 @@ def main(
     if sd.has_attribute("cc_orient_volume_lta"):
         sd.filename_by_attribute("cc_orient_volume_lta").parent.mkdir(exist_ok=True, parents=True)
         # save lta to standardized space (fsaverage + nodding + ac to center)
-        fsavg2standardized_ras2ras = (
+        orig2standardized_ras2ras = (
                 fsavg_vox2ras @ np.linalg.inv(standardized2orig_vox2vox) @ np.linalg.inv(orig.affine)
         )
         logger.info(f"Saving LTA to standardized space: {sd.filename_by_attribute('cc_orient_volume_lta')}")
         futures.append(
             thread_executor().submit(
                 LTA.from_matrix(
-                    fsavg2standardized_ras2ras,
+                    orig2standardized_ras2ras,
                     str(sd.conf_name),
-                    orig.header,
+                    orig_header,
                     "standardized",
                     fsavg_header,
                 ).write,
@@ -1284,31 +1291,6 @@ def main(
     duration = (perf_counter_ns() - start) / 1e9
     logger.info(f"CorpusCallosum analysis pipeline {success_str} {duration:.2f} seconds.")
     return return_value
-
-
-def init_mgh_header(header: nibabelHeader, header_dict: MGHHeaderDict) -> MGHHeader:
-    """
-    Generates a MGHHeader object from a header and a header dictionary.
-
-    Parameters
-    ----------
-    header : nibabelHeader
-        The header object used to initialize the generated header.
-    header_dict : MGHHeaderDict
-        A dictionary of values to overwrite in the generated header.
-
-    Returns
-    -------
-    MGHHeader
-        The header updated with values in header_dict.
-    """
-    new_header: MGHHeader = MGHHeader.from_header(header)
-    if "dims" in header_dict:
-        new_header["dims"] = np.append(header_dict["dims"], [1])
-    for key in ("delta", "Pxyz_c", "Mdc"):
-        if key in header_dict:
-            new_header[key] = header_dict[key]
-    return new_header
 
 
 def save_cc_measures_json(cc_mid_measure_file: Path, metrics: dict[str, object]):

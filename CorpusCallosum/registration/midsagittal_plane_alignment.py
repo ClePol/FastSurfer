@@ -5,13 +5,16 @@ from dataclasses import dataclass
 import nibabel as nib
 import numpy as np
 from neuroreg.segreg import segreg
-from nibabel.freesurfer.mghformat import MGHHeader
 from scipy.ndimage import affine_transform, binary_fill_holes, distance_transform_edt
 from skimage.morphology import convex_hull_image
 
-from CorpusCallosum.data.constants import FSAVERAGE_MIDDLE, FSAVERAGE_REGISTRATION_LABELS, FSAVERAGE_TARGET_PATH
-from CorpusCallosum.data.read_write import MGHHeaderDict, convert_numpy_to_json_serializable
-from CorpusCallosum.registration.landmarks import adjust_midplane_to_landmarks
+from CorpusCallosum.data.constants import FSAVERAGE_MIDPLANE_MM, FSAVERAGE_REGISTRATION_LABELS, FSAVERAGE_TARGET_PATH
+from CorpusCallosum.data.read_write import MGHHeaderDict, convert_numpy_to_json_serializable, init_mgh_header
+from CorpusCallosum.registration.landmarks import (
+    _affine_from_rotation_and_center,
+    _rotation_from_vectors,
+    adjust_midplane_to_landmarks,
+)
 from CorpusCallosum.shape.postprocessing import offset_affine
 from FastSurferCNN.utils import AffineMatrix4x4, Shape3d, logging, nibabelImage
 from FastSurferCNN.utils.brainvolstats import hemi_masks_from_aseg
@@ -56,18 +59,6 @@ class MidplaneDebugVolumes:
     candidate_mask: np.ndarray
     left_mask: np.ndarray
     right_mask: np.ndarray
-
-
-def _mgh_header_from_dict(
-        reference_header: nib.filebasedimages.FileBasedHeader,
-        header_dict: MGHHeaderDict
-) -> MGHHeader:
-    """Create an MGH header from serialized header metadata."""
-    header = MGHHeader.from_header(reference_header)
-    header["dims"] = np.append(header_dict["dims"], [1])
-    for key in ("delta", "Pxyz_c", "Mdc"):
-        header[key] = header_dict[key]
-    return header
 
 
 @dataclass(frozen=True)
@@ -251,79 +242,6 @@ def _clean_partitioned_hemi_masks(
     return left_mask, right_mask
 
 
-def _rotation_from_vectors(source: np.ndarray, target: np.ndarray) -> np.ndarray:
-    """Compute a 3x3 rotation matrix mapping ``source`` onto ``target``.
-
-    Parameters
-    ----------
-    source : np.ndarray
-        Source 3D direction vector.
-    target : np.ndarray
-        Target 3D direction vector.
-
-    Returns
-    -------
-    np.ndarray
-        Rotation matrix that aligns ``source`` with ``target``.
-    """
-    source = source / np.linalg.norm(source)
-    target = target / np.linalg.norm(target)
-    cross = np.cross(source, target)
-    dot = float(np.clip(np.dot(source, target), -1.0, 1.0))
-    cross_norm = np.linalg.norm(cross)
-    if cross_norm < 1e-8:
-        if dot > 0:
-            return np.eye(3, dtype=float)
-        axis = np.array([0.0, 1.0, 0.0], dtype=float)
-        if abs(source[1]) > 0.9:
-            axis = np.array([0.0, 0.0, 1.0], dtype=float)
-        cross = np.cross(source, axis)
-        cross = cross / np.linalg.norm(cross)
-        cross_norm = 1.0
-        dot = -1.0
-    k = cross / cross_norm
-    kx, ky, kz = k
-    skew = np.array(
-        [
-            [0.0, -kz, ky],
-            [kz, 0.0, -kx],
-            [-ky, kx, 0.0],
-        ]
-    )
-    angle = np.arccos(dot)
-    return np.eye(3, dtype=float) + np.sin(angle) * skew + (1 - np.cos(angle)) * (skew @ skew)
-
-
-def _affine_from_rotation_and_center(
-        rotation: np.ndarray,
-        center: np.ndarray,
-        vox_size: np.ndarray | None = None,
-) -> AffineMatrix4x4:
-    """Construct a voxel-space affine applying a rotation (defined in mm) about a voxel-space center.
-
-    Parameters
-    ----------
-    rotation : np.ndarray
-        3x3 rotation matrix (in mm / world-aligned coordinates).
-    center : np.ndarray
-        Rotation center in voxel coordinates.
-    vox_size : np.ndarray, optional
-        Voxel size per voxel axis. For anisotropic voxels, the rotation is conjugated with the voxel scaling
-        (``S^-1 R S``) so the vox2vox is rigid in mm. Default: isotropic.
-
-    Returns
-    -------
-    AffineMatrix4x4
-        Homogeneous 4x4 affine transform.
-    """
-    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
-    vox_rotation = (rotation * scale[np.newaxis, :]) / scale[:, np.newaxis]
-    affine = np.eye(4, dtype=float)
-    affine[:3, :3] = vox_rotation
-    affine[:3, 3] = center - vox_rotation @ center
-    return affine
-
-
 def _prepare_lr_pair_labels(seg_data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Create matched left/right aseg label arrays available in an input segmentation.
 
@@ -353,6 +271,7 @@ def _score_midline_shift(
         base_middle_vox: float,
         shift_vox: int,
         max_pairs_per_slice: int = 64,
+        slab_half_vox: int = 12,
 ) -> tuple[float, int]:
     """Score a candidate LR shift by mirrored label consistency near the midline.
 
@@ -370,6 +289,8 @@ def _score_midline_shift(
         Candidate shift to evaluate relative to ``base_middle_vox``.
     max_pairs_per_slice : int, default=64
         Maximum sampled right-side voxels per z-slice for distance matching.
+    slab_half_vox : int, default=12
+        Half-width of the LR slab around the candidate midline that is compared, in voxels.
 
     Returns
     -------
@@ -384,9 +305,8 @@ def _score_midline_shift(
     if x_mid <= 1 or x_mid >= seg_in_fsavg.shape[0] - 2:
         return float("inf"), 0
 
-    slab_half = 12  # 12 voxels ~= 12 mm in fsaverage (1 mm isotropic grid)
-    x0 = max(0, x_mid - slab_half)
-    x1 = min(seg_in_fsavg.shape[0], x_mid + slab_half + 1)
+    x0 = max(0, x_mid - slab_half_vox)
+    x1 = min(seg_in_fsavg.shape[0], x_mid + slab_half_vox + 1)
     slab = seg_in_fsavg[x0:x1]
 
     left_mask = np.isin(slab, left_ids)
@@ -429,8 +349,11 @@ def refine_midline_lr_shift(
         aseg_data: np.ndarray,
         fsavg_shape: Shape3d,
         base_middle_vox: float,
-        max_shift_vox: int = 6,
+        max_shift_mm: float = 6.0,
         step_vox: int = 1,
+        slab_half_mm: float = 12.0,
+        min_improvement_mm: float = 0.5,
+        vox_size: np.ndarray | None = None,
 ) -> tuple[AffineMatrix4x4, int, float, dict[str, object]]:
     """Refine midsagittal alignment by searching small LR translations.
 
@@ -444,10 +367,17 @@ def refine_midline_lr_shift(
         Shape of the fsaverage target grid.
     base_middle_vox : float
         Baseline midsagittal x-coordinate in fsaverage voxels.
-    max_shift_vox : int, default=6
-        Maximum absolute LR shift explored.
+    max_shift_mm : float, default=6.0
+        Maximum absolute LR shift explored in mm (rounded to full voxels).
     step_vox : int, default=1
         Integer step size for the LR search.
+    slab_half_mm : float, default=12.0
+        Half-width of the LR slab around the candidate midline that is compared, in mm (rounded to full voxels).
+    min_improvement_mm : float, default=0.5
+        Minimum improvement of the score (a median distance in mm) over the unshifted midline to accept a shift.
+    vox_size : np.ndarray, optional
+        Voxel size of the fsaverage grid per voxel axis (default: 1 mm isotropic). The thresholds are converted from
+        mm to voxels, so the behavior is consistent across resolutions (and unchanged for 1 mm grids).
 
     Returns
     -------
@@ -459,6 +389,14 @@ def refine_midline_lr_shift(
     Candidate shifts are regularized and validated with conservative rejection
     criteria (boundary hits, low support, and weak improvements over baseline).
     """
+    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
+
+    def _mm_to_vox(mm: float, axis: int) -> int:
+        # round half up with a tolerance for float noise in the voxel size (e.g. 6 mm / 0.8 mm -> 8 voxels)
+        return int(np.floor(mm / scale[axis] + 0.5 + 1e-6))
+
+    max_shift_vox = _mm_to_vox(max_shift_mm, 0)
+    slab_half_vox = _mm_to_vox(slab_half_mm, 0)
     if max_shift_vox < 0 or step_vox <= 0:
         return orig2fsavg_vox2vox, 0, float("inf"), {}
 
@@ -477,8 +415,10 @@ def refine_midline_lr_shift(
     best_adjusted_score = float("inf")
     best_raw_score = float("inf")
     best_support = 0
-    shift_penalty = 0.25
-    min_improvement = 0.5
+    # scores are median IS distances in voxels of axis 1, shifts are in voxels of axis 0; the penalty is 0.25 mm of
+    # score per mm of shift, and the minimal improvement is converted to voxels of axis 1
+    shift_penalty = float(0.25 * scale[0] / scale[1])
+    min_improvement = float(min_improvement_mm / scale[1])
     min_support = 32
 
     for shift in range(-max_shift_vox, max_shift_vox + 1, step_vox):
@@ -488,6 +428,7 @@ def refine_midline_lr_shift(
             right_ids,
             base_middle_vox=base_middle_vox,
             shift_vox=-shift,
+            slab_half_vox=slab_half_vox,
         )
         adjusted_score = raw_score + shift_penalty * abs(shift)
         candidate_scores.append(
@@ -516,7 +457,12 @@ def refine_midline_lr_shift(
         "selected_shift_support": int(best_support),
         "shift_penalty": shift_penalty,
         "min_improvement": min_improvement,
+        "min_improvement_mm": float(min_improvement_mm),
         "min_support": min_support,
+        "max_shift_vox": max_shift_vox,
+        "max_shift_mm": float(max_shift_mm),
+        "slab_half_vox": slab_half_vox,
+        "slab_half_mm": float(slab_half_mm),
     }
 
     at_boundary = abs(best_shift) == max_shift_vox
@@ -596,7 +542,7 @@ def register_centroids_to_fsavg(
         "Pxyz_c": np.asarray(atlas_header["Pxyz_c"], dtype=np.float64).copy(),
     }
     # Downstream CC mapping expects FreeSurfer's MGH/tkregister affine convention.
-    fsaverage_vox2ras = np.asarray(_mgh_header_from_dict(aseg_nib.header, fsavg_header).get_vox2ras(), dtype=np.float64)
+    fsaverage_vox2ras = np.asarray(init_mgh_header(aseg_nib.header, fsavg_header).get_vox2ras(), dtype=np.float64)
 
     # Resample the fsaverage grid to the subject resolution: the zooms of the subject image (in RAS order) are
     # permuted into the voxel axis order of fsaverage (LIA), i.e. each fsaverage voxel axis gets the zoom of the RAS
@@ -634,10 +580,10 @@ def refine_midplane_with_distance_maps(
         fsavg_shape: Shape3d,
         base_middle_vox: float,
         zero_band_vox: float = 0.5,
-        support_distance_vox: float = 24.0,
-        fit_band_vox: float = 20.0,
+        support_distance_mm: float = 24.0,
+        fit_band_mm: float = 20.0,
         max_tilt_deg: float = 7.5,
-        max_center_shift_vox: float = 8.0,
+        max_center_shift_mm: float = 8.0,
         vox_size: np.ndarray | None = None,
 ) -> MidplaneRefinementResult:
     """Fit a midsagittal plane from LR distance-map symmetry in fsaverage space.
@@ -653,18 +599,20 @@ def refine_midplane_with_distance_maps(
     base_middle_vox : float
         Baseline midsagittal x-coordinate in fsaverage voxels.
     zero_band_vox : float, default=0.5
-        Absolute distance-difference threshold for candidate midplane voxels.
-    support_distance_vox : float, default=24.0
-        Maximum distance to either hemisphere mask for candidate support.
-    fit_band_vox : float, default=20.0
-        X-range around baseline center used for plane fitting.
+        Absolute distance-difference threshold for candidate midplane voxels, in LR voxels. This selects a sheet of
+        about one voxel thickness around the zero crossing, i.e. it is a sampling parameter and stays in voxels.
+    support_distance_mm : float, default=24.0
+        Maximum distance to either hemisphere mask for candidate support, in mm.
+    fit_band_mm : float, default=20.0
+        LR range around baseline center used for plane fitting, in mm.
     max_tilt_deg : float, default=7.5
         Maximum accepted angular tilt away from the LR axis.
-    max_center_shift_vox : float, default=8.0
-        Maximum accepted LR center shift from baseline.
+    max_center_shift_mm : float, default=8.0
+        Maximum accepted LR center shift from baseline, in mm.
     vox_size : np.ndarray, optional
-        Voxel size of the fsaverage grid per voxel axis (default: isotropic). Distances are measured in units of the
-        LR voxel size, and the plane tilt and rotation are computed in mm, so the update is rigid in mm.
+        Voxel size of the fsaverage grid per voxel axis (default: 1 mm isotropic). Distances are measured in units of
+        the LR voxel size, and the plane tilt and rotation are computed in mm, so the update is rigid in mm. The mm
+        thresholds are converted to LR voxels (unchanged for 1 mm grids).
 
     Returns
     -------
@@ -674,6 +622,9 @@ def refine_midplane_with_distance_maps(
     scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
     # distances in units of LR voxels (identical to plain voxel distances for isotropic grids)
     edt_sampling = scale / scale[0]
+    support_distance_vox = float(support_distance_mm / scale[0])
+    fit_band_vox = float(fit_band_mm / scale[0])
+    max_center_shift_vox = float(max_center_shift_mm / scale[0])
     seg_data = aseg_data
     empty = np.zeros(fsavg_shape, dtype=np.float32)
     empty_debug = MidplaneDebugVolumes(
@@ -716,7 +667,9 @@ def refine_midplane_with_distance_maps(
         "candidate_count": int(candidate_coords.shape[0]),
         "zero_band_vox": float(zero_band_vox),
         "support_distance_vox": float(support_distance_vox),
+        "support_distance_mm": float(support_distance_mm),
         "fit_band_vox": float(fit_band_vox),
+        "fit_band_mm": float(fit_band_mm),
         "left_mask_voxels": int(np.count_nonzero(left_mask)),
         "right_mask_voxels": int(np.count_nonzero(right_mask)),
         "brain_mask_voxels": int(np.count_nonzero(brain_mask)),
@@ -769,6 +722,7 @@ def refine_midplane_with_distance_maps(
             "center_shift_vox": center_shift_vox,
             "max_tilt_deg": float(max_tilt_deg),
             "max_center_shift_vox": float(max_center_shift_vox),
+            "max_center_shift_mm": float(max_center_shift_mm),
         }
     )
 
@@ -838,14 +792,17 @@ def find_midplane_transform(
     midplane_method : str
         Midplane strategy. Supported values are ``"center"``, ``"fsaverage"``,
         ``"fsaverage_distance_map"``, and ``"fsaverage_symmetry"``.
+    ac_coords_orig : np.ndarray, optional
+        AC voxel coordinates in orig (requires pc_coords_orig). If passed, the midplane is adjusted to pass through
+        AC and PC.
+    pc_coords_orig : np.ndarray, optional
+        PC voxel coordinates in orig (requires ac_coords_orig).
 
     Returns
     -------
     MidplaneTransformResult
         Transform bundle and method-specific diagnostics for downstream CC steps.
     """
-    vox_size_ras: tuple[float, float, float] = nib.as_closest_canonical(orig).header.get_zooms()
-    vox_size = vox_size_ras[0], vox_size_ras[2], vox_size_ras[1]
     aseg_data = np.asarray(aseg_img.dataobj)
 
     def _grid_zooms(vox2ras: AffineMatrix4x4) -> np.ndarray:
@@ -898,7 +855,7 @@ def find_midplane_transform(
 
     orig2fsavg_vox2vox, _, fsavg_vox2ras, fsavg_header_dict = register_centroids_to_fsavg(aseg_img)
     fsavg_shape = tuple(fsavg_header_dict["dims"])
-    base_middle_vox = float(FSAVERAGE_MIDDLE) / float(vox_size[0])
+    base_middle_vox = FSAVERAGE_MIDPLANE_MM / float(_grid_zooms(fsavg_vox2ras)[0])
 
     if midplane_method == "fsaverage_distance_map":
         dm_result = refine_midplane_with_distance_maps(
@@ -924,6 +881,7 @@ def find_midplane_transform(
             aseg_data=aseg_data,
             fsavg_shape=fsavg_shape,
             base_middle_vox=base_middle_vox,
+            vox_size=_grid_zooms(fsavg_vox2ras),
         )
         return _adjust_with_landmarks(MidplaneTransformResult(
             orig2fsavg_vox2vox=orig2fsavg_vox2vox,

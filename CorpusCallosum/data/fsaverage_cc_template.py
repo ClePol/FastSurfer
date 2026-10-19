@@ -41,5 +41,5 @@ def load_fsaverage_cc_template() -> CCContour:
         points,
         None,
         endpoint_idxs=(anterior_endpoint_idx, posterior_endpoint_idx),
-        z_position=float(data["z_position"]),
+        lr_position=float(data["z_position"]),
     )

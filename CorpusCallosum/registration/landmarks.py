@@ -8,15 +8,37 @@ logger = logging.get_logger(__name__)
 
 
 def _rotation_from_vectors(source: np.ndarray, target: np.ndarray) -> np.ndarray:
-    """Compute a 3x3 rotation matrix mapping one direction onto another."""
+    """Compute a 3x3 rotation matrix mapping ``source`` onto ``target``.
+
+    Parameters
+    ----------
+    source : np.ndarray
+        Source 3D direction vector.
+    target : np.ndarray
+        Target 3D direction vector.
+
+    Returns
+    -------
+    np.ndarray
+        Rotation matrix that aligns ``source`` with ``target``.
+    """
     source = source / np.linalg.norm(source)
     target = target / np.linalg.norm(target)
     cross = np.cross(source, target)
     dot = float(np.clip(np.dot(source, target), -1.0, 1.0))
     cross_norm = np.linalg.norm(cross)
     if cross_norm < 1e-8:
-        return np.eye(3, dtype=float)
-    kx, ky, kz = cross / cross_norm
+        if dot > 0:
+            return np.eye(3, dtype=float)
+        axis = np.array([0.0, 1.0, 0.0], dtype=float)
+        if abs(source[1]) > 0.9:
+            axis = np.array([0.0, 0.0, 1.0], dtype=float)
+        cross = np.cross(source, axis)
+        cross = cross / np.linalg.norm(cross)
+        cross_norm = 1.0
+        dot = -1.0
+    k = cross / cross_norm
+    kx, ky, kz = k
     skew = np.array(
         [
             [0.0, -kz, ky],
@@ -35,8 +57,20 @@ def _affine_from_rotation_and_center(
 ) -> AffineMatrix4x4:
     """Construct a voxel-space affine applying a rotation (defined in mm) about a voxel-space center.
 
-    For anisotropic voxels, the rotation is conjugated with the voxel scaling (``S^-1 R S``), so the resulting
-    vox2vox is rigid in world (mm) coordinates.
+    Parameters
+    ----------
+    rotation : np.ndarray
+        3x3 rotation matrix (in mm / world-aligned coordinates).
+    center : np.ndarray
+        Rotation center in voxel coordinates.
+    vox_size : np.ndarray, optional
+        Voxel size per voxel axis. For anisotropic voxels, the rotation is conjugated with the voxel scaling
+        (``S^-1 R S``) so the vox2vox is rigid in mm. Default: isotropic.
+
+    Returns
+    -------
+    AffineMatrix4x4
+        Homogeneous 4x4 affine transform.
     """
     scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
     vox_rotation = (rotation * scale[np.newaxis, :]) / scale[:, np.newaxis]

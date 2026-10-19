@@ -840,40 +840,42 @@ def subdivide_contour_vertical(
 
 def transform_to_acpc_standard(
         contour_ras: Polygon2dType | Polygon3dType,
-        ac_pt_ras: Vector2d,
-        pc_pt_ras: Vector2d,
+        anterior_pt: Vector2d,
+        posterior_pt: Vector2d,
 ) -> tuple[Polygon2dType, Vector2d, Vector2d, Callable[[Polygon2dType], Polygon2dType]]:
-    """Transform contour coordinates to AC-PC standard space.
+    """Transform contour coordinates to a standard space defined by an anterior and a posterior reference point.
 
     Transforms the contour coordinates by:
-        1. Translating AC point to origin.
-        2. Rotating to align PC point with posterior direction.
-        3. Scaling to maintain AC-PC distance.
+        1. Translating the anterior point to the origin.
+        2. Rotating to align the posterior point with the posterior direction.
+
+    The reference points are typically the CC endpoints (the "AC-PC" space of the CC module is aligned to the
+    anterior and posterior CC endpoints, not to the commissures).
 
     Parameters
     ----------
     contour_ras : array of floats
         Array of shape (2, N) or (3, N) containing contour points in RAS space.
-    ac_pt_ras : np.ndarray
-        Anterior commissure point coordinates in AS space.
-    pc_pt_ras : np.ndarray
-        Posterior commissure point coordinates in AS space.
+    anterior_pt : np.ndarray
+        Anterior reference point coordinates in AS space (moved to the origin).
+    posterior_pt : np.ndarray
+        Posterior reference point coordinates in AS space (rotated onto the negative A axis).
 
     Returns
     -------
     contour_acpc : np.ndarray
         Transformed contour points in AC-PC space.
-    ac_pt_acpc : np.ndarray
-        AC point in AC-PC space (origin).
-    pc_pt_acpc : np.ndarray
-        PC point in AC-PC space.
+    anterior_pt_acpc : np.ndarray
+        Anterior reference point in the standard space (origin).
+    posterior_pt_acpc : np.ndarray
+        Posterior reference point in the standard space.
     rotate_back : callable
         Function to transform points back to RAS space.
     """
-    # translate AC to the origin and PC to (0, ac_pc_dist)
-    translation_matrix = np.array([[1, 0, -ac_pt_ras[0]], [0, 1, -ac_pt_ras[1]], [0, 0, 1]])
+    # translate the anterior point to the origin and the posterior point to (-ac_pc_dist, 0)
+    translation_matrix = np.array([[1, 0, -anterior_pt[0]], [0, 1, -anterior_pt[1]], [0, 0, 1]])
 
-    ac_pc_vec: Vector2d = pc_pt_ras - ac_pt_ras
+    ac_pc_vec: Vector2d = posterior_pt - anterior_pt
     ac_pc_dist = np.linalg.norm(ac_pc_vec)
 
     posterior_vector: Vector2d = np.array([-ac_pc_dist, 0], dtype=float)

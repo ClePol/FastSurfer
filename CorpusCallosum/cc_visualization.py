@@ -173,7 +173,18 @@ def load_contours_from_template_dir(
         template_dir: Path, resolution: float, smoothing_window: int
 ) -> list[CCContour]:
     """Load all contours and thickness data from a template directory."""
-    thickness_files = sorted(template_dir.glob("thickness_values_*.txt"))
+    def _slice_index(path: Path) -> int | None:
+        try:
+            return int(path.stem.split("_")[-1])
+        except ValueError:
+            # skip files that do not follow the expected naming
+            return None
+
+    # sort numerically by the slice index (lexicographic sorting puts 10 between 1 and 2)
+    indexed_files = sorted(
+        (idx, path) for path in template_dir.glob("thickness_values_*.txt") if (idx := _slice_index(path)) is not None
+    )
+    thickness_files = [path for _, path in indexed_files]
     if not thickness_files:
         raise FileNotFoundError(
             f"No thickness files found in template directory {template_dir}. "
@@ -183,29 +194,16 @@ def load_contours_from_template_dir(
 
     fsaverage_contour = None
     contours: list[CCContour] = []
-    # First pass: collect all indices to determine the range
-    indices = []
-    for thickness_file in thickness_files:
-        try:
-            idx = int(thickness_file.stem.split("_")[-1])
-            indices.append(idx)
-        except ValueError:
-            # skip files that do not follow the expected naming
-            continue
+    indices = [idx for idx, _ in indexed_files]
 
-    # Calculate z_positions centered around the middle slice
+    # Calculate lr_positions centered around the middle slice
     num_slices = len(indices)
     middle_idx = num_slices // 2
 
-    for thickness_file in thickness_files:
-        try:
-            idx = int(thickness_file.stem.split("_")[-1])
-        except ValueError:
-            # skip files that do not follow the expected naming
-            continue
+    for idx, thickness_file in indexed_files:
 
-        # Calculate z_position: use the index offset from middle, scaled by resolution
-        z_position = (idx - indices[middle_idx]) * resolution
+        # Calculate lr_position: use the index offset from middle, scaled by resolution
+        lr_position = (idx - indices[middle_idx]) * resolution
 
         contour_file = template_dir / f"contour_{idx}.txt"
 
@@ -219,11 +217,11 @@ def load_contours_from_template_dir(
                 # create measurement points (points = 2 x levelpaths) according to number of thickness values
                 fsaverage_contour.create_levelpaths(num_points=num_thickness_values // 2, inplace=True)
             current_contour = fsaverage_contour.copy()
-            current_contour.z_position = z_position
+            current_contour.lr_position = lr_position
             current_contour.load_thickness_values(thickness_file)
 
         else:
-            current_contour = CCContour.from_contour_file(contour_file, thickness_file, z_position=z_position)
+            current_contour = CCContour.from_contour_file(contour_file, thickness_file, lr_position=lr_position)
 
         if smoothing_window > 0:
             current_contour.smooth_contour(window_size=smoothing_window)
@@ -340,6 +338,12 @@ def main(
         mode=mode
     )
     if twoD:
+        return 0
+    if len(contours) < 2:
+        logger.warning(
+            f"Skipping 3D outputs: the template directory contains only {len(contours)} slice, but at least 2 slices "
+            "are required for a surface (save the template with --slice_selection all).",
+        )
         return 0
 
     # 3D visualization
