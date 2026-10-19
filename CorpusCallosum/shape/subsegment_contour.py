@@ -514,9 +514,12 @@ def subdivide_contour_vertical(
     split_points: list[Vector2d] = []
     for baseline_point in baseline_points:
         intersections = []
-        for i in range(contour.shape[1] - 1):
+        # also test the closing edge (last point -> first point) of the closed contour; with i = N-1 as the index of
+        # the second intersection, the cumulative subsegment below closes from the second intersection back to point 0
+        num_points = contour.shape[1]
+        for i in range(num_points):
             segment_start = contour[:, i]
-            segment_end = contour[:, i + 1]
+            segment_end = contour[:, (i + 1) % num_points]
             segment_vector = segment_end - segment_start
 
             # Check for intersection with the perpendicular line
@@ -654,14 +657,14 @@ def get_primary_eigenvector(contour_ras: Polygon2dType) -> tuple[Vector2d, Vecto
     Parameters
     ----------
     contour_ras : np.ndarray
-        Array of shape (2, N) containing contour points in RAS space.
+        Array of shape (2, N) containing contour points in ACPC space (anterior is positive x).
 
     Returns
     -------
     pt0 : np.ndarray
-        Starting point for eigenvector line.
+        Starting (anterior) point for eigenvector line.
     pt1 : np.ndarray
-        End point for eigenvector line.
+        End (posterior) point for eigenvector line.
     
     """
     # Center the data by subtracting mean
@@ -680,6 +683,10 @@ def get_primary_eigenvector(contour_ras: Polygon2dType) -> tuple[Vector2d, Vecto
 
     # make first eigenvector unit length
     primary_eigenvector = eigenvectors[:, 0] / np.linalg.norm(eigenvectors[:, 0])
+    # the sign of eigenvectors is arbitrary, make the eigenvector point posterior (negative x in ACPC space), so pt0
+    # is anterior of pt1 (expected by transform_to_acpc_standard)
+    if primary_eigenvector[0] > 0:
+        primary_eigenvector = -primary_eigenvector
     pt0 = np.mean(contour_ras, axis=1)
     pt0 -= np.array([0, 5])
     pt1 = pt0 + primary_eigenvector * 100
