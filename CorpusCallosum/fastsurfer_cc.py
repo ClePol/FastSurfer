@@ -538,7 +538,7 @@ def segment_cc(
     cc_softlabels : np.ndarray
         Soft cc_seg_labels probabilities of shape in upright space and LIA-orientation (H, W, D, C=3).
     """
-    pre_clean_segmentation, inputs, cc_softlabels = segmentation_inference.run_inference_on_slice(
+    pre_clean_segmentation, inputs, cc_softlabels, crop_box = segmentation_inference.run_inference_on_slice(
         model_segmentation,
         midslices,
         ac_center=ac_coords,
@@ -548,14 +548,26 @@ def segment_cc(
 
     cc_seg_labels, cc_volume_mask = segmentation_postprocessing.clean_cc_segmentation(pre_clean_segmentation)
 
-    # print a warning if the cc_volume_mask touches the edge of the segmentation
-    if np.any(cc_volume_mask[:, [0, -1]]) or np.any(cc_volume_mask[:, :, [0, -1]]):
-        logger.warning("CC volume mask touches the edge of the cc_seg_labels field-of-view, CC might be truncated")
+    # print a warning if the cc_volume_mask touches the edge of the region segmented by the model (the crop box around
+    # AC and PC, outside the segmentation is zero-padded), the crop box may also coincide with the image edge
+    truncated_sides = []
+    # LIA: the index increases towards inferior (axis 1) and anterior (axis 2)
+    for axis, sides, (start, stop) in zip((1, 2), (("superior", "inferior"), ("posterior", "anterior")), crop_box,
+                                          strict=True):
+        for side, idx in zip(sides, (start, stop - 1), strict=True):
+            if 0 <= idx < cc_volume_mask.shape[axis] and np.any(np.take(cc_volume_mask, idx, axis=axis)):
+                truncated_sides.append(side)
+    if truncated_sides:
+        logger.warning(
+            f"QC flag: The CC segmentation touches the {', '.join(truncated_sides)} edge of the segmented "
+            f"field-of-view (crop box around AC/PC), the CC might be truncated!"
+        )
 
-    # get voxels that were removed during cleaning
-    cleaned_mask = pre_clean_segmentation != cc_seg_labels
-    cc_softlabels[cleaned_mask, 1] = 0
-    cc_softlabels[cleaned_mask, :] /= np.sum(cc_softlabels[cleaned_mask, :], axis=-1, keepdims=True) + 1e-6
+    # Make the softlabels consistent with the cleaned segmentation: voxels removed during cleaning become background,
+    # voxels added during cleaning (connections between CC components) become CC
+    changed_mask = pre_clean_segmentation != cc_seg_labels
+    for channel, label_id in enumerate((0, CC_LABEL, FORNIX_LABEL)):
+        cc_softlabels[changed_mask, channel] = np.equal(cc_seg_labels[changed_mask], label_id)
 
     return cc_seg_labels, cc_softlabels
 
@@ -991,7 +1003,8 @@ def main(
                 f"{num_failed_slices + len(valid_cc_contours)} slices. Results will only be included/saved for "
                 f"successful slices!"
             )
-        outer_contours = [slice_result["split_contours"][0] for slice_result in valid_slice_results]
+        # the full CC contour is the last of the split contours (the others are the subdivisions)
+        outer_contours = [slice_result["split_contours"][-1] for slice_result in valid_slice_results]
 
         if num_failed_slices == 0 and len(outer_contours) > 1 and not check_area_changes(outer_contours):
             logger.warning(
@@ -1100,20 +1113,33 @@ def main(
     ########## Save outputs ##########
     additional_metrics = {}
 
-    cc_num_voxel = segmentation_postprocessing.get_cc_num_voxel(
-        desired_width_mm=CC_ANALYSIS_WIDTH_MM,
-        cc_mask=np.equal(cc_fn_seg_labels, CC_LABEL),
-        voxel_size=vox_size,  # in LIA order
-    )
+    cc_mask = np.equal(cc_fn_seg_labels, CC_LABEL)
+    slices_without_cc = np.flatnonzero(~np.any(cc_mask, axis=(1, 2)))
+    if len(slices_without_cc) > 0:
+        logger.warning(
+            f"QC flag: The CC segmentation is empty in slice(s) {slices_without_cc.tolist()} of the "
+            f"{cc_mask.shape[0]} analyzed slices, the CC voxel count will be underestimated."
+        )
+    cc_num_voxel: float | None
+    try:
+        cc_num_voxel = segmentation_postprocessing.get_cc_num_voxel(
+            desired_width_mm=CC_ANALYSIS_WIDTH_MM,
+            cc_mask=cc_mask,
+            voxel_size=vox_size,  # in LIA order
+        )
+    except Exception as e:
+        logger.warning(f"QC flag: Could not compute the CC voxel count: {e}")
+        cc_num_voxel = None
     additional_metrics["cc_num_voxel"] = cc_num_voxel
     voxel_volume = np.prod(vox_size)
     additional_metrics["voxel_volume"] = voxel_volume
 
     if num_failed_slices == 0 and len(valid_cc_contours) > 1:
-        logger.info(
-            f"CC voxel count: {cc_num_voxel} at {voxel_volume:.2f} mm^3 voxel volume => "
-            f"{cc_num_voxel * voxel_volume:.2f} mm^3"
-        )
+        if cc_num_voxel is not None:
+            logger.info(
+                f"CC voxel count: {cc_num_voxel} at {voxel_volume:.2f} mm^3 voxel volume => "
+                f"{cc_num_voxel * voxel_volume:.2f} mm^3"
+            )
         cc_volume_contour = calculate_cc_volume_contour(valid_cc_contours, width=CC_ANALYSIS_WIDTH_MM)
         logger.info(f"CC volume contour: {cc_volume_contour}")
     else:
@@ -1130,7 +1156,9 @@ def main(
         (ac_coords_vox_3d, pc_coords_vox_3d),
     )
     standardized2orig_vox2vox, ac_coords_standardized, pc_coords_standardized, ac_coords_orig, pc_coords_orig = (
-        calc_mapping_to_standard_space(fsavg_header["dims"][:3], ac_coords_3d, pc_coords_3d, orig2fsavg_vox2vox)
+        calc_mapping_to_standard_space(
+            fsavg_header["dims"][:3], ac_coords_3d, pc_coords_3d, orig2fsavg_vox2vox, vox_size=vox_size
+        )
     )
 
     # write output dict as csv
@@ -1160,7 +1188,7 @@ def main(
     additional_metrics["segmentation_source"] = segmentation_source
 
     # QC checks
-    if len(outer_contours) > 1 and cc_volume_contour is not None:
+    if len(outer_contours) > 1 and cc_volume_contour is not None and cc_num_voxel is not None:
         cc_volume_voxel = cc_num_voxel * voxel_volume
         max_vol = max(cc_volume_voxel, cc_volume_contour)
         if max_vol > 0 and abs(cc_volume_voxel - cc_volume_contour) / max_vol > 0.2:

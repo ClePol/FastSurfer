@@ -139,6 +139,7 @@ def calc_mapping_to_standard_space(
     ac_coords_3d: Vector3d,
     pc_coords_3d: Vector3d,
     orig_fsaverage_vox2vox: AffineMatrix4x4,
+    vox_size: Vector3d | None = None,
 ) -> tuple[AffineMatrix4x4, Vector3d, Vector3d, Vector3d, Vector3d]:
     """Get transformations to map image to standard space.
 
@@ -152,6 +153,9 @@ def calc_mapping_to_standard_space(
         PC coordinates in 3D space.
     orig_fsaverage_vox2vox : AffineMatrix4x4
         Transformation matrix from original to fsaverage space.
+    vox_size : Vector3d, optional
+        Voxel size of the fsaverage-aligned (and standardized) grid in voxel axis order (LIA), used to make the nodding
+        correction a rigid rotation in mm for anisotropic voxels (default: isotropic).
 
     Returns
     -------
@@ -167,15 +171,15 @@ def calc_mapping_to_standard_space(
         PC coordinates in original space.
     """
     image_center = np.array(target_shape) / 2
+    scale = np.ones(3, dtype=float) if vox_size is None else np.asarray(vox_size, dtype=float)
 
-    # correct nodding
-    nod_correct_2d = correct_nodding(ac_coords_3d[1:3], pc_coords_3d[1:3])
+    # correct nodding, the rotation angle is determined in mm
+    nod_correct_2d = correct_nodding(ac_coords_3d[1:3] * scale[1:3], pc_coords_3d[1:3] * scale[1:3])
 
-    # convert 2D nodding correction to 3D transformation matrix
+    # convert 2D nodding correction (a rotation about the origin in mm) to a 3D voxel-space transformation matrix,
+    # conjugating with the voxel scaling (S^-1 R S) so the rotation is rigid in mm also for anisotropic voxels
     nod_correct_3d: AffineMatrix4x4 = np.eye(4, dtype=float)
-    nod_correct_3d[1:3, 1:3] = nod_correct_2d[:2, :2]  # Copy rotation part to y,z axes
-    # Copy translation part to y,z axes (usually no translation)
-    nod_correct_3d[1:3, 3] = nod_correct_2d[:2, 2]
+    nod_correct_3d[1:3, 1:3] = nod_correct_2d[:2, :2] * scale[np.newaxis, 1:3] / scale[1:3, np.newaxis]
 
     ac_coords_after_nodding: Vector3d = apply_transform_to_pt(
         ac_coords_3d, nod_correct_3d, inv=False,
@@ -254,7 +258,8 @@ def apply_transform_to_volume(
     if header is None:
         header = orig_image.header
     if save_vox2ras is None:
-        save_vox2ras = orig_image.affine @ interp_vox2vox
+        # output vox -> input vox -> RAS (interp_vox2vox maps input to output voxels)
+        save_vox2ras = orig_image.affine @ np.linalg.inv(interp_vox2vox)
     # transform / resample the volume with vox2vox, note this needs to be the inverse of input2output vox2vox!
     # affine_transform definition is: input_coord = matrix @ output_coord + offset ( == MATRIX_HOM @ output_coord_hom)
     # --> output_coord = inv(matrix) @ (input_coord - offset) ( == inv(MATRIX_HOM) @ input_coord_hom)

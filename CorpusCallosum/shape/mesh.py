@@ -178,6 +178,67 @@ def make_triangles_between_contours(contour1: np.ndarray, contour2: np.ndarray) 
     return np.array(triangles)
 
 
+def _upsample_contour(
+    points: np.ndarray,
+    values: np.ndarray | None,
+    num_points: int,
+) -> tuple[np.ndarray, np.ndarray | None]:
+    """Insert points into a closed contour until it has `num_points` points.
+
+    Points are inserted one at a time at the midpoint of the currently longest edge
+    (including the closing edge). Values (e.g. thickness) are linearly interpolated,
+    so per-vertex values stay consistent with the inserted vertices.
+
+    Parameters
+    ----------
+    points : np.ndarray
+        Contour points of shape (N, 2).
+    values : np.ndarray, optional
+        Per-point values of shape (N,).
+    num_points : int
+        Target number of points (>= N).
+
+    Returns
+    -------
+    points : np.ndarray
+        Contour points of shape (num_points, 2).
+    values : np.ndarray, optional
+        Per-point values of shape (num_points,), None if `values` is None.
+    """
+    points = np.asarray(points, dtype=float)
+    values = None if values is None else np.asarray(values, dtype=float)
+    while len(points) < num_points:
+        edge_lengths = np.linalg.norm(np.roll(points, -1, axis=0) - points, axis=1)
+        i = int(np.argmax(edge_lengths))
+        j = (i + 1) % len(points)
+        points = np.insert(points, i + 1, (points[i] + points[j]) / 2, axis=0)
+        if values is not None:
+            values = np.insert(values, i + 1, (values[i] + values[j]) / 2)
+    return points, values
+
+
+def _signed_volume(vertices: np.ndarray, faces: np.ndarray) -> float:
+    """Signed volume enclosed by a closed triangle mesh (positive if normals point outward)."""
+    v0, v1, v2 = (vertices[faces[:, k]] for k in range(3))
+    return float(np.einsum("ij,ij->i", v0, np.cross(v1, v2)).sum() / 6)
+
+
+def _fan_cap(loop_idx: np.ndarray, faces: np.ndarray) -> np.ndarray:
+    """Triangulate a closed loop of vertex indices consistently with existing faces.
+
+    The fan is oriented such that its edges along the loop run opposite to the
+    corresponding directed edges in `faces`, i.e. the cap closes the open mesh with
+    consistent orientation. Fan triangles of non-convex loops overlap, but their signed
+    contributions still sum to the correct (signed) enclosed volume.
+    """
+    fan = np.stack([np.full(len(loop_idx) - 2, loop_idx[0]), loop_idx[1:-1], loop_idx[2:]], axis=1)
+    directed_edges = np.concatenate([faces[:, [0, 1]], faces[:, [1, 2]], faces[:, [2, 0]]])
+    # if faces already contain the directed edge loop[0] -> loop[1], the cap must traverse the loop in reverse
+    if np.any(np.all(directed_edges == loop_idx[:2], axis=1)):
+        fan = fan[:, ::-1]
+    return fan
+
+
 Self = TypeVar('Self', bound='type[CCMesh]')
 
 
@@ -736,24 +797,45 @@ class CCMesh(lapy.TriaMesh):
         vertex_values_list = []
         vertex_start_indices = []  # Track starting index for each contour
         current_index = 0
-        previous_contour: CCContour | None = None
+        previous_points: np.ndarray | None = None
 
+        # Triangulation between contours requires the same number of points on every contour. Contours can have
+        # fewer points, if level paths failed in cc_thickness (2 points are inserted per level path), so upsample.
+        num_points = max(len(contour.points) for contour in contours)
         for contour in contours:
+            points, values = contour.points, contour.thickness_values
+            if len(points) != num_points:
+                logger.warning(
+                    f"Contour at z={contour.z_position:.2f} has {len(points)} instead of {num_points} points "
+                    f"(missing level paths?), inserting points for meshing."
+                )
+                points, values = _upsample_contour(points, values, num_points)
+
             vertex_start_indices.append(current_index)
-            vertices.append(np.hstack([np.full((len(contour.points), 1), contour.z_position), contour.points]))
-            if contour.thickness_values is not None:
-                vertex_values_list.append(contour.thickness_values)
+            vertices.append(np.hstack([np.full((len(points), 1), contour.z_position), points]))
+            if values is not None:
+                vertex_values_list.append(values)
 
             # Check if there's a next valid contour to connect to
-            if previous_contour is not None:
-                if len(previous_contour.points) != len(contour.points):
-                    raise ValueError("The number of points of multiple contours must be the same!")
-                faces_between = make_triangles_between_contours(previous_contour.points, contour.points)
+            if previous_points is not None:
+                faces_between = make_triangles_between_contours(previous_points, points)
                 faces.append(faces_between + current_index)
 
-                current_index += len(previous_contour.points)
+                current_index += len(previous_points)
 
-            previous_contour = contour
+            previous_points = points
+
+        if len(contours) > 1:
+            # Orient faces such that normals point outward. The winding produced by make_triangles_between_contours
+            # depends on the contour direction (cw/ccw) and on the order of the z_positions, so close the tube with
+            # temporary caps and flip all faces, if the signed volume is negative.
+            _vertices, _faces = np.vstack(vertices), np.vstack(faces)
+            caps = [
+                _fan_cap(np.arange(start, start + num_points), _faces)
+                for start in (0, (len(contours) - 1) * num_points)
+            ]
+            if _signed_volume(_vertices, np.vstack([_faces] + caps)) < 0:
+                faces = [f[:, ::-1] for f in faces]
 
         vertex_values = None
         if len(vertex_values_list) == len(contours):

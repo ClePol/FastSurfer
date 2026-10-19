@@ -206,7 +206,8 @@ class CCContour:
         endpoint_idxs : tuple[int, int]
             Indices of the anterior and posterior endpoints on the updated contour.
         curvature : float
-            Mean curvature of the midline.
+            Mean absolute turning angle of the midline in degrees per midline sample step
+            (depends on num_thickness_points).
         """
 
          # FIXME: cache all these values in CCContour, and invalidate the cache, when either points or endpoint_idxs get

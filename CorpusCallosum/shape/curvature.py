@@ -41,7 +41,7 @@ def compute_curvature(path: Points2dType) -> np.ndarray[tuple[int], np.dtype[np.
 
 
 def compute_mean_curvature(path: Points2dType) -> float:
-    """Compute mean absolute curvature of a path in degrees.
+    """Compute the mean absolute turning angle of a path in degrees per sample step.
 
     Parameters
     ----------
@@ -51,7 +51,14 @@ def compute_mean_curvature(path: Points2dType) -> float:
     Returns
     -------
     float
-        Mean absolute curvature of the path in degrees.
+        Mean absolute turning angle between consecutive edges of the path in degrees (per sample step).
+
+    Notes
+    -----
+    This is not curvature in deg/mm: the value is averaged per sample step and therefore depends on the sampling
+    density of `path`. For the CC midline, which is sampled equidistantly with `num_thickness_points` points, values
+    are only comparable between analyses that use the same `num_thickness_points` (default 100), but they are
+    invariant to the size (length) of the CC.
     """
     curvature = compute_curvature(path)
     if len(curvature) == 0:
@@ -59,9 +66,66 @@ def compute_mean_curvature(path: Points2dType) -> float:
     return np.mean(np.abs(np.degrees(curvature))).item()
 
 
+def _find_split_indices(
+    midline: Points2dType,
+    split_points: np.ndarray,
+    subdivision_lines: list[Points2dType] | None = None,
+) -> list[int]:
+    """Find the indices of the midline points closest to where the midline is split.
+
+    Parameters
+    ----------
+    midline : Points2dType
+        Array of shape (N, 2) of equidistant points along the midline.
+    split_points : np.ndarray
+        Array of shape (K, 2) of split points (used if `subdivision_lines` is None).
+    subdivision_lines : list of np.ndarray, optional
+        K subdivision lines, each of shape (2, 2) (the two intersections of the line with the contour).
+        If passed, the midline is split where it intersects each subdivision line (split points that already lie
+        on the midline are used as is).
+
+    Returns
+    -------
+    list[int]
+        Sorted midline indices, starting with 0 and ending with N-1.
+    """
+    split_indices_midline = [0]
+    targets = list(np.asarray(split_points, dtype=float).reshape(-1, 2))
+    if subdivision_lines is not None:
+        if len(subdivision_lines) != len(targets):
+            raise ValueError(f"Got {len(targets)} split points, but {len(subdivision_lines)} subdivision lines.")
+        edge_start, edge_vec = midline[:-1], np.diff(midline, axis=0)
+        edge_len_sq = np.maximum(np.sum(edge_vec**2, axis=1), np.finfo(float).tiny)
+        for k, line in enumerate(subdivision_lines):
+            # split points that already lie on the midline (e.g. 'shape' subdivision) are used as is
+            proj = np.clip(np.sum((targets[k] - edge_start) * edge_vec, axis=1) / edge_len_sq, 0, 1)
+            if np.min(np.linalg.norm(edge_start + proj[:, None] * edge_vec - targets[k], axis=1)) < 1e-6:
+                continue
+            p0, p1 = np.asarray(line, dtype=float)
+            line_vec = p1 - p0
+            line_center = (p0 + p1) / 2
+            # solve edge_start + t * edge_vec == p0 + s * line_vec for all midline edges
+            denom = edge_vec[:, 0] * line_vec[1] - edge_vec[:, 1] * line_vec[0]
+            diff = p0[None] - edge_start
+            with np.errstate(divide="ignore", invalid="ignore"):
+                t = (diff[:, 0] * line_vec[1] - diff[:, 1] * line_vec[0]) / denom
+                s = (diff[:, 0] * edge_vec[:, 1] - diff[:, 1] * edge_vec[:, 0]) / denom
+            valid = (denom != 0) & (t >= 0) & (t <= 1) & (s >= 0) & (s <= 1)
+            if np.any(valid):
+                intersections = edge_start[valid] + t[valid, None] * edge_vec[valid]
+                # if the midline crosses the subdivision line more than once, use the crossing closest to the center
+                targets[k] = intersections[np.argmin(np.linalg.norm(intersections - line_center, axis=1))]
+            # else: no crossing (should not happen for a valid subdivision), fall back to the split point
+    for target in targets:
+        split_indices_midline.append(int(np.argmin(np.linalg.norm(midline - target, axis=1))))
+    split_indices_midline.append(len(midline) - 1)
+    return sorted(split_indices_midline)
+
+
 def calculate_curvature_metrics(
     midline: Points2dType,
     split_points: np.ndarray,
+    subdivision_lines: list[Points2dType] | None = None,
 ) -> tuple[float, float, np.ndarray]:
     """
     Calculate curvature metrics for the CC midline, including overall mean,
@@ -72,16 +136,26 @@ def calculate_curvature_metrics(
     midline : Points2dType
         Equidistant points along the midline.
     split_points : np.ndarray
-        Points on the midline where it was split (for orthogonal subdivision).
+        Array of shape (K, 2) of points where the midline is split. For the 'shape' subdivision these lie on the
+        midline; for the other subdivision methods they are the centers of the subdivision lines (inside the CC).
+        The midline is split at the midline points closest to these points.
+    subdivision_lines : list of np.ndarray, optional
+        Subdivision lines, each of shape (2, 2) in the same space as `midline`. If passed, the midline is split
+        where it intersects the subdivision lines instead of at the closest point to `split_points` (exact for all
+        subdivision methods).
 
     Returns
     -------
     mean_curvature : float
-        Overall mean curvature.
+        Overall mean absolute turning angle of the midline in degrees per sample step, see `compute_mean_curvature`.
     curvature_body : float
-        Mean curvature of the central 65% of the midline.
+        Mean absolute turning angle of the central 65% of the midline in degrees per sample step.
     curvature_subsegments : np.ndarray
-        Mean curvature for each subsegment.
+        Mean absolute turning angle for each subsegment in degrees per sample step.
+
+    Notes
+    -----
+    All values depend on the number of midline points (`num_thickness_points`), see `compute_mean_curvature`.
     """
     mean_curvature = compute_mean_curvature(midline)
 
@@ -92,13 +166,7 @@ def calculate_curvature_metrics(
     curvature_body = compute_mean_curvature(midline[start_idx_body:end_idx_body])
 
     # Find split indices on the midline for subsegment curvature
-    split_indices_midline = [0]
-    for sp in split_points:
-        idx = np.argmin(np.linalg.norm(midline - sp, axis=1))
-        split_indices_midline.append(idx)
-
-    split_indices_midline.append(len(midline) - 1)
-    split_indices_midline.sort()
+    split_indices_midline = _find_split_indices(midline, split_points, subdivision_lines)
 
     _curvature_subsegments = []
     for i in range(len(split_indices_midline) - 1):
@@ -112,4 +180,3 @@ def calculate_curvature_metrics(
     curvature_subsegments = np.asarray(_curvature_subsegments)
 
     return mean_curvature, curvature_body, curvature_subsegments
-

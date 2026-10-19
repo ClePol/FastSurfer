@@ -580,7 +580,7 @@ def subdivide_contour_vertical(
     split_contours : list[np.ndarray]
         List of contour arrays for each subsegment.
     split_points : list[Vector2d]
-        List of split points for each subsegment.
+        List of split points, the center of each subdivision line (i.e. inside the CC, close to the midline).
     subdivision_lines : list[Points2dType]
         List of contour arrays for each subdivision line.
 
@@ -655,18 +655,19 @@ def subdivide_contour_vertical(
     # Calculate the perpendicular vector
     perp_vector = np.array([-line_unit_vector[1], line_unit_vector[0]])
 
-    # Calculate split points based on area weights
-    split_points = []
+    # Calculate points on the reference line (below the CC) based on area weights
+    baseline_points = []
     for weight in area_weights:
         # current_weight = np.sum(area_weights[:i])
         split_distance = weight * line_length
-        split_point = start_point + split_distance * line_unit_vector
-        split_points.append(split_point)
+        baseline_point = start_point + split_distance * line_unit_vector
+        baseline_points.append(baseline_point)
 
-    # Split the contour at the calculated split points
+    # Split the contour with the lines perpendicular to the reference line through the baseline points
     split_contours = []
     subdivision_lines: list[Points2dType] = []
-    for split_point in split_points:
+    split_points: list[Vector2d] = []
+    for baseline_point in baseline_points:
         intersections = []
         for i in range(contour.shape[1] - 1):
             segment_start = contour[:, i]
@@ -679,7 +680,7 @@ def subdivide_contour_vertical(
                 continue  # Skip parallel lines
 
             # Solve for intersection
-            t, s = np.linalg.solve(matrix, split_point - segment_start)
+            t, s = np.linalg.solve(matrix, baseline_point - segment_start)
             if 0 <= t <= 1:
                 intersection_point = segment_start + t * segment_vector
                 intersections.append((i, intersection_point))
@@ -691,7 +692,7 @@ def subdivide_contour_vertical(
         intersections.sort(key=lambda x: x[1][1], reverse=True)
 
         # Create new contours by splitting at intersections
-        if intersections:
+        if len(intersections) >= 2:
             first_index, first_intersection = intersections[1]
             second_index, second_intersection = intersections[0]
 
@@ -700,6 +701,8 @@ def subdivide_contour_vertical(
                 first_intersection, second_intersection = second_intersection, first_intersection
 
             subdivision_lines.append(np.stack([first_intersection, second_intersection], axis=0))
+            # the split point is the center of the subdivision line (inside the CC), not the baseline point
+            split_points.append((first_intersection + second_intersection) / 2)
             first_index += 1
 
             # connect first and second half to create a closed cumulative loop
@@ -720,8 +723,8 @@ def subdivide_contour_vertical(
 
     if plot:
         # make vline at every split point
-        split_points_vlines_start = (np.array(split_points) - perp_vector * 1).T
-        split_points_vlines_end = (np.array(split_points) + perp_vector * 1).T
+        split_points_vlines_start = (np.array(baseline_points) - perp_vector * 1).T
+        split_points_vlines_end = (np.array(baseline_points) + perp_vector * 1).T
 
         if oriented:
             # make another vline at start point and end point, this time not 
@@ -736,7 +739,7 @@ def subdivide_contour_vertical(
             split_contours = [plot_transform(split_contour) for split_contour in split_contours]
             contour = plot_transform(contour)
             extremes = [plot_transform(extreme[:, None]) for extreme in extremes]
-            split_points = [plot_transform(split_point[:, None]) for split_point in split_points]
+            baseline_points = [plot_transform(bp[:, None]) for bp in baseline_points]
             split_points_vlines_start = plot_transform(split_points_vlines_start)
             split_points_vlines_end = plot_transform(split_points_vlines_end)
             start_point_vline = plot_transform(start_point_vline.T).T
@@ -779,8 +782,8 @@ def subdivide_contour_vertical(
         ax.plot(end_point_vline[:, 0], end_point_vline[:, 1], "--", linewidth=2, color="grey")
         # put text between split points
         # add endpoints to split_points
-        split_points.insert(0, extremes[0])
-        split_points.append(extremes[1])
+        baseline_points.insert(0, extremes[0])
+        baseline_points.append(extremes[1])
         # convert area_weights into fraction of total line length
         # e.g. area_weights=[1/6, 1/2, 2/3, 3/4] to ['1/6', '2/3', ...]
         # cumulative difference
@@ -797,8 +800,8 @@ def subdivide_contour_vertical(
             Fraction(area_weights_diff[i]).limit_denominator(1000) for i in range(len(area_weights_diff))
         ]
 
-        for i in range(len(split_points) - 1):
-            midpoint = np.mean([split_points[i], split_points[i + 1]], axis=0)
+        for i in range(len(baseline_points) - 1):
+            midpoint = np.mean([baseline_points[i], baseline_points[i + 1]], axis=0)
             # ax.text(midpoint[0]-5, midpoint[1]-5, f'{area_out[i]:.2f}', color='black', fontsize=12)
             ax.text(
                 midpoint[0],

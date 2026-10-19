@@ -93,7 +93,7 @@ def make_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--reduce_to_aseg",
         "-aseg",
-        dest="aseg",
+        dest="output_aseg",
         type=path_or_none,
         required=False,
         help="optionally also reduce the resulting segmentation to aseg and save separately.",
@@ -111,7 +111,7 @@ def make_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def paint_in_cc(
+def paint_cc_into_pred(
         pred: np.ndarray[Shape3d, np.dtype[int]],
         cc_seg: np.ndarray[Shape3d, np.dtype[int]],
 ) -> np.ndarray[Shape3d, np.dtype[int]]:
@@ -144,11 +144,11 @@ def paint_in_cc(
     return out
 
 def _fill_gaps_in_direction_(
-    corrected_pred: np.ndarray[Shape3d, np.dtype[int]],
+    seg: np.ndarray[Shape3d, np.dtype[int]],
     potential_fill: Mask2d,
     source_binary: Mask2d,
     target_binary: Mask2d,
-    x_slice: int,
+    x: int,
     direction: str,
     max_gap_voxels: int,
     fillable_labels: set[int]
@@ -157,7 +157,7 @@ def _fill_gaps_in_direction_(
     
     Parameters
     ----------
-    corrected_pred : np.ndarray
+    seg : np.ndarray
         The segmentation array to modify in place.
     potential_fill : np.ndarray
         2D mask of potential fill regions for this slice.
@@ -165,7 +165,7 @@ def _fill_gaps_in_direction_(
         2D binary mask of source structure (e.g., CC).
     target_binary : np.ndarray
         2D binary mask of target structure (e.g., ventricle).
-    x_slice : int
+    x : int
         The x-coordinate of the current slice.
     direction : str
         Direction of the 1D lines in which gaps are measured (input is LIA): 'inferior-superior' (along axis 1)
@@ -204,17 +204,17 @@ def _fill_gaps_in_direction_(
                 target_label_location = np.where(target_line & dilated_gap_mask)[0]
                 if len(target_label_location) == 0:
                     continue
-                target_label = corrected_pred[x_slice, target_label_location[0], a]
+                target_label = seg[x, target_label_location[0], a]
 
                 # Check gap size
                 if np.sum(gap_mask) > max_gap_voxels:
                     continue
 
                 # Fill voxels that have fillable labels
-                current_labels = corrected_pred[x_slice, :, a]
+                current_labels = seg[x, :, a]
                 fill_mask = gap_mask & np.isin(current_labels, list(fillable_labels))
                 voxels_filled += np.sum(fill_mask)
-                corrected_pred[x_slice, :, a][fill_mask] = target_label
+                seg[x, :, a][fill_mask] = target_label
                 
     elif direction == 'anterior-posterior':
         # Lines run along axis 2 (anterior-posterior), iterate over axis 1 (inferior-superior)
@@ -238,23 +238,23 @@ def _fill_gaps_in_direction_(
                 target_label_location = np.where(target_line & dilated_gap_mask)[0]
                 if len(target_label_location) == 0:
                     continue
-                target_label = corrected_pred[x_slice, i, target_label_location[0]]
+                target_label = seg[x, i, target_label_location[0]]
 
                 # Check gap size
                 if np.sum(gap_mask) > max_gap_voxels:
                     continue
 
                 # Fill voxels that have fillable labels
-                current_labels = corrected_pred[x_slice, i, :]
+                current_labels = seg[x, i, :]
                 fill_mask = gap_mask & np.isin(current_labels, list(fillable_labels))
                 voxels_filled += np.sum(fill_mask)
-                corrected_pred[x_slice, i, :][fill_mask] = target_label
+                seg[x, i, :][fill_mask] = target_label
     
     return voxels_filled
 
 
 def _fill_gaps_between_structures_(
-    corrected_pred: np.ndarray[Shape3d, np.dtype[int]],
+    seg: np.ndarray[Shape3d, np.dtype[int]],
     source_mask: Mask3d,
     target_mask: Mask3d,
     voxel_size: tuple[float, float, float],
@@ -266,7 +266,7 @@ def _fill_gaps_between_structures_(
     
     Parameters
     ----------
-    corrected_pred : np.ndarray
+    seg : np.ndarray
         The segmentation array to modify in place.
     source_mask : np.ndarray
         3D binary mask of source structure (e.g., CC).
@@ -294,7 +294,7 @@ def _fill_gaps_between_structures_(
     voxels_filled = 0
     
     # Process each slice independently
-    for x in range(corrected_pred.shape[0]):
+    for x in range(seg.shape[0]):
         source_slice = source_mask[x]
         target_slice = target_mask[x]
 
@@ -315,13 +315,13 @@ def _fill_gaps_between_structures_(
 
         # Fill gaps in inferior-superior direction
         voxels_filled += _fill_gaps_in_direction_(
-            corrected_pred, potential_fill, source_binary, target_binary,
+            seg, potential_fill, source_binary, target_binary,
             x, 'inferior-superior', max_gap_vox_inferior_superior, fillable_labels
         )
 
         # Fill gaps in anterior-posterior direction
         voxels_filled += _fill_gaps_in_direction_(
-            corrected_pred, potential_fill, source_binary, target_binary,
+            seg, potential_fill, source_binary, target_binary,
             x, 'anterior-posterior', max_gap_vox_anterior_posterior, fillable_labels
         )
     
@@ -331,9 +331,8 @@ def _fill_gaps_between_structures_(
     return voxels_filled
 
 
-def correct_wm_ventricles(
+def fill_gaps_around_cc(
     pred_with_cc: np.ndarray[Shape3d, np.dtype[int]],
-    fornix_mask: Mask3d,
     voxel_size: tuple[float, float, float],
     close_gap_size_mm: float = 3.0
 ) -> np.ndarray[Shape3d, np.dtype[int]]:
@@ -350,8 +349,6 @@ def correct_wm_ventricles(
     ----------
     pred_with_cc : np.ndarray
         Segmentation (prediction) with CC already painted in.
-    fornix_mask : np.ndarray
-        Mask of the fornix. Not currently used (kept for interface compatibility).
     voxel_size : tuple[float, float, float]
         Voxel size of the segmentation in mm.
     close_gap_size_mm : float, default=3.0
@@ -389,21 +386,18 @@ def correct_wm_ventricles(
     return corrected_pred
 
 
-def correct_wm_ventricles_in_lia(
+def fill_gaps_around_cc_in_lia(
     pred_with_cc: np.ndarray[Shape3d, np.dtype[int]],
-    fornix_mask: Mask3d,
     affine: np.ndarray,
     voxel_size: tuple[float, float, float],
     close_gap_size_mm: float = 3.0,
 ) -> np.ndarray[Shape3d, np.dtype[int]]:
-    """Run WM/ventricle gap correction in LIA orientation and map back.
+    """Run gap filling around the CC in LIA orientation and map back.
 
     Parameters
     ----------
     pred_with_cc : np.ndarray
         Segmentation with CC already painted in, in native orientation.
-    fornix_mask : np.ndarray
-        Fornix mask in native orientation.
     affine : np.ndarray
         Native image affine.
     voxel_size : tuple[float, float, float]
@@ -425,17 +419,15 @@ def correct_wm_ventricles_in_lia(
 
     if not native_to_lia.is_identity():
         logger.info(
-            "Running WM/ventricle gap correction in temporary LIA orientation; "
+            "Running gap filling around the CC in temporary LIA orientation; "
             "output will be mapped back to native geometry."
         )
 
     pred_with_cc_lia = native_to_lia(pred_with_cc, order=0)
-    fornix_mask_lia = native_to_lia(fornix_mask, order=0)
     voxel_size_lia = tuple(native_to_lia.reorder_axes(np.asarray(voxel_size)).tolist())
 
-    corrected_lia = correct_wm_ventricles(
+    corrected_lia = fill_gaps_around_cc(
         pred_with_cc_lia,
-        fornix_mask_lia,
         voxel_size_lia,
         close_gap_size_mm=close_gap_size_mm,
     )
@@ -494,38 +486,36 @@ if __name__ == "__main__":
     initial_ventricles = np.sum((pred_data == 4) | (pred_data == 43))
 
     # Paint CC into prediction
-    pred_with_cc = paint_in_cc(pred_data, cc_seg_data)
+    pred_with_cc = paint_cc_into_pred(pred_data, cc_seg_data)
 
-    # Apply ventricle gap filling corrections
-    fornix_mask = cc_seg_data == FORNIX_LABEL
+    # Fill gaps between CC and ventricles/background
     voxel_size = tuple(pred_image.header.get_zooms()[:3])
-    pred_corrected = correct_wm_ventricles_in_lia(
+    pred_with_cc_filled = fill_gaps_around_cc_in_lia(
         pred_with_cc,
-        fornix_mask,
         pred_image.affine,
         voxel_size,
     )
 
     logger.info(f"Writing segmentation with corpus callosum to: {options.output}")
-    pred_with_cc_fin = as_mgh_image(pred_corrected, pred_image.affine, pred_image.header)
-    io_fut = thread_executor().submit(pred_with_cc_fin.to_filename, options.output)
+    pred_with_cc_image = as_mgh_image(pred_with_cc_filled, pred_image.affine, pred_image.header)
+    output_fut = thread_executor().submit(pred_with_cc_image.to_filename, options.output)
 
-    if options.aseg is not None:
-        rta_fut = thread_executor().submit(
+    if options.output_aseg is not None:
+        aseg_fut = thread_executor().submit(
             reduce_to_aseg_and_save,
-            pred_corrected,
+            pred_with_cc_filled,
             pred_image.affine,
             pred_image.header,
-            options.aseg,
+            options.output_aseg,
         )
     else:
-        rta_fut = None
+        aseg_fut = None
 
     # Count final labels
-    final_cc = np.sum(mask_in_array(pred_corrected, SUBSEGMENT_LABELS))
-    final_fornix = np.sum(pred_corrected == FORNIX_LABEL)
-    final_wm = np.sum((pred_corrected == 2) | (pred_corrected == 41))
-    final_ventricles = np.sum((pred_corrected == 4) | (pred_corrected == 43))
+    final_cc = np.sum(mask_in_array(pred_with_cc_filled, SUBSEGMENT_LABELS))
+    final_fornix = np.sum(pred_with_cc_filled == FORNIX_LABEL)
+    final_wm = np.sum((pred_with_cc_filled == 2) | (pred_with_cc_filled == 41))
+    final_ventricles = np.sum((pred_with_cc_filled == 4) | (pred_with_cc_filled == 43))
 
     wm_change = final_wm - initial_wm
     vent_change = final_ventricles - initial_ventricles
@@ -536,7 +526,7 @@ if __name__ == "__main__":
                 f"Ventricles {'+' if vent_change >= 0 else ''}{vent_change}")
 
     # Wait for all IO operations to complete
-    io_fut.result()
-    if rta_fut is not None:
-        rta_fut.result()
+    output_fut.result()
+    if aseg_fut is not None:
+        aseg_fut.result()
 
